@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /b \"g:\\porraza-frontend\\public\\logo\"\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

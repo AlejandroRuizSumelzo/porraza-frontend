@@ -1,26 +1,243 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: var(--font-poppins);
+  --font-display: var(--font-teko);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.625rem;
+
+  /* ===== Neutrales (CLARO, sin dark) =====
+     Fondo off-white con tinte frío para que el azul respire mejor */
+  --background: oklch(0.98 0.01 250);
+  --foreground: oklch(0.2 0.02 250);
+
+  --card: oklch(0.985 0.008 250);
+  --card-foreground: oklch(0.18 0.02 250);
+
+  --popover: oklch(0.985 0.008 250);
+  --popover-foreground: oklch(0.18 0.02 250);
+
+  /* ===== Marca Porraza ===== */
+  --primary: #2a398d; /* Azul */
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: #3cac3b; /* Verde */
+  --secondary-foreground: oklch(0.16 0.02 160);
+
+  --destructive: #e61d25; /* Rojo */
+  --destructive-foreground: oklch(0.99 0 0);
+
+  /* ===== Accents y estados ===== */
+  --accent: color-mix(in oklab, #2a398d 16%, white);
+  --accent-foreground: oklch(0.22 0.02 250);
+
+  --muted: oklch(0.965 0.01 250);
+  --muted-foreground: oklch(0.56 0.02 250);
+
+  /* ===== Bordes / Inputs / Ring ===== */
+  --border: oklch(0.9 0.01 250);
+  --input: oklch(0.92 0.01 250);
+  --ring: color-mix(in oklab, #2a398d 55%, white);
+
+  /* ===== Charts (derivados de la triada) ===== */
+  --chart-1: #2a398d; /* azul base */
+  --chart-2: #3cac3b; /* verde base */
+  --chart-3: #e61d25; /* rojo base */
+  --chart-4: color-mix(in oklab, #2a398d 70%, #3cac3b); /* azul→verde */
+  --chart-5: color-mix(in oklab, #2a398d 70%, #e61d25); /* azul→rojo */
+
+  /* ===== Sidebar ===== */
+  --sidebar: oklch(0.975 0.01 250);
+  --sidebar-foreground: oklch(0.22 0.02 250);
+  --sidebar-primary: #2a398d;
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.96 0.01 250);
+  --sidebar-accent-foreground: oklch(0.22 0.02 250);
+  --sidebar-border: oklch(0.9 0.01 250);
+  --sidebar-ring: color-mix(in oklab, #2a398d 45%, white);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Modern selection styles */
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 25%, transparent);
+    color: var(--foreground);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Glass effect utility */
+  .glass {
+    @apply bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/50;
+  }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-transform duration-200 ease-out hover:-translate-y-0.5;
+  }
+
+  /* Focus ring modern */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Gradient text utilities */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent;
+  }
+
+  .gradient-text-primary {
+    @apply bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent;
+  }
+
+  .gradient-text-secondary {
+    @apply bg-gradient-to-r from-secondary via-secondary/80 to-secondary bg-clip-text text-transparent;
+  }
+
+  .gradient-text-tricolor {
+    @apply bg-gradient-to-r from-primary via-secondary to-destructive bg-clip-text text-transparent;
+  }
+
+  /* Background gradients */
+  .bg-gradient-tricolor {
+    background: linear-gradient(135deg,
+      color-mix(in oklab, var(--primary) 20%, transparent) 0%,
+      color-mix(in oklab, var(--secondary) 15%, transparent) 50%,
+      color-mix(in oklab, var(--destructive) 10%, transparent) 100%
+    );
+  }
+
+  .bg-gradient-primary {
+    background: linear-gradient(135deg,
+      color-mix(in oklab, var(--primary) 15%, transparent) 0%,
+      color-mix(in oklab, var(--primary) 5%, transparent) 100%
+    );
+  }
+
+  .bg-gradient-secondary {
+    background: linear-gradient(135deg,
+      color-mix(in oklab, var(--secondary) 15%, transparent) 0%,
+      color-mix(in oklab, var(--secondary) 5%, transparent) 100%
+    );
+  }
+
+  /* Accent colors for decorative elements */
+  .accent-primary {
+    @apply bg-primary/10 text-primary border-primary/20;
+  }
+
+  .accent-secondary {
+    @apply bg-secondary/10 text-secondary border-secondary/20;
+  }
+
+  .accent-destructive {
+    @apply bg-destructive/10 text-destructive border-destructive/20;
+  }
+
+  /* Shadow elevations */
+  .shadow-soft {
+    box-shadow: 0 2px 8px -2px oklch(0.2 0.02 250 / 0.08), 0 4px 16px -4px oklch(0.2 0.02 250 / 0.06);
+  }
+
+  .shadow-medium {
+    box-shadow: 0 4px 16px -2px oklch(0.2 0.02 250 / 0.1), 0 8px 24px -4px oklch(0.2 0.02 250 / 0.08);
+  }
+
+  .shadow-primary {
+    box-shadow: 0 4px 16px -2px color-mix(in oklab, var(--primary) 30%, transparent),
+                0 8px 24px -4px color-mix(in oklab, var(--primary) 20%, transparent);
+  }
+
+  .shadow-secondary {
+    box-shadow: 0 4px 16px -2px color-mix(in oklab, var(--secondary) 30%, transparent),
+                0 8px 24px -4px color-mix(in oklab, var(--secondary) 20%, transparent);
+  }
+
+  /* Container queries helper */
+  .container-responsive {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Border utilities with brand colors */
+  .border-gradient-tricolor {
+    border-image: linear-gradient(90deg, var(--primary), var(--secondary), var(--destructive)) 1;
+  }
+}
+
+.dark {
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
