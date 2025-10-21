@@ -86,7 +86,7 @@ export function Hero() {
               </strong>
               , equipos y grupos de amigos.{" "}
               <span className="font-semibold text-foreground">
-                Gratis y sin apuestas.
+                La forma más sencilla de vivir el Mundial con tu comunidad.
               </span>
             </motion.p>
 

@@ -1,0 +1,54 @@
+"use client";
+
+import { SidebarTrigger, useSidebar } from "@/presentation/components/ui/sidebar";
+import type { Stadium } from "@/domain/entities/stadium";
+import { StadiumHeader } from "./stadium-header";
+import { StadiumGrid } from "./stadium-grid";
+import { StadiumEmptyState } from "./stadium-empty-state";
+
+interface StadiumPageContentProps {
+  stadiums: Stadium[] | null;
+  error: string | null;
+}
+
+/**
+ * Stadium Page Content (Client Component)
+ * Wrapper component to handle sidebar toggle and display stadiums
+ */
+export function StadiumPageContent({ stadiums, error }: StadiumPageContentProps) {
+  const { open } = useSidebar();
+
+  return (
+    <div className="flex h-full flex-col">
+      {/* Header with Sidebar Toggle */}
+      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        {!open && <SidebarTrigger />}
+        <h1 className="text-xl font-semibold">Estadios</h1>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto p-4">
+        <div className="mx-auto max-w-7xl space-y-8">
+          {/* Error State */}
+          {error && <StadiumEmptyState type="error" message={error} />}
+
+          {/* Empty State */}
+          {!error && stadiums && stadiums.length === 0 && (
+            <StadiumEmptyState type="empty" />
+          )}
+
+          {/* Success State */}
+          {!error && stadiums && stadiums.length > 0 && (
+            <>
+              {/* Header with Stats */}
+              <StadiumHeader stadiums={stadiums} />
+
+              {/* Stadium Grid */}
+              <StadiumGrid stadiums={stadiums} />
+            </>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}

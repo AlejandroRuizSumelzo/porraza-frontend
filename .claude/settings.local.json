@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir /b \"g:\\porraza-frontend\\public\\logo\"\")"
+      "Read(//Users/alejandroruizsumelzo/Documents/alex_proyects/dbaile-app/di/context/**)",
+      "Read(//Users/alejandroruizsumelzo/Documents/alex_proyects/dbaile-app/di/interfaces/**)",
+      "Read(//Users/alejandroruizsumelzo/Documents/alex_proyects/dbaile-app/di/providers/**)"
     ],
     "deny": [],
     "ask": []

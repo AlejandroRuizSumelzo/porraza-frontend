@@ -2,16 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Trophy,
-  Calendar,
-  Users,
-  TrendingUp,
-  BookOpen,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 
 import {
   Sidebar,
@@ -26,44 +17,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/presentation/components/ui/sidebar";
-
-const navigationItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Predicciones",
-    href: "/predictions",
-    icon: Trophy,
-  },
-  {
-    title: "Calendario",
-    href: "/schedule",
-    icon: Calendar,
-  },
-  {
-    title: "Ligas",
-    href: "/leagues",
-    icon: Users,
-  },
-  {
-    title: "Clasificación",
-    href: "/leaderboard",
-    icon: TrendingUp,
-  },
-  {
-    title: "Reglas",
-    href: "/rules",
-    icon: BookOpen,
-  },
-  {
-    title: "Configuración",
-    href: "/settings",
-    icon: Settings,
-  },
-];
+import { navigationItems, APP_ROUTES } from "@/presentation/lib/routes";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -71,7 +25,7 @@ export function AppSidebar() {
 
   const handleLogout = () => {
     document.cookie = "auth-token=; path=/; max-age=0";
-    router.push("/");
+    router.push(APP_ROUTES.public.home);
   };
 
   return (
@@ -79,9 +33,11 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center justify-between px-2 py-2">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Trophy className="h-5 w-5" />
-            </div>
+            <img
+              src="/logo/porraza-icon.webp"
+              alt="Porraza Logo"
+              className="h-8 w-8 rounded-lg"
+            />
             <span className="text-lg font-bold">Porraza</span>
           </div>
           <SidebarTrigger />

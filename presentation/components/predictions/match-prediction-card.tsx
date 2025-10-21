@@ -4,7 +4,6 @@ import { Lock, MapPin, Calendar, Clock } from "lucide-react";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Input } from "@/presentation/components/ui/input";
 import { cn } from "@/presentation/lib/utils";
-import { CountryFlag } from "@/presentation/lib/country-flags";
 
 interface Match {
   id: number;
@@ -93,11 +92,6 @@ export function MatchPredictionCard({
                 {match.team1}
               </p>
             </div>
-            <CountryFlag
-              countryCode={match.flag1}
-              countryName={match.team1}
-              className="h-7 w-10 flex-shrink-0 overflow-hidden rounded-sm shadow-sm sm:h-9 sm:w-14"
-            />
           </div>
 
           {/* Score Inputs */}
@@ -158,11 +152,6 @@ export function MatchPredictionCard({
 
           {/* Team 2 */}
           <div className="flex items-center gap-3">
-            <CountryFlag
-              countryCode={match.flag2}
-              countryName={match.team2}
-              className="h-7 w-10 flex-shrink-0 overflow-hidden rounded-sm shadow-sm sm:h-9 sm:w-14"
-            />
             <div className="text-left">
               <p className="text-sm font-medium leading-tight text-foreground sm:text-base">
                 {match.team2}
