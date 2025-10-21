@@ -19,14 +19,7 @@ import { SchedulePageContent } from "@/presentation/components/schedule/schedule
  * - Sidebar toggle in header
  */
 export default async function SchedulePage() {
-  // Use custom hook to fetch match calendar (encapsulates business logic)
   const { calendar, error } = await useMatchCalendar();
-
-  // Console log for debugging
-  console.log("[SchedulePage] Calendar from custom hook:", {
-    total: calendar?.total,
-    phases: calendar?.calendar.length,
-  });
 
   return <SchedulePageContent calendar={calendar} error={error} />;
 }

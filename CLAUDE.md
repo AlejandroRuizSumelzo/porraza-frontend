@@ -20,6 +20,33 @@ npm run lint
 
 The dev server runs on http://localhost:3000 by default.
 
+## Code Organization Rules
+
+### NO Index/Barrel Files
+
+**IMPORTANT:** Do NOT create `index.ts` or `index.tsx` barrel export files in any directory.
+
+❌ **Bad:**
+```typescript
+// components/schedule/index.ts
+export { MatchCard } from './match-card';
+export { PhaseSection } from './phase-section';
+```
+
+✅ **Good:**
+```typescript
+// Direct imports
+import { MatchCard } from '@/presentation/components/schedule/match-card';
+import { PhaseSection } from '@/presentation/components/schedule/phase-section';
+```
+
+**Reasoning:**
+- Explicit imports are clearer and easier to trace
+- Better tree-shaking (bundler can remove unused code)
+- Avoids circular dependency issues
+- IDE navigation works better
+- Easier to refactor and maintain
+
 ## Architecture
 
 ### Clean Architecture Structure
