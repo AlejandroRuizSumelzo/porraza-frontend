@@ -1,23 +1,32 @@
-"use client";
+import { useMatchCalendar } from "@/presentation/hooks/matches/use-match-calendar";
+import { SchedulePageContent } from "@/presentation/components/schedule/schedule-page-content";
 
-import { SidebarTrigger, useSidebar } from "@/presentation/components/ui/sidebar";
+/**
+ * Schedule Page (Server Component)
+ * Fetches and displays the complete match calendar using Clean Architecture pattern
+ *
+ * Architecture Flow:
+ * Page (Server) → Custom Hook → Use Case → Repository → HTTP Client → API
+ *                     ↓
+ *              SchedulePageContent (Client) - For sidebar toggle
+ *
+ * Design:
+ * - Modern, minimalist UI with shadcn/ui components
+ * - Responsive layout with match cards grouped by phase
+ * - Header with summary statistics
+ * - Match cards with team info, scores, stadium, and time
+ * - Color-coded phase headers and status badges
+ * - Sidebar toggle in header
+ */
+export default async function SchedulePage() {
+  // Use custom hook to fetch match calendar (encapsulates business logic)
+  const { calendar, error } = await useMatchCalendar();
 
-export default function SchedulePage() {
-  const { open } = useSidebar();
+  // Console log for debugging
+  console.log("[SchedulePage] Calendar from custom hook:", {
+    total: calendar?.total,
+    phases: calendar?.calendar.length,
+  });
 
-  return (
-    <div className="flex h-full flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        {!open && <SidebarTrigger />}
-        <h1 className="text-xl font-semibold">Calendario</h1>
-      </header>
-      <main className="flex-1 overflow-auto p-4">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-muted-foreground">
-            Consulta el calendario completo de partidos y eventos.
-          </p>
-        </div>
-      </main>
-    </div>
-  );
+  return <SchedulePageContent calendar={calendar} error={error} />;
 }
