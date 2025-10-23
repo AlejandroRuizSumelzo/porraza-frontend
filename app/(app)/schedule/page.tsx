@@ -1,4 +1,4 @@
-import { useMatchCalendar } from "@/presentation/hooks/matches/use-match-calendar";
+import { getMatchCalendar } from "@/presentation/hooks/matches/use-match-calendar";
 import { SchedulePageContent } from "@/presentation/components/schedule/schedule-page-content";
 
 /**
@@ -6,7 +6,7 @@ import { SchedulePageContent } from "@/presentation/components/schedule/schedule
  * Fetches and displays the complete match calendar using Clean Architecture pattern
  *
  * Architecture Flow:
- * Page (Server) → Custom Hook → Use Case → Repository → HTTP Client → API
+ * Page (Server) → Server Function → Use Case → Repository → HTTP Client → API
  *                     ↓
  *              SchedulePageContent (Client) - For sidebar toggle
  *
@@ -19,7 +19,7 @@ import { SchedulePageContent } from "@/presentation/components/schedule/schedule
  * - Sidebar toggle in header
  */
 export default async function SchedulePage() {
-  const { calendar, error } = await useMatchCalendar();
+  const { calendar, error } = await getMatchCalendar();
 
   return <SchedulePageContent calendar={calendar} error={error} />;
 }

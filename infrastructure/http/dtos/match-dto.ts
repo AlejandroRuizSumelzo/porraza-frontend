@@ -20,7 +20,6 @@ export type MatchPhaseDTO =
 export type MatchStatusDTO =
   | "SCHEDULED"
   | "LIVE"
-  | "HALF_TIME"
   | "FINISHED"
   | "POSTPONED"
   | "CANCELLED";

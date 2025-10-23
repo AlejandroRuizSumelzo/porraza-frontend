@@ -4,10 +4,10 @@ import { createStadiumRepository } from "@/di/server/factories/create-stadium-re
 import { createGetAllStadiumsUseCase } from "@/di/server/factories/create-stadium-use-cases";
 
 /**
- * Custom Hook: useStadiums
+ * Server Function: getStadiums
  *
  * Encapsulates the business logic for fetching stadiums
- * This is a SERVER-SIDE hook (async function, not React hook)
+ * This is a SERVER-SIDE function for use in Server Components (NOT a React hook)
  *
  * Responsibilities:
  * - Setup dependency injection
@@ -17,16 +17,16 @@ import { createGetAllStadiumsUseCase } from "@/di/server/factories/create-stadiu
  *
  * Usage in Server Components:
  * ```tsx
- * const { stadiums, error } = await useStadiums();
+ * const { stadiums, error } = await getStadiums();
  * ```
  */
 
-interface UseStadiumsResult {
+interface GetStadiumsResult {
   stadiums: Stadium[] | null;
   error: string | null;
 }
 
-export async function useStadiums(): Promise<UseStadiumsResult> {
+export async function getStadiums(): Promise<GetStadiumsResult> {
   try {
     // Dependency Injection
     const repository = createStadiumRepository(httpClient);
@@ -36,7 +36,7 @@ export async function useStadiums(): Promise<UseStadiumsResult> {
     const stadiums = await getAllStadiumsUseCase.execute();
 
     // Log for debugging (can be removed in production)
-    console.log('[useStadiums] Fetched stadiums:', stadiums);
+    console.log('[getStadiums] Fetched stadiums:', stadiums);
 
     return {
       stadiums,
@@ -46,7 +46,7 @@ export async function useStadiums(): Promise<UseStadiumsResult> {
     const errorMessage =
       err instanceof Error ? err.message : "Failed to fetch stadiums";
 
-    console.error("[useStadiums] Error:", err);
+    console.error("[getStadiums] Error:", err);
 
     return {
       stadiums: null,

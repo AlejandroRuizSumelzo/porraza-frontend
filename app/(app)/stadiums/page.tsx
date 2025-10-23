@@ -1,4 +1,4 @@
-import { useStadiums } from "@/presentation/hooks/stadiums/use-stadiums";
+import { getStadiums } from "@/presentation/hooks/stadiums/use-stadiums";
 import { StadiumPageContent } from "@/presentation/components/stadiums";
 
 /**
@@ -6,7 +6,7 @@ import { StadiumPageContent } from "@/presentation/components/stadiums";
  * Fetches and displays all stadiums using Clean Architecture pattern
  *
  * Architecture Flow:
- * Page (Server) → Custom Hook → Use Case → Repository → HTTP Client → API
+ * Page (Server) → Server Function → Use Case → Repository → HTTP Client → API
  *                     ↓
  *              StadiumPageContent (Client) - For sidebar toggle
  *
@@ -18,11 +18,11 @@ import { StadiumPageContent } from "@/presentation/components/stadiums";
  * - Sidebar toggle in header
  */
 export default async function StadiumsPage() {
-  // Use custom hook to fetch stadiums (encapsulates business logic)
-  const { stadiums, error } = await useStadiums();
+  // Use server function to fetch stadiums (encapsulates business logic)
+  const { stadiums, error } = await getStadiums();
 
   // Console log for debugging
-  console.log("[StadiumsPage] Stadiums from custom hook:", stadiums);
+  console.log("[StadiumsPage] Stadiums from server function:", stadiums);
   console.log("[StadiumsPage] Total stadiums:", stadiums?.length || 0);
 
   return <StadiumPageContent stadiums={stadiums} error={error} />;

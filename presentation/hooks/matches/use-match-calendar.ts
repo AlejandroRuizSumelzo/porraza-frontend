@@ -4,10 +4,10 @@ import { createMatchRepository } from "@/di/server/factories/create-match-reposi
 import { createGetMatchCalendarUseCase } from "@/di/server/factories/create-match-use-cases";
 
 /**
- * Custom Hook: useMatchCalendar
+ * Server Function: getMatchCalendar
  *
  * Encapsulates the business logic for fetching the complete match calendar
- * This is a SERVER-SIDE hook (async function, not React hook)
+ * This is a SERVER-SIDE function for use in Server Components (NOT a React hook)
  *
  * Responsibilities:
  * - Setup dependency injection
@@ -17,7 +17,7 @@ import { createGetMatchCalendarUseCase } from "@/di/server/factories/create-matc
  *
  * Usage in Server Components:
  * ```tsx
- * const { calendar, error } = await useMatchCalendar();
+ * const { calendar, error } = await getMatchCalendar();
  *
  * if (error) {
  *   return <ErrorComponent message={error} />;
@@ -31,12 +31,12 @@ import { createGetMatchCalendarUseCase } from "@/di/server/factories/create-matc
  * ```
  */
 
-interface UseMatchCalendarResult {
+interface GetMatchCalendarResult {
   calendar: MatchCalendar | null;
   error: string | null;
 }
 
-export async function useMatchCalendar(): Promise<UseMatchCalendarResult> {
+export async function getMatchCalendar(): Promise<GetMatchCalendarResult> {
   try {
     // Dependency Injection
     const repository = createMatchRepository(httpClient);
@@ -46,7 +46,7 @@ export async function useMatchCalendar(): Promise<UseMatchCalendarResult> {
     const calendar = await getMatchCalendarUseCase.execute();
 
     // Log for debugging (can be removed in production)
-    console.log('[useMatchCalendar] Fetched calendar:', {
+    console.log('[getMatchCalendar] Fetched calendar:', {
       total: calendar.total,
       phases: calendar.calendar.length,
     });
@@ -59,7 +59,7 @@ export async function useMatchCalendar(): Promise<UseMatchCalendarResult> {
     const errorMessage =
       err instanceof Error ? err.message : "Failed to fetch match calendar";
 
-    console.error("[useMatchCalendar] Error:", err);
+    console.error("[getMatchCalendar] Error:", err);
 
     return {
       calendar: null,
