@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, Teko } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { DependencyProvider } from "@/di/client/providers/dependency-provider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -29,8 +30,10 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${poppins.variable} ${teko.variable} antialiased`}>
-        {children}
-        <Toaster richColors position="top-center" />
+        <DependencyProvider>
+          {children}
+          <Toaster richColors position="top-center" />
+        </DependencyProvider>
       </body>
     </html>
   );

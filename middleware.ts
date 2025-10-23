@@ -18,8 +18,9 @@ const authRoutes = ["/login", "/signup"];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const authToken = request.cookies.get("auth-token");
-  const isAuthenticated = !!authToken;
+  // Check for accessToken cookie (set by backend)
+  const accessToken = request.cookies.get("accessToken");
+  const isAuthenticated = !!accessToken;
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)

@@ -1,5 +1,7 @@
 import type { HttpClient } from "@/infrastructure/http/client";
 import type { DependencyModule } from "./base-module";
+import type { AuthRepository } from "@/domain/repositories/auth-repository";
+import { AuthRepositoryImpl } from "@/infrastructure/repositories/auth-repository-impl";
 
 /**
  * Repository Module
@@ -18,11 +20,12 @@ export class RepositoryModule implements DependencyModule {
 
   register() {
     // Register repositories needed by Client Components here
-    // Example:
-    // const userRepository = new UserRepositoryImpl(this.deps.httpClient);
+    const authRepository: AuthRepository = new AuthRepositoryImpl(
+      this.deps.httpClient
+    );
 
     return {
-      // Add repositories here as needed
+      authRepository,
     };
   }
 }

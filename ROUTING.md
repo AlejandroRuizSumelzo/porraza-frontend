@@ -10,9 +10,15 @@ app/
 │   ├── page.tsx           # Landing page principal (/)
 │   ├── pricing/
 │   │   └── page.tsx       # Página de precios (/pricing)
+│   ├── legal-advise/
+│   │   └── page.tsx       # Aviso legal (/legal-advise)
+│   ├── privacy-policy/
+│   │   └── page.tsx       # Política de privacidad (/privacy-policy)
+│   ├── cookies-policy/
+│   │   └── page.tsx       # Política de cookies (/cookies-policy)
 │   └── legal/
 │       ├── privacy/
-│       │   └── page.tsx   # Política de privacidad (/legal/privacy)
+│       │   └── page.tsx   # Redirección legacy a (/privacy-policy)
 │       └── terms/
 │           └── page.tsx   # Términos y condiciones (/legal/terms)
 │

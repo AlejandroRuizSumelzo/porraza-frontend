@@ -6,6 +6,7 @@ import type { Dependencies } from "@/di/shared/types";
 import { DependencyContainer } from "./dependency-container";
 import { HttpModule } from "./modules/http-module";
 import { RepositoryModule } from "./modules/repository-module";
+import { AuthUseCaseModule } from "./modules/auth-use-case-module";
 
 interface DependencyProviderProps {
   children: ReactNode;
@@ -35,9 +36,8 @@ export function DependencyProvider({ children }: DependencyProviderProps) {
     container.registerModule(new RepositoryModule({ httpClient }));
 
     // Register all use case modules with their respective repositories
-    // Example:
-    // const { userRepository } = container.getDependencies();
-    // container.registerModule(new UserUseCaseModule({ userRepository }));
+    const { authRepository } = container.getDependencies();
+    container.registerModule(new AuthUseCaseModule({ authRepository }));
 
     return container.getDependencies() as Dependencies;
   }, []); // Empty dependency array ensures this only runs once

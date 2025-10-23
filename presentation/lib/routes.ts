@@ -31,8 +31,8 @@ export const APP_ROUTES = {
   public: {
     home: "/",
     pricing: "/pricing",
-    privacy: "/privacy",
-    terms: "/terms",
+    privacy: "/privacy-policy",
+    terms: "/legal/terms",
   },
 
   // Auth routes

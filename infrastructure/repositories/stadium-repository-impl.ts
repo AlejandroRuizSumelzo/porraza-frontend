@@ -11,7 +11,7 @@ import { HttpError } from "@/infrastructure/http/client";
  * Handles all HTTP communication with the stadiums API
  */
 export class StadiumRepositoryImpl implements StadiumRepository {
-  private readonly baseUrl = '/stadiums';
+  private readonly baseUrl = "/stadiums";
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -25,7 +25,7 @@ export class StadiumRepositoryImpl implements StadiumRepository {
       return StadiumMapper.toDomainList(response.data);
     } catch (error) {
       if (error instanceof HttpError) {
-        console.error('[StadiumRepository] Error fetching stadiums:', {
+        console.error("[StadiumRepository] Error fetching stadiums:", {
           status: error.status,
           message: error.message,
           response: error.response,
@@ -54,7 +54,7 @@ export class StadiumRepositoryImpl implements StadiumRepository {
           return null;
         }
 
-        console.error('[StadiumRepository] Error fetching stadium by id:', {
+        console.error("[StadiumRepository] Error fetching stadium by id:", {
           id,
           status: error.status,
           message: error.message,
@@ -80,12 +80,15 @@ export class StadiumRepositoryImpl implements StadiumRepository {
       return StadiumMapper.toDomainList(response.data);
     } catch (error) {
       if (error instanceof HttpError) {
-        console.error('[StadiumRepository] Error fetching stadiums by country:', {
-          country,
-          status: error.status,
-          message: error.message,
-          response: error.response,
-        });
+        console.error(
+          "[StadiumRepository] Error fetching stadiums by country:",
+          {
+            country,
+            status: error.status,
+            message: error.message,
+            response: error.response,
+          }
+        );
         throw new Error(
           `Failed to fetch stadiums for country ${country}: ${error.message}`
         );

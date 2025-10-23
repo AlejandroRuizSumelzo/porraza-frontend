@@ -15,10 +15,10 @@ const productLinks = [
 ];
 
 const legalLinks = [
-  { href: "/terminos", label: "Términos del servicio" },
-  { href: "/privacidad", label: "Política de privacidad" },
-  { href: "/cookies", label: "Política de cookies" },
-  { href: "/contacto", label: "Contacto y soporte" },
+  { href: "/legal-advise", label: "Aviso legal" },
+  { href: "/privacy-policy", label: "Política de privacidad" },
+  { href: "/cookies-policy", label: "Política de cookies" },
+  { href: "mailto:contacto@porraza.com", label: "Contacto y soporte" },
 ];
 
 const socialLinks = [

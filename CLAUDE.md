@@ -271,6 +271,7 @@ This project uses **shadcn/ui** (New York style) as the primary UI component lib
 - `Table` - Data tables
 - `Spinner` - Loading indicators
 - `Sonner` - Toast notifications
+- `Field` - Composable form field system (see Form Patterns section below)
 
 **Animation Library:**
 
@@ -287,6 +288,232 @@ This project uses **shadcn/ui** (New York style) as the primary UI component lib
 - Leverage `variants` from class-variance-authority for component flexibility
 - Add `"use client"` directive when using hooks or animations
 - Use semantic HTML and ARIA attributes for accessibility
+
+### Form Patterns with Field Component
+
+**IMPORTANT:** The `Field` component system is the standard way to build forms in this project. Always use these components for form fields.
+
+#### Field Component System
+
+The Field component provides a composable, accessible form structure with the following core components:
+
+**Core Components:**
+
+- `Field` - Main wrapper providing orientation control and validation state
+- `FieldLabel` - Accessible label for inputs
+- `FieldDescription` - Helper text explaining the field purpose
+- `FieldError` - Error message container with support for validation libraries
+- `FieldGroup` - Layout wrapper for multiple fields with container queries
+- `FieldSet` - Semantic `<fieldset>` container for related fields
+- `FieldLegend` - Accessible legend for fieldsets
+- `FieldContent` - Flex column for grouping controls and descriptions
+- `FieldTitle` - Title component for use within FieldContent
+- `FieldSeparator` - Visual divider with optional inline content
+
+**Orientation Options:**
+
+- `vertical` (default) - Stacks label, control, and helper text vertically
+- `horizontal` - Aligns label and control side-by-side
+- `responsive` - Automatic responsive layout using container queries
+
+**Key Features:**
+
+- Accessibility-first design with proper ARIA attributes and semantic HTML
+- Built-in support for react-hook-form validation
+- Works with Zod, Valibot, ArkType and other Standard Schema validators
+- Automatic error rendering from validation libraries
+- Container queries for responsive layouts
+- Supports nested Field components for complex forms
+
+#### Basic Field Usage
+
+```tsx
+import { Field, FieldLabel, FieldDescription, FieldError } from '@/presentation/components/ui/field';
+import { Input } from '@/presentation/components/ui/input';
+
+<Field>
+  <FieldLabel htmlFor="email">Email</FieldLabel>
+  <Input
+    id="email"
+    type="email"
+    placeholder="your@email.com"
+  />
+  <FieldDescription>
+    We'll never share your email with anyone else.
+  </FieldDescription>
+  <FieldError errors={errors.email} />
+</Field>
+```
+
+#### Form Pattern with react-hook-form + Zod
+
+**IMPORTANT:** This is the standard pattern for all forms in the application.
+
+**1. Create Zod Schema (`presentation/schemas/`):**
+
+```typescript
+// presentation/schemas/login-schema.ts
+import { z } from 'zod';
+
+export const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
+```
+
+**2. Create Form Component with Field:**
+
+```tsx
+"use client";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, type LoginFormData } from '@/presentation/schemas/login-schema';
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from '@/presentation/components/ui/field';
+import { Input } from '@/presentation/components/ui/input';
+import { Button } from '@/presentation/components/ui/button';
+
+export function LoginForm() {
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    // Handle form submission
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <Field data-invalid={!!form.formState.errors.email}>
+        <FieldLabel htmlFor="email">Email</FieldLabel>
+        <Input
+          id="email"
+          type="email"
+          placeholder="your@email.com"
+          aria-invalid={!!form.formState.errors.email}
+          {...form.register('email')}
+        />
+        <FieldDescription>
+          Enter your email address to log in.
+        </FieldDescription>
+        <FieldError errors={[form.formState.errors.email]} />
+      </Field>
+
+      <Field data-invalid={!!form.formState.errors.password}>
+        <FieldLabel htmlFor="password">Password</FieldLabel>
+        <Input
+          id="password"
+          type="password"
+          placeholder="••••••••"
+          aria-invalid={!!form.formState.errors.password}
+          {...form.register('password')}
+        />
+        <FieldError errors={[form.formState.errors.password]} />
+      </Field>
+
+      <Button type="submit" disabled={form.formState.isSubmitting}>
+        {form.formState.isSubmitting ? 'Logging in...' : 'Log In'}
+      </Button>
+    </form>
+  );
+}
+```
+
+#### Advanced Field Patterns
+
+**Horizontal Layout:**
+
+```tsx
+<Field orientation="horizontal">
+  <FieldLabel htmlFor="name">Full Name</FieldLabel>
+  <FieldContent>
+    <Input id="name" {...form.register('name')} />
+    <FieldDescription>Enter your full legal name.</FieldDescription>
+    <FieldError errors={[form.formState.errors.name]} />
+  </FieldContent>
+</Field>
+```
+
+**Responsive Layout:**
+
+```tsx
+<FieldGroup>
+  <Field orientation="responsive">
+    <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+    <Input id="firstName" {...form.register('firstName')} />
+  </Field>
+
+  <Field orientation="responsive">
+    <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+    <Input id="lastName" {...form.register('lastName')} />
+  </Field>
+</FieldGroup>
+```
+
+**FieldSet with Related Fields:**
+
+```tsx
+<FieldSet>
+  <FieldLegend variant="legend">Contact Information</FieldLegend>
+  <FieldDescription>
+    Provide your contact details for account recovery.
+  </FieldDescription>
+
+  <Field>
+    <FieldLabel htmlFor="email">Email</FieldLabel>
+    <Input id="email" type="email" {...form.register('email')} />
+    <FieldError errors={[form.formState.errors.email]} />
+  </Field>
+
+  <Field>
+    <FieldLabel htmlFor="phone">Phone</FieldLabel>
+    <Input id="phone" type="tel" {...form.register('phone')} />
+    <FieldError errors={[form.formState.errors.phone]} />
+  </Field>
+</FieldSet>
+```
+
+**With Separator:**
+
+```tsx
+<FieldGroup>
+  <Field>
+    <FieldLabel htmlFor="email">Email</FieldLabel>
+    <Input id="email" {...form.register('email')} />
+  </Field>
+
+  <FieldSeparator>or</FieldSeparator>
+
+  <Field>
+    <FieldLabel htmlFor="phone">Phone</FieldLabel>
+    <Input id="phone" {...form.register('phone')} />
+  </Field>
+</FieldGroup>
+```
+
+#### Form Best Practices
+
+1. **Always use Zod schemas** for validation in `presentation/schemas/`
+2. **Use react-hook-form** with `zodResolver` for form state management
+3. **Add `data-invalid` attribute** to Field for error styling
+4. **Add `aria-invalid` attribute** to inputs for accessibility
+5. **Use FieldError with errors array** for automatic error rendering
+6. **Keep forms in presentation layer** - use DI hooks for submission logic
+7. **Use FieldDescription** to provide helpful context for users
+8. **Use FieldSet and FieldLegend** for grouping related fields semantically
+9. **Prefer vertical orientation** for mobile-first design, use responsive when needed
+10. **Never create custom form field components** - always compose with Field components
 
 ## Key Technical Details
 

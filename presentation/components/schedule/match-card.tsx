@@ -3,6 +3,7 @@
 import { Card } from "@/presentation/components/ui/card";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Separator } from "@/presentation/components/ui/separator";
+import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import { MapPin, Clock, Trophy, Circle } from "lucide-react";
 import type { Match } from "@/domain/entities/match";
 import { cn } from "@/presentation/lib/utils";
@@ -36,7 +37,8 @@ export function MatchCard({ match }: MatchCardProps) {
       },
       LIVE: {
         label: "En vivo",
-        className: "bg-destructive text-destructive-foreground border-destructive shadow-lg shadow-destructive/20",
+        className:
+          "bg-destructive text-destructive-foreground border-destructive shadow-lg shadow-destructive/20",
         icon: Circle,
       },
       HALF_TIME: {
@@ -107,7 +109,10 @@ export function MatchCard({ match }: MatchCardProps) {
             #{match.matchNumber}
           </span>
           {match.group && (
-            <Badge variant="outline" className="h-5 border-primary/20 bg-primary/5 text-xs text-primary">
+            <Badge
+              variant="outline"
+              className="h-5 border-primary/20 bg-primary/5 text-xs text-primary"
+            >
               Grupo {match.group}
             </Badge>
           )}
@@ -118,23 +123,27 @@ export function MatchCard({ match }: MatchCardProps) {
       <div className="p-4">
         {/* Teams & Score */}
         <div className="flex items-center gap-4">
-          {/* Home Team - Primary Color (Blue) */}
+          {/* Home Team */}
           <div className="flex flex-1 items-center gap-3">
-            <div
+            <TeamFlag
+              fifaCode={match.homeTeam.fifaCode}
+              teamName={match.homeTeam.name}
+              size="lg"
+              rounded="lg"
+              bordered
               className={cn(
-                "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all duration-300",
-                homeIsWinner
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                  : "bg-primary/10 text-primary"
+                "shrink-0 transition-all duration-300",
+                homeIsWinner &&
+                  "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg shadow-primary/30"
               )}
-            >
-              {match.homeTeam.fifaCode}
-            </div>
+            />
             <div className="flex-1 min-w-0">
-              <p className={cn(
-                "font-semibold line-clamp-1 transition-colors",
-                homeIsWinner && "text-primary"
-              )}>
+              <p
+                className={cn(
+                  "font-semibold line-clamp-1 transition-colors",
+                  homeIsWinner && "text-primary"
+                )}
+              >
                 {match.homeTeam.name}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -148,19 +157,23 @@ export function MatchCard({ match }: MatchCardProps) {
             {match.score ? (
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2.5 text-2xl font-bold">
-                  <span className={cn(
-                    "transition-colors",
-                    homeIsWinner && "text-primary",
-                    isDraw && "text-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      "transition-colors",
+                      homeIsWinner && "text-primary",
+                      isDraw && "text-foreground"
+                    )}
+                  >
                     {match.score.home}
                   </span>
                   <span className="text-sm text-muted-foreground">-</span>
-                  <span className={cn(
-                    "transition-colors",
-                    awayIsWinner && "text-secondary",
-                    isDraw && "text-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      "transition-colors",
+                      awayIsWinner && "text-secondary",
+                      isDraw && "text-foreground"
+                    )}
+                  >
                     {match.score.away}
                   </span>
                 </div>
@@ -178,33 +191,39 @@ export function MatchCard({ match }: MatchCardProps) {
                 )}
               </div>
             ) : (
-              <span className="text-base font-semibold text-muted-foreground">vs</span>
+              <span className="text-base font-semibold text-muted-foreground">
+                vs
+              </span>
             )}
           </div>
 
-          {/* Away Team - Secondary Color (Green) */}
+          {/* Away Team */}
           <div className="flex flex-1 items-center gap-3">
             <div className="flex-1 min-w-0 text-right">
-              <p className={cn(
-                "font-semibold line-clamp-1 transition-colors",
-                awayIsWinner && "text-secondary"
-              )}>
+              <p
+                className={cn(
+                  "font-semibold line-clamp-1 transition-colors",
+                  awayIsWinner && "text-secondary"
+                )}
+              >
                 {match.awayTeam.name}
               </p>
               <p className="text-xs text-muted-foreground">
                 {match.awayTeam.confederation}
               </p>
             </div>
-            <div
+            <TeamFlag
+              fifaCode={match.awayTeam.fifaCode}
+              teamName={match.awayTeam.name}
+              size="lg"
+              rounded="md"
+              bordered
               className={cn(
-                "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all duration-300",
-                awayIsWinner
-                  ? "bg-secondary text-secondary-foreground shadow-md shadow-secondary/20"
-                  : "bg-secondary/10 text-secondary"
+                "shrink-0 transition-all duration-300",
+                awayIsWinner &&
+                  "ring-2 ring-secondary ring-offset-2 ring-offset-background shadow-lg shadow-secondary/30"
               )}
-            >
-              {match.awayTeam.fifaCode}
-            </div>
+            />
           </div>
         </div>
 

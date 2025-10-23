@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/presentation/components/ui/button";
+import { APP_ROUTES } from "@/presentation/lib/routes";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function SignupPage() {
     document.cookie = "auth-token=simulated-token; path=/; max-age=86400";
 
     setIsLoading(false);
-    router.push("/dashboard");
+    router.push(APP_ROUTES.app.dashboard);
   };
 
   return (
@@ -116,7 +117,7 @@ export default function SignupPage() {
                 </Link>{" "}
                 y la{" "}
                 <Link
-                  href="/legal/privacy"
+                  href="/privacy-policy"
                   className="text-purple-600 hover:text-purple-800"
                 >
                   política de privacidad

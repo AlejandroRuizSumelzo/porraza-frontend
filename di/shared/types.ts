@@ -1,4 +1,8 @@
 import type { HttpClient } from "@/infrastructure/http/client";
+import type { AuthRepository } from "@/domain/repositories/auth-repository";
+import type { LoginUseCase } from "@/domain/use-cases/auth/login-use-case";
+import type { RefreshTokenUseCase } from "@/domain/use-cases/auth/refresh-token-use-case";
+import type { LogoutUseCase } from "@/domain/use-cases/auth/logout-use-case";
 
 /**
  * Dependencies Interface
@@ -14,10 +18,10 @@ export interface Dependencies {
   httpClient: HttpClient;
 
   // Repositories
-  // Add client-side repositories here
-  // Example: userRepository: UserRepository;
+  authRepository: AuthRepository;
 
   // Use Cases
-  // Add client-side use cases here
-  // Example: loginUseCase: LoginUseCase;
+  loginUseCase: LoginUseCase;
+  refreshTokenUseCase: RefreshTokenUseCase;
+  logoutUseCase: LogoutUseCase;
 }

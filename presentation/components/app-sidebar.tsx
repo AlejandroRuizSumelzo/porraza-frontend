@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 
 import {
@@ -17,15 +17,25 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/presentation/components/ui/sidebar";
-import { navigationItems, APP_ROUTES } from "@/presentation/lib/routes";
+import { navigationItems } from "@/presentation/lib/routes";
+import { useLogout } from "@/presentation/hooks/auth/use-logout";
+import { toast } from "sonner";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { logout, isLoading } = useLogout();
 
-  const handleLogout = () => {
-    document.cookie = "auth-token=; path=/; max-age=0";
-    router.push(APP_ROUTES.public.home);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Sesión cerrada", {
+        description: "Has cerrado sesión correctamente",
+      });
+    } catch (error) {
+      toast.error("Error al cerrar sesión", {
+        description: "No se pudo cerrar la sesión. Inténtalo de nuevo.",
+      });
+    }
   };
 
   return (
@@ -71,9 +81,13 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} tooltip="Cerrar sesión">
+            <SidebarMenuButton
+              onClick={handleLogout}
+              tooltip="Cerrar sesión"
+              disabled={isLoading}
+            >
               <LogOut />
-              <span>Cerrar sesión</span>
+              <span>{isLoading ? "Cerrando sesión..." : "Cerrar sesión"}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
