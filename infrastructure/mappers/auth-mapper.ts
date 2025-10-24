@@ -2,10 +2,14 @@ import type { User } from "@/domain/entities/user";
 import type { AuthTokens } from "@/domain/entities/auth-tokens";
 import type { AuthResponse } from "@/domain/entities/auth-response";
 import type { RefreshTokenResponse } from "@/domain/entities/refresh-token-response";
+import type { RegisterResponse } from "@/domain/entities/register-response";
 import type {
   UserDTO,
   LoginResponseDTO,
   RefreshTokenResponseDTO,
+  RegisterResponseDTO,
+  ForgotPasswordResponseDTO,
+  ResetPasswordResponseDTO,
 } from "@/infrastructure/http/dtos/auth-dto";
 
 /**
@@ -33,6 +37,8 @@ export class AuthMapper {
       isActive: dto.isActive,
       isEmailVerified: dto.isEmailVerified,
       lastLoginAt: dto.lastLoginAt,
+      hasPaid: dto.hasPaid,
+      stripeCustomerId: dto.stripeCustomerId,
     };
   }
 
@@ -74,6 +80,21 @@ export class AuthMapper {
   }
 
   /**
+   * Transform Register Response DTO to Domain RegisterResponse
+   *
+   * @param dto - Register response from API
+   * @returns Domain RegisterResponse entity
+   */
+  static registerResponseToDomain(dto: RegisterResponseDTO): RegisterResponse {
+    const user: User = this.userToDomain(dto.user);
+
+    return {
+      user,
+      message: dto.message,
+    };
+  }
+
+  /**
    * Transform Domain User to DTO
    * Adds back createdAt and updatedAt for API requests (if needed)
    *
@@ -88,8 +109,40 @@ export class AuthMapper {
       isActive: domain.isActive,
       isEmailVerified: domain.isEmailVerified,
       lastLoginAt: domain.lastLoginAt,
+      hasPaid: domain.hasPaid,
+      stripeCustomerId: domain.stripeCustomerId,
       createdAt: "", // Not needed for requests
       updatedAt: "", // Not needed for requests
+    };
+  }
+
+  /**
+   * Transform Forgot Password Response DTO to Domain
+   * Simple pass-through since the response is just a message
+   *
+   * @param dto - Forgot password response from API
+   * @returns Domain response object
+   */
+  static forgotPasswordResponseToDomain(
+    dto: ForgotPasswordResponseDTO
+  ): { message: string } {
+    return {
+      message: dto.message,
+    };
+  }
+
+  /**
+   * Transform Reset Password Response DTO to Domain
+   * Simple pass-through since the response is just a message
+   *
+   * @param dto - Reset password response from API
+   * @returns Domain response object
+   */
+  static resetPasswordResponseToDomain(
+    dto: ResetPasswordResponseDTO
+  ): { message: string } {
+    return {
+      message: dto.message,
     };
   }
 }

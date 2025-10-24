@@ -1,14 +1,17 @@
-import { getStadiums } from "@/presentation/hooks/stadiums/use-stadiums";
+"use client";
+
+import { useStadiums } from "@/presentation/hooks/stadiums/use-stadiums-client";
 import { StadiumPageContent } from "@/presentation/components/stadiums";
+import { Spinner } from "@/presentation/components/ui/spinner";
 
 /**
- * Stadiums Page (Server Component)
+ * Stadiums Page (Client Component)
  * Fetches and displays all stadiums using Clean Architecture pattern
  *
  * Architecture Flow:
- * Page (Server) → Server Function → Use Case → Repository → HTTP Client → API
- *                     ↓
- *              StadiumPageContent (Client) - For sidebar toggle
+ * Page (Client) → useStadiums Hook → Use Case → Repository → HTTP Client → API
+ *                                                                 ↓
+ *                                            Browser sends cookies automatically
  *
  * Design:
  * - Modern, minimalist UI with shadcn/ui components
@@ -16,14 +19,22 @@ import { StadiumPageContent } from "@/presentation/components/stadiums";
  * - Stadium cards with images and gradient overlays
  * - Header with summary statistics
  * - Sidebar toggle in header
+ *
+ * IMPORTANT: Now a Client Component
+ * - Requests are made from the BROWSER (not Next.js server)
+ * - Cookies are sent automatically (authentication works correctly)
+ * - HTTP client interceptor adds Authorization header
  */
-export default async function StadiumsPage() {
-  // Use server function to fetch stadiums (encapsulates business logic)
-  const { stadiums, error } = await getStadiums();
+export default function StadiumsPage() {
+  const { stadiums, isLoading, error } = useStadiums();
 
-  // Console log for debugging
-  console.log("[StadiumsPage] Stadiums from server function:", stadiums);
-  console.log("[StadiumsPage] Total stadiums:", stadiums?.length || 0);
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return <StadiumPageContent stadiums={stadiums} error={error} />;
 }

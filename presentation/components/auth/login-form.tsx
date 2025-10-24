@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -13,6 +14,7 @@ import {
 } from "@/presentation/schemas/login-schema";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
+import { PasswordInput } from "@/presentation/components/ui/password-input";
 import { Separator } from "@/presentation/components/ui/separator";
 import {
   Field,
@@ -29,6 +31,7 @@ import {
 import { useLogin } from "@/presentation/hooks/auth/use-login";
 import { APP_ROUTES } from "@/presentation/lib/routes";
 import { LogIn, Mail, Lock, ArrowLeft } from "lucide-react";
+import { ForgotPasswordDialog } from "@/presentation/components/auth/forgot-password-dialog";
 
 /**
  * LoginForm Component
@@ -41,10 +44,15 @@ import { LogIn, Mail, Lock, ArrowLeft } from "lucide-react";
  * - Uses DI hooks for business logic (useLogin)
  * - Communicates with domain layer through use cases
  * - No direct API calls or business logic here
+ *
+ * Features:
+ * - Pre-fills email from URL query param (e.g., from email verification redirect)
  */
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, isLoading, error, clearError } = useLogin();
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -53,6 +61,20 @@ export function LoginForm() {
       password: "",
     },
   });
+
+  // Pre-fill email from URL query parameter (e.g., after email verification)
+  // Only run once on mount to avoid infinite loops
+  useEffect(() => {
+    const emailFromUrl = searchParams.get("email");
+    if (emailFromUrl) {
+      form.setValue("email", emailFromUrl);
+      // Show a toast to inform the user
+      toast.success("Email verificado exitosamente", {
+        description: "Ahora puedes iniciar sesión con tu contraseña",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   const onSubmit = async (data: LoginFormData) => {
     clearError();
@@ -66,8 +88,16 @@ export function LoginForm() {
         description: `Has iniciado sesión como ${authResponse.user.email}`,
       });
 
-      // Redirect to dashboard
-      router.push(APP_ROUTES.app.dashboard);
+      // Check if user has paid
+      // If user hasn't paid, redirect to checkout
+      // If user has paid, redirect to dashboard
+      if (!authResponse.user.hasPaid) {
+        console.log("[LoginForm] User hasn't paid, redirecting to checkout");
+        router.push("/checkout");
+      } else {
+        console.log("[LoginForm] User has paid, redirecting to dashboard");
+        router.push(APP_ROUTES.app.dashboard);
+      }
     } else {
       // Show error toast
       toast.error("Error al iniciar sesión", {
@@ -169,9 +199,8 @@ export function LoginForm() {
                     <Lock className="w-4 h-4 text-muted-foreground" />
                     Contraseña
                   </FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type="password"
                     placeholder="••••••••"
                     aria-invalid={!!form.formState.errors.password}
                     className="h-11 transition-all focus:shadow-primary"
@@ -191,12 +220,17 @@ export function LoginForm() {
                       Recordarme
                     </span>
                   </label>
-                  <Link
-                    href="/forgot-password"
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setForgotPasswordOpen(true);
+                    }}
                     className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                   >
                     ¿Olvidaste tu contraseña?
-                  </Link>
+                  </button>
                 </div>
 
                 {/* Submit Button */}
@@ -306,6 +340,12 @@ export function LoginForm() {
           </Link>
         </motion.div>
       </div>
+
+      {/* Forgot Password Dialog - Outside of form to prevent event propagation */}
+      <ForgotPasswordDialog
+        open={forgotPasswordOpen}
+        onOpenChange={setForgotPasswordOpen}
+      />
     </div>
   );
 }

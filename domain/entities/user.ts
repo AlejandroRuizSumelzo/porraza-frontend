@@ -5,4 +5,6 @@ export interface User {
   isActive: boolean;
   isEmailVerified: boolean;
   lastLoginAt: string | null;
+  hasPaid: boolean;
+  stripeCustomerId?: string | null;
 }

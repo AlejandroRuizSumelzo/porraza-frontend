@@ -11,6 +11,8 @@ export interface UserDTO {
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;
+  hasPaid: boolean;
+  stripeCustomerId?: string | null;
 }
 
 /**
@@ -50,6 +52,85 @@ export interface RefreshTokenRequestDTO {
 export interface RefreshTokenResponseDTO {
   accessToken: string;
   expiresIn: number;
+}
+
+/**
+ * Register Request DTO
+ * Request body for register endpoint
+ */
+export interface RegisterRequestDTO {
+  email: string;
+  password: string;
+  name: string;
+}
+
+/**
+ * Register Response DTO
+ * Response from the API for successful registration
+ * Matches the backend response format exactly for /auth/register
+ */
+export interface RegisterResponseDTO {
+  user: UserDTO;
+  message: string;
+}
+
+/**
+ * Verify Email Request DTO
+ * Request body for email verification endpoint
+ */
+export interface VerifyEmailRequestDTO {
+  token: string;
+}
+
+/**
+ * Verify Email Response DTO
+ * Response from the API for successful email verification
+ * Matches the backend response format exactly for /auth/verify-email
+ */
+export interface VerifyEmailResponseDTO {
+  id: string;
+  email: string;
+  name: string;
+  isActive: boolean;
+  isEmailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt: string | null;
+}
+
+/**
+ * Forgot Password Request DTO
+ * Request body for forgot password endpoint
+ */
+export interface ForgotPasswordRequestDTO {
+  email: string;
+}
+
+/**
+ * Forgot Password Response DTO
+ * Response from the API for successful forgot password request
+ * Matches the backend response format exactly for /auth/forgot-password
+ */
+export interface ForgotPasswordResponseDTO {
+  message: string;
+}
+
+/**
+ * Reset Password Request DTO
+ * Request body for reset password endpoint
+ */
+export interface ResetPasswordRequestDTO {
+  token: string;
+  newPassword: string;
+}
+
+/**
+ * Reset Password Response DTO
+ * Response from the API for successful password reset
+ * Matches the backend response format exactly for /auth/reset-password
+ */
+export interface ResetPasswordResponseDTO {
+  message: string;
 }
 
 /**

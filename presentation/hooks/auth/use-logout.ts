@@ -14,10 +14,19 @@ import { APP_ROUTES } from "@/presentation/lib/routes";
  *
  * Responsibilities:
  * - Setup dependency injection
- * - Execute logout use case (clears backend cookies)
- * - Clear local auth state (Zustand store)
+ * - Execute logout use case (clears backend HTTP-only cookies)
+ * - Clear local auth state (Zustand store in-memory)
+ * - Clear persisted localStorage (Zustand persist middleware)
+ * - Clear all browser cookies (client-side fallback)
+ * - Clear sessionStorage
  * - Redirect to login page
  * - Handle loading and error states
+ *
+ * Security Notes:
+ * - Backend clears HTTP-only cookies (accessToken, refreshToken)
+ * - Client explicitly clears localStorage to remove persisted Zustand state
+ * - Client clears all browser cookies as a fallback/safety measure
+ * - Client clears sessionStorage for any temporary session data
  *
  * Usage in Client Components:
  * ```tsx
@@ -25,7 +34,8 @@ import { APP_ROUTES } from "@/presentation/lib/routes";
  *
  * const handleLogout = async () => {
  *   await logout();
- *   // User is logged out and redirected to login
+ *   // User is fully logged out and redirected to login
+ *   // All auth data (cookies, localStorage, sessionStorage) is cleared
  * };
  * ```
  */
@@ -33,7 +43,7 @@ import { APP_ROUTES } from "@/presentation/lib/routes";
 interface UseLogoutResult {
   /**
    * Execute logout
-   * Clears backend cookies and local auth state, then redirects to login
+   * Clears backend cookies, localStorage, browser cookies, sessionStorage, and redirects to login
    */
   logout: () => Promise<void>;
 
@@ -73,10 +83,46 @@ export function useLogout(): UseLogoutResult {
 
       console.log("[useLogout] Backend cookies cleared");
 
-      // Clear local auth state (Zustand store)
+      // Clear local auth state (Zustand store in-memory)
       clearAuth();
 
       console.log("[useLogout] Local auth state cleared");
+
+      // IMPORTANT: Explicitly clear localStorage
+      // The Zustand persist middleware might not clear localStorage immediately
+      // when clearAuth() is called, so we force it here
+      try {
+        localStorage.removeItem("porraza-auth");
+        console.log("[useLogout] LocalStorage cleared");
+      } catch (localStorageError) {
+        console.warn("[useLogout] Failed to clear localStorage:", localStorageError);
+      }
+
+      // Clear all cookies from the browser (client-side cleanup)
+      // This is a fallback in case the backend fails to clear cookies
+      try {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i];
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+
+          // Clear the cookie by setting it to expire in the past
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+        }
+        console.log("[useLogout] Browser cookies cleared");
+      } catch (cookieError) {
+        console.warn("[useLogout] Failed to clear browser cookies:", cookieError);
+      }
+
+      // Clear sessionStorage as well (if anything is stored there)
+      try {
+        sessionStorage.clear();
+        console.log("[useLogout] SessionStorage cleared");
+      } catch (sessionStorageError) {
+        console.warn("[useLogout] Failed to clear sessionStorage:", sessionStorageError);
+      }
 
       // Redirect to login page
       router.push(APP_ROUTES.auth.login);

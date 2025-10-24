@@ -7,6 +7,9 @@ import { DependencyContainer } from "./dependency-container";
 import { HttpModule } from "./modules/http-module";
 import { RepositoryModule } from "./modules/repository-module";
 import { AuthUseCaseModule } from "./modules/auth-use-case-module";
+import { PaymentUseCaseModule } from "./modules/payment-use-case-module";
+import { MatchUseCaseModule } from "./modules/match-use-case-module";
+import { StadiumUseCaseModule } from "./modules/stadium-use-case-module";
 
 interface DependencyProviderProps {
   children: ReactNode;
@@ -36,8 +39,16 @@ export function DependencyProvider({ children }: DependencyProviderProps) {
     container.registerModule(new RepositoryModule({ httpClient }));
 
     // Register all use case modules with their respective repositories
-    const { authRepository } = container.getDependencies();
+    const {
+      authRepository,
+      paymentRepository,
+      matchRepository,
+      stadiumRepository,
+    } = container.getDependencies();
     container.registerModule(new AuthUseCaseModule({ authRepository }));
+    container.registerModule(new PaymentUseCaseModule({ paymentRepository }));
+    container.registerModule(new MatchUseCaseModule({ matchRepository }));
+    container.registerModule(new StadiumUseCaseModule({ stadiumRepository }));
 
     return container.getDependencies() as Dependencies;
   }, []); // Empty dependency array ensures this only runs once

@@ -3,7 +3,7 @@
  * Wrapper around fetch API with error handling, interceptors, and type safety
  */
 
-import { attemptTokenRefresh } from "./token-refresh-service";
+import { attemptTokenRefresh } from "@/infrastructure/http/token-refresh-service";
 
 // Import auth store at the top (will be used in interceptor)
 // Using dynamic import to avoid circular dependencies
@@ -188,9 +188,17 @@ export function createHttpClient(config: HttpClientConfig = {}): HttpClient {
 
   /**
    * Check if URL is an auth endpoint that shouldn't trigger token refresh
+   * These are public endpoints that don't require authentication
    */
   const isAuthEndpoint = (url: string): boolean => {
-    return url.includes('/auth/login') || url.includes('/auth/refresh');
+    return (
+      url.includes("/auth/login") ||
+      url.includes("/auth/register") ||
+      url.includes("/auth/verify-email") ||
+      url.includes("/auth/refresh") ||
+      url.includes("/auth/forgot-password") ||
+      url.includes("/auth/reset-password")
+    );
   };
 
   /**
@@ -206,10 +214,17 @@ export function createHttpClient(config: HttpClientConfig = {}): HttpClient {
   ): Promise<HttpResponse<T>> => {
     const fullURL = buildURL(url);
 
-    // Skip token expiration check for auth endpoints (login, refresh)
-    // These endpoints are used to obtain tokens, so checking expiration makes no sense
-    if (!isRetry && !isAuthEndpoint(url) && isTokenExpired && isTokenExpired()) {
-      console.log("[HttpClient] Token expired, attempting refresh before request");
+    // Skip token expiration check for public auth endpoints (login, register, refresh)
+    // These endpoints don't require authentication, so checking expiration makes no sense
+    if (
+      !isRetry &&
+      !isAuthEndpoint(url) &&
+      isTokenExpired &&
+      isTokenExpired()
+    ) {
+      console.log(
+        "[HttpClient] Token expired, attempting refresh before request"
+      );
       const newToken = await attemptTokenRefresh();
 
       if (!newToken) {
@@ -234,13 +249,22 @@ export function createHttpClient(config: HttpClientConfig = {}): HttpClient {
       requestOptions.body = JSON.stringify(body);
     }
 
+    // Debug logging for authentication (only for non-auth endpoints)
+    if (!isAuthEndpoint(url)) {
+      console.log(`[HttpClient] ${method} ${fullURL}`, {
+        hasAuthHeader: headers.has("Authorization"),
+        authHeaderPreview: headers.get("Authorization")?.substring(0, 30) + "...",
+        credentials: requestOptions.credentials,
+      });
+    }
+
     try {
       const response = await fetchWithTimeout(fullURL, requestOptions);
       return await processResponse<T>(response);
     } catch (error) {
       if (error instanceof HttpError) {
         // Handle 401 Unauthorized - try to refresh token and retry
-        // Skip token refresh for auth endpoints (they are meant to handle auth failures)
+        // Skip token refresh for public auth endpoints (they handle auth differently)
         if (error.status === 401 && !isRetry && !isAuthEndpoint(url)) {
           console.log("[HttpClient] 401 detected, attempting token refresh");
 

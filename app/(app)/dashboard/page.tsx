@@ -1,6 +1,9 @@
 "use client";
 
-import { SidebarTrigger, useSidebar } from "@/presentation/components/ui/sidebar";
+import {
+  SidebarTrigger,
+  useSidebar,
+} from "@/presentation/components/ui/sidebar";
 import { Button } from "@/presentation/components/ui/button";
 
 export default function DashboardPage() {

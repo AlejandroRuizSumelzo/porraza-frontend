@@ -73,12 +73,12 @@ porraza-frontend/
 │   │   └── ...
 │   ├── hooks/           # Custom React hooks for business logic
 │   └── schemas/         # Zod validation schemas (forms, DTOs)
-├── di/                  # Dependency Injection
-│   ├── context/         # React context for DI
-│   ├── factories/       # Factory functions for use cases
-│   ├── hooks/           # DI hooks (useGetMatches, etc.)
-│   ├── interfaces/      # DI interfaces
-│   └── providers/       # DI providers (wrap app)
+├── di/                  # Dependency Injection (Client Components only)
+│   ├── client/          # Client-side DI (for Client Components)
+│   │   ├── context/     # React context for DI
+│   │   ├── hooks/       # DI hooks (useGetMatches, useGetStadiums, etc.)
+│   │   └── providers/   # DI providers (modules, dependency-provider)
+│   └── shared/          # Shared types across DI
 ├── app/                 # Next.js 15 App Router (file-based routing)
 │   ├── (landing)/       # Public pages
 │   ├── (auth)/          # Auth pages
@@ -119,32 +119,61 @@ porraza-frontend/
 
 ### State Management Strategy
 
-**1. Server State (React Server Components - Preferred):**
+**IMPORTANT: Authentication with Cookies Requires Client Components**
+
+In this project, we use **cookie-based authentication (HTTP-only cookies)**. This means:
+- ✅ **Client Components** for authenticated endpoints (cookies sent automatically from browser)
+- ✅ **Server Components** for public endpoints only
+- ❌ **Server Components** do NOT have access to browser cookies when using `fetch`
+
+**1. Authenticated Data Fetching (Client Components):**
 ```tsx
-// app/(app)/dashboard/page.tsx
-export default async function DashboardPage() {
-  // Fetch data directly in Server Component
-  const matches = await getMatchesUseCase.execute();
-  return <MatchList matches={matches} />;
+// app/(app)/schedule/page.tsx
+"use client";
+
+import { useMatchCalendar } from "@/presentation/hooks/matches/use-match-calendar-client";
+
+export default function SchedulePage() {
+  const { calendar, isLoading, error } = useMatchCalendar();
+
+  if (isLoading) return <Spinner />;
+  if (error) return <ErrorMessage error={error} />;
+
+  return <ScheduleContent calendar={calendar} />;
 }
+
+// Why Client Component:
+// - Fetch happens in the BROWSER (not Next.js server)
+// - Browser automatically sends cookies with credentials: 'include'
+// - Backend receives cookies and validates JWT ✅
 ```
 
-**2. Client State (Zustand - Minimal use):**
+**2. Public Data Fetching (Server Components - Optional):**
+```tsx
+// app/(landing)/blog/page.tsx
+export default async function BlogPage() {
+  // Fetch public data directly in Server Component
+  const posts = await getPublicPostsUseCase.execute();
+  return <BlogList posts={posts} />;
+}
+
+// Note: Only use for PUBLIC endpoints that don't require authentication
+```
+
+**3. Global State (Zustand - Minimal use):**
 ```typescript
 // infrastructure/store/auth-store.ts
 import { create } from 'zustand';
 
 interface AuthState {
   user: User | null;
-  setUser: (user: User | null) => void;
-  logout: () => void;
+  accessToken: string | null;
+  refreshToken: string | null;
+  setAuth: (authResponse: AuthResponse) => void;
+  clearAuth: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  setUser: (user) => set({ user }),
-  logout: () => set({ user: null }),
-}));
+export const useAuthStore = create<AuthState>(/* ... */);
 ```
 
 **When to use Zustand:**
@@ -153,7 +182,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 - Client-side preferences (theme, language)
 
 **When NOT to use Zustand:**
-- Server-fetched data (use RSC or React Query instead)
+- API data (use custom hooks with useState instead)
 - Form state (use react-hook-form)
 - URL-based state (use searchParams)
 
@@ -163,35 +192,55 @@ export const useAuthStore = create<AuthState>((set) => ({
 - Pages in `app/` are Server Components by default
 - Fetch data directly, no useState/useEffect needed
 - Better performance, smaller client bundles
+- **IMPORTANT:** Only use for PUBLIC data (no authentication required)
 
 **Client Components (`"use client"`):**
-- Required for: hooks (useState, useEffect), event handlers, Zustand stores
+- Required for: hooks (useState, useEffect), event handlers, Zustand stores, **authenticated API calls**
 - Mark with `"use client"` directive at top of file
-- Keep as minimal as possible (composition pattern)
+- Use for ALL authenticated endpoints (cookies work correctly)
 
 **Data Fetching Patterns:**
+
 ```tsx
-// ✅ Good: Server Component with use case
-async function MatchesPage() {
-  const getMatches = new GetMatchesUseCase(repository);
-  const matches = await getMatches.execute();
+// ✅ GOOD: Client Component with authenticated endpoint
+"use client";
+
+import { useMatchCalendar } from "@/presentation/hooks/matches/use-match-calendar-client";
+
+export default function MatchesPage() {
+  const { calendar, isLoading, error } = useMatchCalendar();
+
+  if (isLoading) return <Spinner />;
+
+  return <CalendarView calendar={calendar} />;
+}
+
+// Why this works:
+// - useEffect in the hook triggers fetch from BROWSER
+// - Browser sends cookies automatically
+// - Backend receives auth cookies ✅
+```
+
+```tsx
+// ❌ BAD: Server Component with authenticated endpoint
+// This will FAIL because Server Components don't have access to browser cookies
+export default async function MatchesPage() {
+  const matches = await getMatchesUseCase.execute(); // ❌ NO cookies sent
   return <MatchList matches={matches} />;
 }
+```
 
-// ✅ Good: Client Component with hook + DI
-"use client";
-function LiveScores() {
-  const getMatches = useGetMatches(); // DI hook
-  const [matches, setMatches] = useState([]);
-
-  useEffect(() => {
-    getMatches.execute().then(setMatches);
-  }, []);
-
-  return <ScoreBoard matches={matches} />;
+```tsx
+// ✅ GOOD: Server Component with PUBLIC endpoint
+export default async function BlogPage() {
+  // Only use Server Components for PUBLIC data
+  const posts = await getPublicPostsUseCase.execute();
+  return <BlogList posts={posts} />;
 }
+```
 
-// ❌ Bad: Direct repository call in component
+```tsx
+// ❌ BAD: Direct API call in component (bypasses Clean Architecture)
 "use client";
 function MatchesPage() {
   const [matches, setMatches] = useState([]);
@@ -199,6 +248,8 @@ function MatchesPage() {
   useEffect(() => {
     fetch('/api/matches').then(r => r.json()).then(setMatches); // ❌ No!
   }, []);
+
+  return <MatchList matches={matches} />;
 }
 ```
 
@@ -1092,10 +1143,26 @@ export default async function FeaturesPage() {
 - **Route Groups** are for organization only, they don't affect URLs or routing
 - **Middleware matcher** pattern is critical for performance - avoid matching static assets
 - **Client Components** require `"use client"` directive when using hooks or event handlers
-- **Server Components** are the default - prefer them for data fetching when possible
+- **⚠️ CRITICAL: Use Client Components for authenticated endpoints** - Server Components don't have access to browser cookies
+- **Server Components** are for PUBLIC data only - authenticated data must use Client Components
 - **Domain layer** must remain pure TypeScript - no React, no Next.js, no external dependencies
 - **Use Cases** should contain business logic only - no HTTP calls, no UI concerns
 - **Repositories** handle all external communication - API calls, database, third-party services
 - **Mappers** transform between DTOs (API format) and domain entities
-- **Zustand** should be used minimally - prefer Server Components for data fetching
+- **Zustand** should be used minimally - use custom hooks with useState for API data
+- **DI is Client-side only** - `di/server` was removed, all DI happens in `di/client`
 - **No tests yet** - testing infrastructure will be added later
+
+## Authentication Architecture
+
+**See these files for detailed information:**
+- [AUTHENTICATION_FIXED.md](./AUTHENTICATION_FIXED.md) - Complete solution explanation
+- [AUTHENTICATION_FLOW.md](./AUTHENTICATION_FLOW.md) - Detailed authentication flow
+- [AUTHENTICATION_DEBUG.md](./AUTHENTICATION_DEBUG.md) - Debugging guide
+
+**Key Points:**
+- This project uses **HTTP-only cookies** for authentication (more secure)
+- **Client Components are REQUIRED** for authenticated endpoints
+- Server Components cannot access browser cookies when using `fetch`
+- All authenticated pages must be Client Components with `"use client"`
+- Custom hooks (e.g., `useMatchCalendar`, `useStadiums`) handle data fetching from the browser

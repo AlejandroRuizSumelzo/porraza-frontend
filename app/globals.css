@@ -158,7 +158,8 @@
 
   /* Background gradients */
   .bg-gradient-tricolor {
-    background: linear-gradient(135deg,
+    background: linear-gradient(
+      135deg,
       color-mix(in oklab, var(--primary) 20%, transparent) 0%,
       color-mix(in oklab, var(--secondary) 15%, transparent) 50%,
       color-mix(in oklab, var(--destructive) 10%, transparent) 100%
@@ -166,14 +167,16 @@
   }
 
   .bg-gradient-primary {
-    background: linear-gradient(135deg,
+    background: linear-gradient(
+      135deg,
       color-mix(in oklab, var(--primary) 15%, transparent) 0%,
       color-mix(in oklab, var(--primary) 5%, transparent) 100%
     );
   }
 
   .bg-gradient-secondary {
-    background: linear-gradient(135deg,
+    background: linear-gradient(
+      135deg,
       color-mix(in oklab, var(--secondary) 15%, transparent) 0%,
       color-mix(in oklab, var(--secondary) 5%, transparent) 100%
     );
@@ -194,21 +197,23 @@
 
   /* Shadow elevations */
   .shadow-soft {
-    box-shadow: 0 2px 8px -2px oklch(0.2 0.02 250 / 0.08), 0 4px 16px -4px oklch(0.2 0.02 250 / 0.06);
+    box-shadow: 0 2px 8px -2px oklch(0.2 0.02 250 / 0.08),
+      0 4px 16px -4px oklch(0.2 0.02 250 / 0.06);
   }
 
   .shadow-medium {
-    box-shadow: 0 4px 16px -2px oklch(0.2 0.02 250 / 0.1), 0 8px 24px -4px oklch(0.2 0.02 250 / 0.08);
+    box-shadow: 0 4px 16px -2px oklch(0.2 0.02 250 / 0.1),
+      0 8px 24px -4px oklch(0.2 0.02 250 / 0.08);
   }
 
   .shadow-primary {
     box-shadow: 0 4px 16px -2px color-mix(in oklab, var(--primary) 30%, transparent),
-                0 8px 24px -4px color-mix(in oklab, var(--primary) 20%, transparent);
+      0 8px 24px -4px color-mix(in oklab, var(--primary) 20%, transparent);
   }
 
   .shadow-secondary {
     box-shadow: 0 4px 16px -2px color-mix(in oklab, var(--secondary) 30%, transparent),
-                0 8px 24px -4px color-mix(in oklab, var(--secondary) 20%, transparent);
+      0 8px 24px -4px color-mix(in oklab, var(--secondary) 20%, transparent);
   }
 
   /* Container queries helper */
@@ -218,7 +223,28 @@
 
   /* Border utilities with brand colors */
   .border-gradient-tricolor {
-    border-image: linear-gradient(90deg, var(--primary), var(--secondary), var(--destructive)) 1;
+    border-image: linear-gradient(
+        90deg,
+        var(--primary),
+        var(--secondary),
+        var(--destructive)
+      )
+      1;
+  }
+
+  /* Stripe Checkout iframe styling - minimalist integration */
+  iframe[name^="__privateStripeFrame"] {
+    @apply rounded-lg;
+    border: none !important;
+    min-height: 500px;
+    display: block;
+  }
+
+  /* Ensure iframe container has proper spacing */
+  .stripe-checkout-wrapper {
+    @apply w-full;
+    /* Add breathing room around the iframe */
+    padding: 0;
   }
 }
 
