@@ -238,10 +238,7 @@ export class AuthRepositoryImpl implements AuthRepository {
         `${this.baseUrl}/verify-email`,
         requestBody
       );
-      console.log(
-        "[AuthRepositoryImpl] Verify email response:",
-        response.data
-      );
+      console.log("[AuthRepositoryImpl] Verify email response:", response.data);
 
       return AuthMapper.userToDomain(response.data);
     } catch (error) {
@@ -272,9 +269,7 @@ export class AuthRepositoryImpl implements AuthRepository {
             );
 
           default:
-            throw new Error(
-              `Error al verificar email: ${error.message}`
-            );
+            throw new Error(`Error al verificar email: ${error.message}`);
         }
       }
 
@@ -367,7 +362,9 @@ export class AuthRepositoryImpl implements AuthRepository {
         throw new Error(`Error de conexión: ${error.message}`);
       }
 
-      throw new Error("Error desconocido al solicitar recuperación de contraseña");
+      throw new Error(
+        "Error desconocido al solicitar recuperación de contraseña"
+      );
     }
   }
 

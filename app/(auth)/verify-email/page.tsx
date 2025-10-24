@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,24 +19,12 @@ import { Spinner } from "@/presentation/components/ui/spinner";
 import { CheckCircle2, XCircle, Mail, ShieldCheck } from "lucide-react";
 
 /**
- * Email Verification Page
+ * Email Verification Content Component
  *
- * This page handles email verification from the link sent to the user's email.
- * The token is read from the URL query parameter.
- *
- * Flow:
- * 1. User clicks link in email: /verify-email?token=xxx
- * 2. User sees a button "Verificar Email"
- * 3. User clicks button → verifies email
- * 4. Shows success/error message
- * 5. Button to go to login
- *
- * Clean Architecture:
- * - Uses presentation hook (useEmailVerification)
- * - Communicates with domain layer through use cases
- * - No direct API calls or business logic here
+ * Handles email verification logic.
+ * Separated from page component to use useSearchParams inside Suspense.
  */
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { verifyEmail, isLoading, error, clearError } = useEmailVerification();
@@ -298,5 +286,40 @@ export default function VerifyEmailPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Email Verification Page
+ *
+ * This page handles email verification from the link sent to the user's email.
+ * The token is read from the URL query parameter.
+ *
+ * Flow:
+ * 1. User clicks link in email: /verify-email?token=xxx
+ * 2. User sees a button "Verificar Email"
+ * 3. User clicks button → verifies email
+ * 4. Shows success/error message
+ * 5. Button to go to login
+ *
+ * Clean Architecture:
+ * - Uses presentation hook (useEmailVerification)
+ * - Communicates with domain layer through use cases
+ * - Wrapped in Suspense for useSearchParams
+ */
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="flex flex-col items-center gap-4">
+            <Spinner className="w-12 h-12" />
+            <p className="text-muted-foreground">Cargando...</p>
+          </div>
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

@@ -96,6 +96,8 @@ export interface VerifyEmailResponseDTO {
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;
+  hasPaid: boolean;
+  stripeCustomerId?: string | null;
 }
 
 /**

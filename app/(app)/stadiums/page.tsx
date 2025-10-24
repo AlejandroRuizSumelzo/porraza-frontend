@@ -2,7 +2,6 @@
 
 import { useStadiums } from "@/presentation/hooks/stadiums/use-stadiums-client";
 import { StadiumPageContent } from "@/presentation/components/stadiums";
-import { Spinner } from "@/presentation/components/ui/spinner";
 
 /**
  * Stadiums Page (Client Component)
@@ -20,21 +19,14 @@ import { Spinner } from "@/presentation/components/ui/spinner";
  * - Header with summary statistics
  * - Sidebar toggle in header
  *
- * IMPORTANT: Now a Client Component
+ * IMPORTANT: Client Component
  * - Requests are made from the BROWSER (not Next.js server)
  * - Cookies are sent automatically (authentication works correctly)
  * - HTTP client interceptor adds Authorization header
+ * - Loading state is handled by loading.tsx (shows skeleton UI)
  */
 export default function StadiumsPage() {
-  const { stadiums, isLoading, error } = useStadiums();
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  const { stadiums, error } = useStadiums();
 
   return <StadiumPageContent stadiums={stadiums} error={error} />;
 }
