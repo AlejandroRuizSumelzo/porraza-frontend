@@ -14,12 +14,12 @@ import { GroupStagePredictions } from "@/presentation/components/predictions/gro
 import { Trophy, Target, Award } from "lucide-react";
 
 export default function PredictionsPage() {
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
 
   return (
     <div className="flex h-full flex-col">
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        {!open && <SidebarTrigger />}
+        {(isMobile || !open) && <SidebarTrigger />}
         <h1 className="text-xl font-semibold">Predicciones</h1>
       </header>
       <main className="flex-1 overflow-auto p-4">

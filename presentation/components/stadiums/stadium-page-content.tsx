@@ -1,6 +1,9 @@
 "use client";
 
-import { SidebarTrigger, useSidebar } from "@/presentation/components/ui/sidebar";
+import {
+  SidebarTrigger,
+  useSidebar,
+} from "@/presentation/components/ui/sidebar";
 import type { Stadium } from "@/domain/entities/stadium";
 import { StadiumHeader } from "./stadium-header";
 import { StadiumGrid } from "./stadium-grid";
@@ -15,14 +18,18 @@ interface StadiumPageContentProps {
  * Stadium Page Content (Client Component)
  * Wrapper component to handle sidebar toggle and display stadiums
  */
-export function StadiumPageContent({ stadiums, error }: StadiumPageContentProps) {
-  const { open } = useSidebar();
+export function StadiumPageContent({
+  stadiums,
+  error,
+}: StadiumPageContentProps) {
+  const { open, isMobile } = useSidebar();
 
   return (
     <div className="flex h-full flex-col">
       {/* Header with Sidebar Toggle */}
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        {!open && <SidebarTrigger />}
+        {/* Show trigger always on mobile, or when collapsed on desktop */}
+        {(isMobile || !open) && <SidebarTrigger />}
         <h1 className="text-xl font-semibold">Estadios</h1>
       </header>
 

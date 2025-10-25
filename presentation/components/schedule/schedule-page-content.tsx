@@ -31,7 +31,7 @@ export function SchedulePageContent({
   calendar,
   error,
 }: SchedulePageContentProps) {
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
 
   // Filter state: Set of selected groups (e.g., Set(["A", "B"]))
   const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
@@ -101,7 +101,7 @@ export function SchedulePageContent({
     <div className="flex h-full flex-col">
       {/* Header */}
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        {!open && <SidebarTrigger />}
+        {(isMobile || !open) && <SidebarTrigger />}
         <h1 className="text-xl font-semibold">Calendario</h1>
       </header>
 
