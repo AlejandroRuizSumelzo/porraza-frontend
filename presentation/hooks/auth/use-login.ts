@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLogin as useDILogin } from "@/di/client/hooks/use-auth";
-import { selectSetAuth } from "@/infrastructure/store/selectors";
+import { useGetMyLeagues } from "@/di/client/hooks/use-leagues";
+import {
+  selectSetAuth,
+  selectSetLeagues,
+  selectSetLeaguesLoading,
+} from "@/infrastructure/store/selectors";
 import type { AuthResponse } from "@/domain/entities/auth-response";
 
 /**
@@ -60,7 +65,10 @@ interface UseLoginResult {
 export function useLogin(): UseLoginResult {
   const router = useRouter();
   const loginUseCase = useDILogin();
+  const getMyLeaguesUseCase = useGetMyLeagues();
   const setAuth = selectSetAuth();
+  const setLeagues = selectSetLeagues();
+  const setLeaguesLoading = selectSetLeaguesLoading();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,20 +82,43 @@ export function useLogin(): UseLoginResult {
 
     try {
       console.log("[useLogin] Login started:", { email, password });
-      // Execute login use case
+
+      // Step 1: Execute login use case
       const authResponse = await loginUseCase.execute(email, password);
 
       console.log("[useLogin] Login response:", authResponse);
 
-      // Save authentication state to Zustand store
+      // Step 2: Save authentication state to Zustand store
       setAuth(authResponse);
 
-      // Log success (can be removed in production)
       console.log("[useLogin] Login successful, auth saved to store:", {
         userId: authResponse.user.id,
         email: authResponse.user.email,
         expiresIn: authResponse.tokens.expiresIn,
       });
+
+      // Step 3: Fetch user's leagues immediately after login
+      try {
+        console.log("[useLogin] Fetching user leagues...");
+        setLeaguesLoading(true);
+
+        const leagues = await getMyLeaguesUseCase.execute();
+
+        console.log("[useLogin] Leagues fetched successfully:", {
+          total: leagues.length,
+          leagues: leagues.map((l) => ({ id: l.id, name: l.name })),
+        });
+
+        // Step 4: Save leagues to Zustand store
+        setLeagues(leagues);
+      } catch (leagueError) {
+        // Don't fail login if league fetch fails
+        console.error("[useLogin] Failed to fetch leagues:", leagueError);
+        console.warn(
+          "[useLogin] Login succeeded but leagues could not be loaded. User can refresh later."
+        );
+        setLeaguesLoading(false);
+      }
 
       setIsLoading(false);
       return authResponse;

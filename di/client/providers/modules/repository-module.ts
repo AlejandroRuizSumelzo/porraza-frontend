@@ -1,13 +1,15 @@
 import type { HttpClient } from "@/infrastructure/http/client";
-import type { DependencyModule } from "./base-module";
+import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 import type { AuthRepository } from "@/domain/repositories/auth-repository";
 import type { PaymentRepository } from "@/domain/repositories/payment-repository";
 import type { MatchRepository } from "@/domain/repositories/match-repository";
 import type { StadiumRepository } from "@/domain/repositories/stadium-repository";
+import type { LeagueRepository } from "@/domain/repositories/league-repository";
 import { AuthRepositoryImpl } from "@/infrastructure/repositories/auth-repository-impl";
 import { PaymentRepositoryImpl } from "@/infrastructure/repositories/payment-repository-impl";
 import { MatchRepositoryImpl } from "@/infrastructure/repositories/match-repository-impl";
 import { StadiumRepositoryImpl } from "@/infrastructure/repositories/stadium-repository-impl";
+import { LeagueRepositoryImpl } from "@/infrastructure/repositories/league-repository-impl";
 
 /**
  * Repository Module
@@ -42,11 +44,16 @@ export class RepositoryModule implements DependencyModule {
       this.deps.httpClient
     );
 
+    const leagueRepository: LeagueRepository = new LeagueRepositoryImpl(
+      this.deps.httpClient
+    );
+
     return {
       authRepository,
       paymentRepository,
       matchRepository,
       stadiumRepository,
+      leagueRepository,
     };
   }
 }

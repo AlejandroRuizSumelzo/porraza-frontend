@@ -1,5 +1,5 @@
 import type { Stadium } from "@/domain/entities/stadium";
-import { StadiumCard } from "./stadium-card";
+import { StadiumCard } from "@/presentation/components/stadiums/stadium-card";
 
 interface StadiumGridProps {
   stadiums: Stadium[];

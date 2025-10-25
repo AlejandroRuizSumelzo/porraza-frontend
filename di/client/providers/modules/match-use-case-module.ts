@@ -1,4 +1,4 @@
-import type { DependencyModule } from "./base-module";
+import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 import type { MatchRepository } from "@/domain/repositories/match-repository";
 import { GetMatchCalendarUseCase } from "@/domain/use-cases/matches/get-match-calendar-use-case";
 

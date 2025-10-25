@@ -1,4 +1,4 @@
-import type { DependencyModule } from "./modules/base-module";
+import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 
 /**
  * Dependency Container

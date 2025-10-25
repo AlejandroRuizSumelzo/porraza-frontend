@@ -1,4 +1,4 @@
-import type { DependencyModule } from "./base-module";
+import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 import type { AuthRepository } from "@/domain/repositories/auth-repository";
 import { LoginUseCase } from "@/domain/use-cases/auth/login-use-case";
 import { RegisterUseCase } from "@/domain/use-cases/auth/register-use-case";

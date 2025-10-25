@@ -1,4 +1,4 @@
-import type { DependencyModule } from "./base-module";
+import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 import type { PaymentRepository } from "@/domain/repositories/payment-repository";
 import { CreateCheckoutSessionUseCase } from "@/domain/use-cases/payments/create-checkout-session-use-case";
 import { VerifyPaymentStatusUseCase } from "@/domain/use-cases/payments/verify-payment-status-use-case";

@@ -5,9 +5,9 @@ import {
   useSidebar,
 } from "@/presentation/components/ui/sidebar";
 import type { Stadium } from "@/domain/entities/stadium";
-import { StadiumHeader } from "./stadium-header";
-import { StadiumGrid } from "./stadium-grid";
-import { StadiumEmptyState } from "./stadium-empty-state";
+import { StadiumHeader } from "@/presentation/components/stadiums/stadium-header";
+import { StadiumGrid } from "@/presentation/components/stadiums/stadium-grid";
+import { StadiumEmptyState } from "@/presentation/components/stadiums/stadium-empty-state";
 
 interface StadiumPageContentProps {
   stadiums: Stadium[] | null;

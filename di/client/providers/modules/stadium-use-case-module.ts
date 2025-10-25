@@ -1,4 +1,4 @@
-import type { DependencyModule } from "./base-module";
+import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 import type { StadiumRepository } from "@/domain/repositories/stadium-repository";
 import { GetAllStadiumsUseCase } from "@/domain/use-cases/stadiums/get-all-stadiums-use-case";
 

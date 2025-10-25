@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Trophy,
   Calendar,
-  Users,
   TrendingUp,
   BookOpen,
   Settings,
@@ -56,6 +55,8 @@ export const APP_ROUTES = {
 
 /**
  * Navigation items for the sidebar
+ * Note: "Ligas" has been removed from navigation as it's now integrated
+ * into the "Mis Ligas" collapsible section in the sidebar
  */
 export const navigationItems: RouteItem[] = [
   {
@@ -83,12 +84,6 @@ export const navigationItems: RouteItem[] = [
     description: "Explora los estadios",
   },
   {
-    title: "Ligas",
-    href: APP_ROUTES.app.leagues,
-    icon: Users,
-    description: "Únete a ligas y compite",
-  },
-  {
     title: "Clasificación",
     href: APP_ROUTES.app.leaderboard,
     icon: TrendingUp,
@@ -110,6 +105,7 @@ export const navigationItems: RouteItem[] = [
 
 /**
  * Grouped navigation items (for more complex sidebar structures)
+ * Note: Indexes updated after removing "Ligas" from navigation
  */
 export const navigationGroups: RouteGroup[] = [
   {
@@ -124,15 +120,14 @@ export const navigationGroups: RouteGroup[] = [
     label: "Comunidad",
     items: [
       navigationItems[3], // Estadios
-      navigationItems[4], // Ligas
-      navigationItems[5], // Clasificación
+      navigationItems[4], // Clasificación (was index 5)
     ],
   },
   {
     label: "Información",
     items: [
-      navigationItems[6], // Reglas
-      navigationItems[7], // Configuración
+      navigationItems[5], // Reglas (was index 6)
+      navigationItems[6], // Configuración (was index 7)
     ],
   },
 ];

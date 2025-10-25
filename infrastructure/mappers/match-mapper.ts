@@ -1,7 +1,7 @@
 import type { Match, Score } from "@/domain/entities/match";
 import type { MatchDTO, ScoreDTO } from "@/infrastructure/http/dtos/match-dto";
-import { TeamMapper } from "./team-mapper";
-import { StadiumMapper } from "./stadium-mapper";
+import { TeamMapper } from "@/infrastructure/mappers/team-mapper";
+import { StadiumMapper } from "@/infrastructure/mappers/stadium-mapper";
 
 /**
  * Match Mapper

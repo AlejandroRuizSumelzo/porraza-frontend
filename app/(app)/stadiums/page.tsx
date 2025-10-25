@@ -1,7 +1,7 @@
 "use client";
 
 import { useStadiums } from "@/presentation/hooks/stadiums/use-stadiums-client";
-import { StadiumPageContent } from "@/presentation/components/stadiums";
+import { StadiumPageContent } from "@/presentation/components/stadiums/stadium-page-content";
 
 /**
  * Stadiums Page (Client Component)

@@ -1,26 +1,27 @@
 "use client";
 
-import {
-  SidebarTrigger,
-  useSidebar,
-} from "@/presentation/components/ui/sidebar";
+import { LeaguePageContent } from "@/presentation/components/leagues/league-page-content";
 
+/**
+ * Leagues Page (Client Component)
+ * Manages league creation, joining, and viewing
+ *
+ * Architecture Flow:
+ * Page (Client) → LeaguePageContent → Hooks → Use Cases → Repository → HTTP Client → API
+ *                                                                          ↓
+ *                                                     Browser sends cookies automatically
+ *
+ * Design:
+ * - Clean, modular structure with reusable components
+ * - Brand colors: Blue (public), Red (private), Green (admin)
+ * - Responsive tabs with shadcn/ui components
+ * - Loading states handled by loading.tsx
+ *
+ * IMPORTANT: Client Component
+ * - Requests are made from the BROWSER (not Next.js server)
+ * - Cookies are sent automatically (authentication works correctly)
+ * - HTTP client interceptor adds Authorization header
+ */
 export default function LeaguesPage() {
-  const { open, isMobile } = useSidebar();
-
-  return (
-    <div className="flex h-full flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        {(isMobile || !open) && <SidebarTrigger />}
-        <h1 className="text-xl font-semibold">Ligas</h1>
-      </header>
-      <main className="flex-1 overflow-auto p-4">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-muted-foreground">
-            Explora y únete a diferentes ligas de predicción.
-          </p>
-        </div>
-      </main>
-    </div>
-  );
+  return <LeaguePageContent />;
 }

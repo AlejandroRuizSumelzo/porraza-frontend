@@ -2,9 +2,8 @@ import {
   httpClient,
   initAuthStoreTokenGetter,
 } from "@/infrastructure/http/client";
-import { initTokenRefreshService } from "@/infrastructure/http/token-refresh-service";
 import { useAuthStore } from "@/infrastructure/store/auth-store";
-import type { DependencyModule } from "./base-module";
+import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 
 /**
  * HTTP Module

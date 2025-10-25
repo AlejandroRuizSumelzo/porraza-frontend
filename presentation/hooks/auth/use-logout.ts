@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLogout as useDILogout } from "@/di/client/hooks/use-auth";
-import { selectClearAuth } from "@/infrastructure/store/selectors";
+import {
+  selectClearAuth,
+  selectClearLeagues,
+} from "@/infrastructure/store/selectors";
 import { APP_ROUTES } from "@/presentation/lib/routes";
 
 /**
@@ -67,6 +70,7 @@ export function useLogout(): UseLogoutResult {
   const router = useRouter();
   const logoutUseCase = useDILogout();
   const clearAuth = selectClearAuth();
+  const clearLeagues = selectClearLeagues();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,14 +92,23 @@ export function useLogout(): UseLogoutResult {
 
       console.log("[useLogout] Local auth state cleared");
 
+      // Clear league state (Zustand store in-memory)
+      clearLeagues();
+
+      console.log("[useLogout] Local league state cleared");
+
       // IMPORTANT: Explicitly clear localStorage
       // The Zustand persist middleware might not clear localStorage immediately
       // when clearAuth() is called, so we force it here
       try {
         localStorage.removeItem("porraza-auth");
+        localStorage.removeItem("porraza-leagues");
         console.log("[useLogout] LocalStorage cleared");
       } catch (localStorageError) {
-        console.warn("[useLogout] Failed to clear localStorage:", localStorageError);
+        console.warn(
+          "[useLogout] Failed to clear localStorage:",
+          localStorageError
+        );
       }
 
       // Clear all cookies from the browser (client-side cleanup)
@@ -105,7 +118,8 @@ export function useLogout(): UseLogoutResult {
         for (let i = 0; i < cookies.length; i++) {
           const cookie = cookies[i];
           const eqPos = cookie.indexOf("=");
-          const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+          const name =
+            eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
 
           // Clear the cookie by setting it to expire in the past
           document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -113,7 +127,10 @@ export function useLogout(): UseLogoutResult {
         }
         console.log("[useLogout] Browser cookies cleared");
       } catch (cookieError) {
-        console.warn("[useLogout] Failed to clear browser cookies:", cookieError);
+        console.warn(
+          "[useLogout] Failed to clear browser cookies:",
+          cookieError
+        );
       }
 
       // Clear sessionStorage as well (if anything is stored there)
@@ -121,7 +138,10 @@ export function useLogout(): UseLogoutResult {
         sessionStorage.clear();
         console.log("[useLogout] SessionStorage cleared");
       } catch (sessionStorageError) {
-        console.warn("[useLogout] Failed to clear sessionStorage:", sessionStorageError);
+        console.warn(
+          "[useLogout] Failed to clear sessionStorage:",
+          sessionStorageError
+        );
       }
 
       // Redirect to login page

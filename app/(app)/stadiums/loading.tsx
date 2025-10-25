@@ -1,4 +1,4 @@
-import { StadiumGridSkeleton } from "@/presentation/components/stadiums";
+import { StadiumGridSkeleton } from "@/presentation/components/stadiums/stadium-skeleton";
 import { Skeleton } from "@/presentation/components/ui/skeleton";
 
 /**

@@ -6,10 +6,10 @@ import {
   useSidebar,
 } from "@/presentation/components/ui/sidebar";
 import type { MatchCalendar } from "@/domain/entities/match-calendar";
-import { ScheduleHeader } from "./schedule-header";
-import { PhaseSection } from "./phase-section";
-import { ScheduleErrorState } from "./schedule-error-state";
-import { GroupFilter } from "./group-filter";
+import { ScheduleHeader } from "@/presentation/components/schedule/schedule-header";
+import { PhaseSection } from "@/presentation/components/schedule/phase-section";
+import { ScheduleErrorState } from "@/presentation/components/schedule/schedule-error-state";
+import { GroupFilter } from "@/presentation/components/schedule/group-filter";
 
 interface SchedulePageContentProps {
   calendar: MatchCalendar | null;

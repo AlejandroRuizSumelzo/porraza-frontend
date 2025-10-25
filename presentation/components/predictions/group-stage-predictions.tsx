@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MatchPredictionCard } from "./match-prediction-card";
+import { MatchPredictionCard } from "@/presentation/components/predictions/match-prediction-card";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
