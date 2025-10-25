@@ -5,6 +5,7 @@ import { GetAllLeaguesUseCase } from "@/domain/use-cases/leagues/get-all-leagues
 import { GetPublicLeaguesUseCase } from "@/domain/use-cases/leagues/get-public-leagues-use-case";
 import { GetMyLeaguesUseCase } from "@/domain/use-cases/leagues/get-my-leagues-use-case";
 import { GetLeagueByIdUseCase } from "@/domain/use-cases/leagues/get-league-by-id-use-case";
+import { GetLeagueByInviteCodeUseCase } from "@/domain/use-cases/leagues/get-league-by-invite-code-use-case";
 import { UpdateLeagueUseCase } from "@/domain/use-cases/leagues/update-league-use-case";
 import { DeleteLeagueUseCase } from "@/domain/use-cases/leagues/delete-league-use-case";
 import { JoinLeagueUseCase } from "@/domain/use-cases/leagues/join-league-use-case";
@@ -49,6 +50,10 @@ export class LeagueUseCaseModule implements DependencyModule {
       this.deps.leagueRepository
     );
 
+    const getLeagueByInviteCodeUseCase = new GetLeagueByInviteCodeUseCase(
+      this.deps.leagueRepository
+    );
+
     const updateLeagueUseCase = new UpdateLeagueUseCase(
       this.deps.leagueRepository
     );
@@ -81,6 +86,7 @@ export class LeagueUseCaseModule implements DependencyModule {
       getPublicLeaguesUseCase,
       getMyLeaguesUseCase,
       getLeagueByIdUseCase,
+      getLeagueByInviteCodeUseCase,
       updateLeagueUseCase,
       deleteLeagueUseCase,
       joinLeagueUseCase,

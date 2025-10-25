@@ -12,7 +12,7 @@ export interface LeagueDTO {
   adminUserId: string;
   maxMembers: number;
   currentMembers: number;
-  inviteCode: string | null;
+  code: string;
   logoUrl: string | null;
   isAdmin: boolean;
   isMember: boolean;
@@ -45,7 +45,7 @@ export interface UpdateLeagueDTO {
  * Matches the JoinLeagueDto from Swagger
  */
 export interface JoinLeagueDTO {
-  inviteCode?: string;
+  code?: string;
 }
 
 /**
@@ -90,7 +90,7 @@ export class LeagueMapper {
       adminUserId: dto.adminUserId,
       maxMembers: dto.maxMembers,
       currentMembers: dto.currentMembers,
-      inviteCode: dto.inviteCode,
+      code: dto.code,
       logoUrl: dto.logoUrl,
       isAdmin: dto.isAdmin,
       isMember: dto.isMember,
@@ -132,9 +132,9 @@ export class LeagueMapper {
   /**
    * Transform join league parameters to DTO
    */
-  static toJoinDTO(inviteCode?: string): JoinLeagueDTO {
+  static toJoinDTO(code?: string): JoinLeagueDTO {
     return {
-      inviteCode,
+      code,
     };
   }
 

@@ -20,8 +20,8 @@ import type { League } from "@/domain/entities/league";
  * ```tsx
  * const { joinLeague, isJoining, error, joinedLeague } = useJoinLeague();
  *
- * const handleJoin = async (leagueId, inviteCode) => {
- *   const league = await joinLeague(leagueId, inviteCode);
+ * const handleJoin = async (leagueId, code) => {
+ *   const league = await joinLeague(leagueId, code);
  *   if (league) {
  *     router.push(`/leagues/${league.id}`);
  *   }
@@ -33,8 +33,8 @@ import type { League } from "@/domain/entities/league";
  *
  * IMPORTANT: This hook makes requests from the BROWSER, not the server
  * - Requires authentication, payment, and email verification
- * - Public leagues can be joined without invite code
- * - Private leagues require a valid 8-character invite code
+ * - Public leagues can be joined without code
+ * - Private leagues require a valid league code (6-20 alphanumeric characters)
  * - Cookies are sent automatically with credentials: 'include'
  * - Authorization header is added automatically by HTTP client interceptor
  */
@@ -43,10 +43,10 @@ interface UseJoinLeagueResult {
   /**
    * Function to join a league
    * @param id League UUID
-   * @param inviteCode Optional invite code for private leagues
+   * @param code Optional league code for private leagues
    * @returns Joined league or null if failed
    */
-  joinLeague: (id: string, inviteCode?: string) => Promise<League | null>;
+  joinLeague: (id: string, code?: string) => Promise<League | null>;
 
   /**
    * Loading state during join
@@ -78,7 +78,7 @@ export function useJoinLeagueClient(): UseJoinLeagueResult {
 
   const joinLeague = async (
     id: string,
-    inviteCode?: string
+    code?: string
   ): Promise<League | null> => {
     setIsJoining(true);
     setError(null);
@@ -87,10 +87,10 @@ export function useJoinLeagueClient(): UseJoinLeagueResult {
     try {
       console.log("[useJoinLeagueClient] Joining league from browser...", {
         id,
-        hasInviteCode: !!inviteCode,
+        hasCode: !!code,
       });
 
-      const result = await joinLeagueUseCase.execute(id, inviteCode);
+      const result = await joinLeagueUseCase.execute(id, code);
 
       console.log("[useJoinLeagueClient] League joined successfully:", {
         id: result.id,

@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Button } from "@/presentation/components/ui/button";
-import { Users, Lock, Globe, ChevronRight } from "lucide-react";
+import { Users, Lock, Globe, ChevronRight, Share2 } from "lucide-react";
 import type { League } from "@/domain/entities/league";
 
 interface LeagueCardProps {
@@ -12,12 +12,14 @@ interface LeagueCardProps {
   actionLabel?: string;
   actionDisabled?: boolean;
   showAdminBadge?: boolean;
+  showShareButton?: boolean;
+  onShareInvite?: (league: League) => void;
 }
 
 /**
  * League Card Component
  * Reusable card for displaying league information
- * Supports different actions (Join, View, etc.)
+ * Supports different actions (Join, View, Share, etc.)
  *
  * Design: Uses brand colors
  * - Blue (#2a398d): Public leagues
@@ -30,6 +32,8 @@ export function LeagueCard({
   actionLabel = "Ver Liga",
   actionDisabled = false,
   showAdminBadge = false,
+  showShareButton = false,
+  onShareInvite,
 }: LeagueCardProps) {
   const isPublic = league.type === "public";
 
@@ -88,16 +92,33 @@ export function LeagueCard({
           </div>
         </div>
 
-        {onAction && (
-          <Button
-            onClick={() => onAction(league)}
-            disabled={actionDisabled}
-            className="ml-4"
-          >
-            {actionLabel}
-            {!actionDisabled && <ChevronRight className="ml-1 h-4 w-4" />}
-          </Button>
-        )}
+        {/* Action Buttons */}
+        <div className="ml-4 flex gap-2">
+          {/* Share Button - Only for members */}
+          {showShareButton && league.isMember && onShareInvite && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onShareInvite(league)}
+              title="Compartir invitación"
+            >
+              <Share2 className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Compartir</span>
+            </Button>
+          )}
+
+          {/* Main Action Button */}
+          {onAction && (
+            <Button
+              onClick={() => onAction(league)}
+              disabled={actionDisabled}
+              size="sm"
+            >
+              {actionLabel}
+              {!actionDisabled && <ChevronRight className="ml-1 h-4 w-4" />}
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

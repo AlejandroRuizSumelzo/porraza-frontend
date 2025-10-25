@@ -1,1168 +1,776 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guía completa para Claude Code al trabajar en este repositorio.
 
-## Development Commands
+---
+
+## 📝 Descripción del Proyecto
+
+**Porraza** es una plataforma de predicciones deportivas para el Mundial de Fútbol 2026. Los usuarios pueden:
+
+- Crear predicciones de partidos del Mundial
+- Unirse o crear ligas públicas/privadas para competir con amigos
+- Ver calendarios de partidos, estadios y equipos
+- Competir en leaderboards dentro de sus ligas
+- Acceso premium mediante pago único de €1.99
+
+**Modelo de negocio:** Freemium con verificación de email + pago único (€1.99) para acceso completo.
+
+**Stack tecnológico:**
+
+- Frontend: Next.js 15 (App Router), React 19, TypeScript
+- Estilos: Tailwind CSS v4, shadcn/ui (New York style)
+- Estado global: Zustand con persistencia en localStorage
+- Autenticación: Cookies HTTP-only + JWT
+- Pagos: Stripe (Embedded Checkout)
+- Arquitectura: Clean Architecture
+- Fuentes: Poppins (sans), Teko (display)
+
+---
+
+## 🚀 Comandos de Desarrollo
 
 ```bash
-# Start development server with Turbopack
-npm run dev
+# Instalar dependencias
+pnpm install
 
-# Build for production with Turbopack
-npm run build
+# Desarrollo con Turbopack
+pnpm dev
 
-# Start production server
-npm run start
+# Build de producción
+pnpm build
 
-# Run linter
-npm run lint
+# Servidor de producción
+pnpm start
+
+# Linter
+pnpm lint
 ```
 
-The dev server runs on http://localhost:3000 by default.
+El servidor de desarrollo corre en http://localhost:3000 por defecto.
 
-## Code Organization Rules
+---
 
-### NO Index/Barrel Files
+## 🌍 Variables de Entorno
 
-**IMPORTANT:** Do NOT create `index.ts` or `index.tsx` barrel export files in any directory.
-
-❌ **Bad:**
-```typescript
-// components/schedule/index.ts
-export { MatchCard } from './match-card';
-export { PhaseSection } from './phase-section';
+```env
+# .env.local
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
-✅ **Good:**
-```typescript
-// Direct imports
-import { MatchCard } from '@/presentation/components/schedule/match-card';
-import { PhaseSection } from '@/presentation/components/schedule/phase-section';
-```
+---
 
-**Reasoning:**
-- Explicit imports are clearer and easier to trace
-- Better tree-shaking (bundler can remove unused code)
-- Avoids circular dependency issues
-- IDE navigation works better
-- Easier to refactor and maintain
+## 📁 Arquitectura Clean Architecture
 
-## Architecture
-
-### Clean Architecture Structure
-
-**Porraza** follows Clean Architecture principles with clear separation of concerns optimized for Next.js 15:
+### Estructura del Proyecto
 
 ```
 porraza-frontend/
-├── domain/              # Business logic (pure TypeScript)
-│   ├── entities/        # Business entities (Match, Team, Prediction, User, etc.)
-│   ├── repositories/    # Repository interfaces (contracts)
-│   └── use-cases/       # Business use cases (application logic)
-├── infrastructure/      # External concerns & implementations
-│   ├── adapters/        # External service adapters (APIs, third-party services)
-│   ├── http/            # HTTP client implementation (fetch wrappers, interceptors)
-│   ├── mappers/         # Data transformation between layers (DTO ↔ Entity)
-│   ├── repositories/    # Repository implementations (API calls)
-│   └── store/           # Zustand global state stores
-├── presentation/        # UI layer (React components)
-│   ├── components/      # React components
-│   │   ├── ui/          # shadcn/ui components (Button, Card, etc.)
-│   │   ├── predictions/ # Feature-specific components
-│   │   ├── matches/     # Feature-specific components
-│   │   └── ...
-│   ├── hooks/           # Custom React hooks for business logic
-│   └── schemas/         # Zod validation schemas (forms, DTOs)
-├── di/                  # Dependency Injection (Client Components only)
-│   ├── client/          # Client-side DI (for Client Components)
-│   │   ├── context/     # React context for DI
-│   │   ├── hooks/       # DI hooks (useGetMatches, useGetStadiums, etc.)
-│   │   └── providers/   # DI providers (modules, dependency-provider)
-│   └── shared/          # Shared types across DI
-├── app/                 # Next.js 15 App Router (file-based routing)
-│   ├── (landing)/       # Public pages
-│   ├── (auth)/          # Auth pages
-│   ├── (app)/           # Protected pages
-│   └── api/             # API routes (if needed)
-├── lib/                 # Shared utilities
-│   ├── utils.ts         # Utility functions (cn(), etc.)
-│   └── auth.ts          # Auth helpers
-├── public/              # Static assets
-│   └── stadiums/        # Stadium images (lazy loaded)
-└── middleware.ts        # Auth & routing middleware
+├── domain/              # Lógica de negocio pura (TypeScript)
+│   ├── entities/        # Entidades (User, Match, League, Stadium, Team, etc.)
+│   ├── repositories/    # Interfaces de repositories
+│   └── use-cases/       # Casos de uso (business logic)
+├── infrastructure/      # Implementaciones externas
+│   ├── http/            # HTTP client (fetch wrapper)
+│   ├── mappers/         # Transformación DTO ↔ Entity
+│   ├── repositories/    # Implementaciones de repositories
+│   └── store/           # Zustand stores (auth, leagues)
+├── presentation/        # Capa de presentación
+│   ├── components/      # Componentes React
+│   │   ├── ui/          # shadcn/ui components
+│   │   ├── auth/        # Componentes de autenticación
+│   │   ├── leagues/     # Componentes de ligas
+│   │   ├── schedule/    # Calendarios de partidos
+│   │   ├── stadiums/    # Información de estadios
+│   │   └── payments/    # Flujo de pago
+│   ├── hooks/           # Custom hooks (useLogin, useStadiums, etc.)
+│   └── schemas/         # Validación Zod para formularios
+├── di/                  # Dependency Injection
+│   ├── client/          # DI para Client Components (Context + Providers)
+│   └── shared/          # Tipos compartidos
+├── app/                 # Next.js 15 App Router
+│   ├── (landing)/       # Páginas públicas
+│   ├── (auth)/          # Login, signup, verify-email
+│   ├── (app)/           # Páginas protegidas (dashboard, leagues, etc.)
+│   └── layout.tsx       # Layout raíz con DependencyProvider
+├── middleware.ts        # Protección de rutas
+└── public/              # Assets estáticos (logos, estadios, equipos)
 ```
 
-### Dependency Rules (Critical)
+### Reglas de Dependencias
 
-**Domain Layer (`domain/`):**
-- ✅ Pure TypeScript only
-- ❌ NO React, NO Next.js, NO external libraries
-- ❌ NO imports from `infrastructure/`, `presentation/`, `di/`
-- Contains: Entities, repository interfaces, use cases
+| Capa               | Puede importar de      | NO puede importar de                  |
+| ------------------ | ---------------------- | ------------------------------------- |
+| **Domain**         | Nada (TypeScript puro) | infrastructure, presentation, di, app |
+| **Infrastructure** | domain                 | presentation, di, app                 |
+| **Presentation**   | domain, infrastructure | di (usa indirectamente), app          |
+| **DI**             | Todas las capas        | —                                     |
+| **App**            | Todas las capas        | —                                     |
 
-**Infrastructure Layer (`infrastructure/`):**
-- ✅ Can import from `domain/`
-- ❌ NO imports from `presentation/`
-- Contains: Repository implementations, API clients, mappers, stores
+---
 
-**Presentation Layer (`presentation/`):**
-- ✅ Can import from `domain/` and `infrastructure/`
-- Contains: React components, hooks, schemas
+## 🔐 Autenticación y Seguridad
 
-**Dependency Injection (`di/`):**
-- ✅ Connects all layers
-- Provides: Context, factories, hooks to wire dependencies
+### Sistema de Autenticación
 
-**App Router (`app/`):**
-- ✅ Can import from all layers (orchestration layer)
-- Contains: Pages (Server Components), layouts, API routes
+- **Método:** JWT almacenado en **cookies HTTP-only** (seguro, automático)
+- **Estrategia dual:**
+  1. **Cookies HTTP-only** (principal): Enviadas automáticamente, no accesibles desde JS
+  2. **Zustand store** (backup): Para Client Components y Authorization header
 
-### State Management Strategy
+### Flujo de Autenticación
 
-**IMPORTANT: Authentication with Cookies Requires Client Components**
+```
+Signup → Verify Email → Login → Checkout (si no pagó) → Dashboard
+```
 
-In this project, we use **cookie-based authentication (HTTP-only cookies)**. This means:
-- ✅ **Client Components** for authenticated endpoints (cookies sent automatically from browser)
-- ✅ **Server Components** for public endpoints only
-- ❌ **Server Components** do NOT have access to browser cookies when using `fetch`
+**Detalles:**
 
-**1. Authenticated Data Fetching (Client Components):**
+1. Usuario se registra con email/password
+2. Backend envía email de verificación
+3. Usuario verifica email y hace login
+4. Si `user.hasPaid === false` → Redirige a `/checkout`
+5. Si `user.hasPaid === true` → Redirige a `/dashboard`
+
+### Almacenamiento Seguro
+
+| Token        | Cookie (HTTP-only) | Zustand (memoria) | localStorage | Uso                    |
+| ------------ | ------------------ | ----------------- | ------------ | ---------------------- |
+| accessToken  | ✅ (15 min)        | ✅ (backup)       | ❌           | Autenticación API      |
+| refreshToken | ✅ (7 días)        | ❌                | ✅ (backup)  | Renovar access token   |
+| user         | ❌                 | ✅                | ✅           | Información de usuario |
+
+**Refresh automático:**
+
+- El `httpClient` detecta tokens expirados (401) y refresca automáticamente
+- Doble capa: prevención (antes del request) + recuperación (al recibir 401)
+
+**Documentación detallada:** Ver [AUTHENTICATION_FLOW.md](./AUTHENTICATION_FLOW.md)
+
+---
+
+## 💳 Sistema de Pagos
+
+### Integración con Stripe
+
+- **Producto:** Pago único de €1.99 para acceso premium
+- **Método:** Stripe Embedded Checkout
+- **Webhooks:** Backend actualiza `users.has_paid = true` al confirmar pago
+
+### Flujo de Pago
+
+```
+Login → hasPaid check → Checkout (/checkout)
+         ↓ false             ↓
+         ↓              Stripe Embedded Form
+         ↓                   ↓
+         ↓              Payment Success
+         ↓                   ↓
+      Dashboard ← Success Page (/checkout/success)
+```
+
+**Protección de contenido premium:**
+
 ```tsx
-// app/(app)/schedule/page.tsx
-"use client";
+import { PaymentRequiredGuard } from "@/presentation/components/payments/payment-required-guard";
 
-import { useMatchCalendar } from "@/presentation/hooks/matches/use-match-calendar-client";
-
-export default function SchedulePage() {
-  const { calendar, isLoading, error } = useMatchCalendar();
-
-  if (isLoading) return <Spinner />;
-  if (error) return <ErrorMessage error={error} />;
-
-  return <ScheduleContent calendar={calendar} />;
+export default function PredictionsPage() {
+  return (
+    <PaymentRequiredGuard>
+      <PremiumContent />
+    </PaymentRequiredGuard>
+  );
 }
-
-// Why Client Component:
-// - Fetch happens in the BROWSER (not Next.js server)
-// - Browser automatically sends cookies with credentials: 'include'
-// - Backend receives cookies and validates JWT ✅
 ```
 
-**2. Public Data Fetching (Server Components - Optional):**
-```tsx
-// app/(landing)/blog/page.tsx
-export default async function BlogPage() {
-  // Fetch public data directly in Server Component
-  const posts = await getPublicPostsUseCase.execute();
-  return <BlogList posts={posts} />;
-}
+**Documentación detallada:** Ver [PAYMENT_FLOW.md](./PAYMENT_FLOW.md)
 
-// Note: Only use for PUBLIC endpoints that don't require authentication
+---
+
+## 🏆 Sistema de Ligas
+
+### Gestión de Estado
+
+**Zustand stores separados:**
+
+1. `authStore` - Autenticación (user, tokens)
+2. `leagueStore` - Ligas (leagues, selectedLeagueId)
+
+**¿Por qué frontend-managed?**
+
+- ✅ Separation of concerns (login ≠ leagues)
+- ✅ Caching inteligente (refresh cada 5 minutos)
+- ✅ Mejor UX (actualizar leagues sin re-login)
+
+### Flujo de Ligas
+
+```
+Login exitoso
+    ↓
+getMyLeaguesUseCase.execute() (automático)
+    ↓
+leagueStore.setLeagues(leagues)
+    ↓
+Auto-selecciona primera liga
+    ↓
+Componentes leen de selectSelectedLeagueId()
 ```
 
-**3. Global State (Zustand - Minimal use):**
+**Selectores optimizados:**
+
 ```typescript
-// infrastructure/store/auth-store.ts
-import { create } from 'zustand';
+import {
+  selectLeagues,
+  selectSelectedLeagueId,
+  selectSelectedLeague,
+} from "@/infrastructure/store/selectors";
 
-interface AuthState {
-  user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
-  setAuth: (authResponse: AuthResponse) => void;
-  clearAuth: () => void;
-}
-
-export const useAuthStore = create<AuthState>(/* ... */);
+const leagues = selectLeagues();
+const selectedId = selectSelectedLeagueId();
+const selected = selectSelectedLeague();
 ```
 
-**When to use Zustand:**
-- Global auth state (user session, tokens)
-- UI state shared across multiple client components
-- Client-side preferences (theme, language)
+**Documentación detallada:** Ver [LEAGUE_MANAGEMENT.md](./LEAGUE_MANAGEMENT.md)
 
-**When NOT to use Zustand:**
-- API data (use custom hooks with useState instead)
-- Form state (use react-hook-form)
-- URL-based state (use searchParams)
+---
 
-### Next.js 15 Specifics
+## 🎨 Componentes UI
 
-**Server Components (Default):**
-- Pages in `app/` are Server Components by default
-- Fetch data directly, no useState/useEffect needed
-- Better performance, smaller client bundles
-- **IMPORTANT:** Only use for PUBLIC data (no authentication required)
+### shadcn/ui Configuration
 
-**Client Components (`"use client"`):**
-- Required for: hooks (useState, useEffect), event handlers, Zustand stores, **authenticated API calls**
-- Mark with `"use client"` directive at top of file
-- Use for ALL authenticated endpoints (cookies work correctly)
+- **Estilo:** New York
+- **Path alias:** `@/` → raíz del proyecto
+- **Librería de iconos:** lucide-react
+- **Animaciones:** motion (Framer Motion v12)
 
-**Data Fetching Patterns:**
+### Componentes Principales
 
-```tsx
-// ✅ GOOD: Client Component with authenticated endpoint
-"use client";
+**Layout y navegación:**
 
-import { useMatchCalendar } from "@/presentation/hooks/matches/use-match-calendar-client";
+- `Sidebar` - Navegación con colapso/expandir
+- `SidebarProvider` - Context del sidebar
+- `AppSidebar` - Sidebar de la aplicación con ligas
 
-export default function MatchesPage() {
-  const { calendar, isLoading, error } = useMatchCalendar();
+**Formularios (IMPORTANTE):**
 
-  if (isLoading) return <Spinner />;
+- `Field`, `FieldLabel`, `FieldDescription`, `FieldError` - Sistema composable de forms
+- `Input`, `Textarea`, `Checkbox` - Inputs básicos
+- Siempre usar **react-hook-form** + **Zod** para validación
 
-  return <CalendarView calendar={calendar} />;
-}
+**UI general:**
 
-// Why this works:
-// - useEffect in the hook triggers fetch from BROWSER
-// - Browser sends cookies automatically
-// - Backend receives auth cookies ✅
-```
-
-```tsx
-// ❌ BAD: Server Component with authenticated endpoint
-// This will FAIL because Server Components don't have access to browser cookies
-export default async function MatchesPage() {
-  const matches = await getMatchesUseCase.execute(); // ❌ NO cookies sent
-  return <MatchList matches={matches} />;
-}
-```
-
-```tsx
-// ✅ GOOD: Server Component with PUBLIC endpoint
-export default async function BlogPage() {
-  // Only use Server Components for PUBLIC data
-  const posts = await getPublicPostsUseCase.execute();
-  return <BlogList posts={posts} />;
-}
-```
-
-```tsx
-// ❌ BAD: Direct API call in component (bypasses Clean Architecture)
-"use client";
-function MatchesPage() {
-  const [matches, setMatches] = useState([]);
-
-  useEffect(() => {
-    fetch('/api/matches').then(r => r.json()).then(setMatches); // ❌ No!
-  }, []);
-
-  return <MatchList matches={matches} />;
-}
-```
-
-## Architecture Overview
-
-### Route-Based Architecture with Next.js 15 App Router
-
-This application uses **Route Groups** to organize pages into three logical sections:
-
-1. **`app/(landing)/`** - Public marketing pages
-
-   - Landing page, pricing, legal pages (privacy, terms)
-   - Accessible to all users
-
-2. **`app/(auth)/`** - Authentication pages
-
-   - Login and signup pages
-   - Auto-redirect to `/dashboard` if already authenticated
-
-3. **`app/(app)/`** - Protected application pages
-   - Dashboard and all private features
-   - Protected by middleware authentication
-
-**Important:** Route Groups (folders with parentheses) do NOT appear in URLs. For example:
-
-- `app/(landing)/pricing/page.tsx` → `/pricing`
-- `app/(app)/dashboard/page.tsx` → `/dashboard`
-
-### Authentication & Middleware System
-
-**Middleware (`middleware.ts`):**
-
-- Runs on Edge Runtime before every request
-- Checks for `auth-token` cookie to determine authentication state
-- Protected routes: `/dashboard`, `/projects`, `/analytics`, `/settings`
-- Auth routes: `/login`, `/signup`
-
-**Current Implementation (Demo):**
-
-- Simple cookie-based authentication for demonstration
-- Functions in `lib/auth.ts`: `isAuthenticated()`, `getCurrentUser()`
-- Login/signup set a cookie, logout removes it
-
-**For Production:**
-Replace the demo auth with a real solution (NextAuth.js, Clerk, Auth0, etc.). The middleware architecture is designed to work with any auth provider - just update the `auth-token` cookie verification logic.
-
-### UI Component System
-
-This project uses **shadcn/ui** (New York style) as the primary UI component library.
-
-**Key Features:**
-
-- Tailwind CSS v4 for styling
-- Path alias: `@/` maps to project root
-- Components in `@/presentation/components/ui/`
-- Utilities in `@/lib/utils`
-- Lucide React for icons
-- Motion (Framer Motion v12) for animations
-- RSC (React Server Components) enabled
-
-**Available shadcn/ui Components:**
-
-- `Button` - Interactive button with multiple variants
-- `Badge` - Labels and tags with variant support
-- `Card` - Container with Header, Content, Footer, Title, Description, and Action
-- `Avatar` - User profile images
-- `Input` - Text input fields
-- `Textarea` - Multi-line text input
-- `Checkbox` - Selection controls
-- `Table` - Data tables
-- `Spinner` - Loading indicators
+- `Button`, `Badge`, `Avatar`
+- `Card`, `CardHeader`, `CardContent`, `CardFooter`
+- `Dialog`, `Tabs`, `Tooltip`, `Separator`
+- `Table`, `TableHeader`, `TableBody`, `TableRow`
 - `Sonner` - Toast notifications
-- `Field` - Composable form field system (see Form Patterns section below)
 
-**Animation Library:**
+### Sistema de Formularios (Patrón Estándar)
 
-- Uses `motion/react` (Motion One / Framer Motion v12)
-- Import: `import { motion, AnimatePresence } from "motion/react"`
-- Apply animations with `initial`, `animate`, `exit`, `whileHover`, `whileTap`
-- Use `transition` for spring physics and timing
-
-**Best Practices:**
-
-- Always use `cn()` utility from `@/lib/utils` for conditional classes
-- Import components from `@/presentation/components/ui/[component]`
-- Use `asChild` prop with Slot for component composition
-- Leverage `variants` from class-variance-authority for component flexibility
-- Add `"use client"` directive when using hooks or animations
-- Use semantic HTML and ARIA attributes for accessibility
-
-### Form Patterns with Field Component
-
-**IMPORTANT:** The `Field` component system is the standard way to build forms in this project. Always use these components for form fields.
-
-#### Field Component System
-
-The Field component provides a composable, accessible form structure with the following core components:
-
-**Core Components:**
-
-- `Field` - Main wrapper providing orientation control and validation state
-- `FieldLabel` - Accessible label for inputs
-- `FieldDescription` - Helper text explaining the field purpose
-- `FieldError` - Error message container with support for validation libraries
-- `FieldGroup` - Layout wrapper for multiple fields with container queries
-- `FieldSet` - Semantic `<fieldset>` container for related fields
-- `FieldLegend` - Accessible legend for fieldsets
-- `FieldContent` - Flex column for grouping controls and descriptions
-- `FieldTitle` - Title component for use within FieldContent
-- `FieldSeparator` - Visual divider with optional inline content
-
-**Orientation Options:**
-
-- `vertical` (default) - Stacks label, control, and helper text vertically
-- `horizontal` - Aligns label and control side-by-side
-- `responsive` - Automatic responsive layout using container queries
-
-**Key Features:**
-
-- Accessibility-first design with proper ARIA attributes and semantic HTML
-- Built-in support for react-hook-form validation
-- Works with Zod, Valibot, ArkType and other Standard Schema validators
-- Automatic error rendering from validation libraries
-- Container queries for responsive layouts
-- Supports nested Field components for complex forms
-
-#### Basic Field Usage
-
-```tsx
-import { Field, FieldLabel, FieldDescription, FieldError } from '@/presentation/components/ui/field';
-import { Input } from '@/presentation/components/ui/input';
-
-<Field>
-  <FieldLabel htmlFor="email">Email</FieldLabel>
-  <Input
-    id="email"
-    type="email"
-    placeholder="your@email.com"
-  />
-  <FieldDescription>
-    We'll never share your email with anyone else.
-  </FieldDescription>
-  <FieldError errors={errors.email} />
-</Field>
-```
-
-#### Form Pattern with react-hook-form + Zod
-
-**IMPORTANT:** This is the standard pattern for all forms in the application.
-
-**1. Create Zod Schema (`presentation/schemas/`):**
+**1. Crear schema Zod:**
 
 ```typescript
 // presentation/schemas/login-schema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(8, "Mínimo 8 caracteres"),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 ```
 
-**2. Create Form Component with Field:**
+**2. Usar Field components:**
 
 ```tsx
 "use client";
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, type LoginFormData } from '@/presentation/schemas/login-schema';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Field,
   FieldLabel,
-  FieldDescription,
   FieldError,
-} from '@/presentation/components/ui/field';
-import { Input } from '@/presentation/components/ui/input';
-import { Button } from '@/presentation/components/ui/button';
+} from "@/presentation/components/ui/field";
+import { Input } from "@/presentation/components/ui/input";
+import { Button } from "@/presentation/components/ui/button";
 
 export function LoginForm() {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    // Handle form submission
-    console.log(data);
-  };
-
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <Field data-invalid={!!form.formState.errors.email}>
         <FieldLabel htmlFor="email">Email</FieldLabel>
-        <Input
-          id="email"
-          type="email"
-          placeholder="your@email.com"
-          aria-invalid={!!form.formState.errors.email}
-          {...form.register('email')}
-        />
-        <FieldDescription>
-          Enter your email address to log in.
-        </FieldDescription>
+        <Input id="email" type="email" {...form.register("email")} />
         <FieldError errors={[form.formState.errors.email]} />
       </Field>
 
-      <Field data-invalid={!!form.formState.errors.password}>
-        <FieldLabel htmlFor="password">Password</FieldLabel>
-        <Input
-          id="password"
-          type="password"
-          placeholder="••••••••"
-          aria-invalid={!!form.formState.errors.password}
-          {...form.register('password')}
-        />
-        <FieldError errors={[form.formState.errors.password]} />
-      </Field>
-
-      <Button type="submit" disabled={form.formState.isSubmitting}>
-        {form.formState.isSubmitting ? 'Logging in...' : 'Log In'}
-      </Button>
+      <Button type="submit">Iniciar sesión</Button>
     </form>
   );
 }
 ```
 
-#### Advanced Field Patterns
+---
 
-**Horizontal Layout:**
+## 🏗️ Patrones de Implementación
 
-```tsx
-<Field orientation="horizontal">
-  <FieldLabel htmlFor="name">Full Name</FieldLabel>
-  <FieldContent>
-    <Input id="name" {...form.register('name')} />
-    <FieldDescription>Enter your full legal name.</FieldDescription>
-    <FieldError errors={[form.formState.errors.name]} />
-  </FieldContent>
-</Field>
-```
+### Server Components vs Client Components
 
-**Responsive Layout:**
+**Server Components (Preferido):**
 
 ```tsx
-<FieldGroup>
-  <Field orientation="responsive">
-    <FieldLabel htmlFor="firstName">First Name</FieldLabel>
-    <Input id="firstName" {...form.register('firstName')} />
-  </Field>
+// app/(app)/stadiums/page.tsx
+import { httpClient } from "@/infrastructure/http/client";
+import { createStadiumRepository } from "@/infrastructure/repositories/stadium-repository-impl";
+import { GetAllStadiumsUseCase } from "@/domain/use-cases/stadiums/get-all-stadiums-use-case";
 
-  <Field orientation="responsive">
-    <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
-    <Input id="lastName" {...form.register('lastName')} />
-  </Field>
-</FieldGroup>
-```
+export default async function StadiumsPage() {
+  // Instanciación directa - Sin Context, sin hooks
+  const repository = new createStadiumRepository(httpClient);
+  const useCase = new GetAllStadiumsUseCase(repository);
+  const stadiums = await useCase.execute();
 
-**FieldSet with Related Fields:**
-
-```tsx
-<FieldSet>
-  <FieldLegend variant="legend">Contact Information</FieldLegend>
-  <FieldDescription>
-    Provide your contact details for account recovery.
-  </FieldDescription>
-
-  <Field>
-    <FieldLabel htmlFor="email">Email</FieldLabel>
-    <Input id="email" type="email" {...form.register('email')} />
-    <FieldError errors={[form.formState.errors.email]} />
-  </Field>
-
-  <Field>
-    <FieldLabel htmlFor="phone">Phone</FieldLabel>
-    <Input id="phone" type="tel" {...form.register('phone')} />
-    <FieldError errors={[form.formState.errors.phone]} />
-  </Field>
-</FieldSet>
-```
-
-**With Separator:**
-
-```tsx
-<FieldGroup>
-  <Field>
-    <FieldLabel htmlFor="email">Email</FieldLabel>
-    <Input id="email" {...form.register('email')} />
-  </Field>
-
-  <FieldSeparator>or</FieldSeparator>
-
-  <Field>
-    <FieldLabel htmlFor="phone">Phone</FieldLabel>
-    <Input id="phone" {...form.register('phone')} />
-  </Field>
-</FieldGroup>
-```
-
-#### Form Best Practices
-
-1. **Always use Zod schemas** for validation in `presentation/schemas/`
-2. **Use react-hook-form** with `zodResolver` for form state management
-3. **Add `data-invalid` attribute** to Field for error styling
-4. **Add `aria-invalid` attribute** to inputs for accessibility
-5. **Use FieldError with errors array** for automatic error rendering
-6. **Keep forms in presentation layer** - use DI hooks for submission logic
-7. **Use FieldDescription** to provide helpful context for users
-8. **Use FieldSet and FieldLegend** for grouping related fields semantically
-9. **Prefer vertical orientation** for mobile-first design, use responsive when needed
-10. **Never create custom form field components** - always compose with Field components
-
-## Key Technical Details
-
-### Middleware Matcher Configuration
-
-The middleware matcher excludes static assets and API routes for performance:
-
-```typescript
-matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|public).*)"];
-```
-
-### TypeScript Configuration
-
-- Path alias `@/*` points to project root
-- Target: ES2017
-- Strict mode enabled
-
-### Cookie Handling
-
-Cookies are handled differently in middleware vs. Server Components:
-
-- **Middleware:** `request.cookies.get("name")`
-- **Server Components:** `const cookieStore = await cookies(); cookieStore.get("name")`
-
-## Adding New Protected Routes
-
-1. Create the page under `app/(app)/your-route/page.tsx`
-2. Add the route path to the `protectedRoutes` array in `middleware.ts`
-3. The middleware will automatically protect it
-
-## Adding New Public Routes
-
-Simply create pages under `app/(landing)/` - no middleware configuration needed.
-
-## Clean Architecture Implementation Patterns
-
-### Domain Layer Patterns
-
-**Entities (`domain/entities/`):**
-```typescript
-// domain/entities/match.ts
-export interface Match {
-  id: string;
-  homeTeam: Team;
-  awayTeam: Team;
-  date: Date;
-  stadium: string;
-  competition: Competition;
-  status: 'scheduled' | 'live' | 'finished';
-  score?: {
-    home: number;
-    away: number;
-  };
+  return <StadiumList stadiums={stadiums} />;
 }
+```
 
+**Client Components (Solo cuando necesario):**
+
+```tsx
+"use client";
+import { useState } from "react";
+import { useLogin } from "@/presentation/hooks/auth/use-login";
+
+export function LoginForm() {
+  const { login, isLoading, error } = useLogin();
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await login(email, password);
+  };
+
+  return <form onSubmit={handleSubmit}>...</form>;
+}
+```
+
+**¿Cuándo usar cada uno?**
+
+| Escenario                | Tipo      |
+| ------------------------ | --------- |
+| Mostrar lista de datos   | ✅ Server |
+| Formularios interactivos | ⚡ Client |
+| Páginas estáticas        | ✅ Server |
+| Real-time updates        | ⚡ Client |
+| Calendario de partidos   | ✅ Server |
+| Crear predicción         | ⚡ Client |
+
+### Manejo de Estado
+
+**❌ NO usar Zustand para:**
+
+- Datos de API (usar custom hooks con useState)
+- Estado de formularios (usar react-hook-form)
+- Estado derivado de URL (usar searchParams)
+
+**✅ SÍ usar Zustand para:**
+
+- Estado de autenticación global
+- Ligas y selección de liga
+- Preferencias de usuario (tema, idioma)
+
+---
+
+## 🔧 HTTP Client y Manejo de Errores
+
+### HTTP Client
+
+```typescript
+import { httpClient } from "@/infrastructure/http/client";
+
+// GET request
+const { data } = await httpClient.get<Stadium[]>("/stadiums");
+
+// POST request
+const { data } = await httpClient.post("/auth/login", { email, password });
+```
+
+**Características:**
+
+- ✅ Interceptor automático de tokens (añade Authorization header)
+- ✅ Refresh automático de tokens al recibir 401
+- ✅ credentials: 'include' para enviar cookies
+- ✅ Timeout configurable (30s por defecto)
+- ✅ Type-safe con generics TypeScript
+
+### Mappers (DTO ↔ Entity)
+
+```typescript
+// infrastructure/mappers/stadium-mapper.ts
+export class StadiumMapper {
+  static toDomain(dto: StadiumDTO): Stadium {
+    return {
+      id: dto.id,
+      name: dto.name,
+      createdAt: new Date(dto.createdAt), // string → Date
+    };
+  }
+
+  static toDTO(domain: Stadium): StadiumDTO {
+    return {
+      id: domain.id,
+      name: domain.name,
+      createdAt: domain.createdAt.toISOString(), // Date → string
+    };
+  }
+}
+```
+
+---
+
+## 🛡️ Middleware y Rutas Protegidas
+
+```typescript
+// middleware.ts
+const protectedRoutes = [
+  "/dashboard",
+  "/predictions",
+  "/schedule",
+  "/leagues",
+  "/leaderboard",
+  "/rules",
+  "/settings",
+];
+```
+
+**Comportamiento:**
+
+- Usuario NO autenticado en ruta protegida → Redirige a `/login?from={ruta}`
+- Usuario autenticado en `/login` o `/signup` → Redirige a `/dashboard`
+
+**Añadir nueva ruta protegida:**
+
+```typescript
+const protectedRoutes = [
+  // ... existing routes
+  "/mi-nueva-ruta",
+];
+```
+
+---
+
+## 📂 Organización de Código
+
+### Reglas Importantes
+
+**❌ NO crear archivos index.ts barrel exports:**
+
+```typescript
+// ❌ MAL: components/schedule/index.ts
+export { MatchCard } from "./match-card";
+```
+
+**✅ Importaciones directas:**
+
+```typescript
+// ✅ BIEN
+import { MatchCard } from "@/presentation/components/schedule/match-card";
+```
+
+**Naming conventions:**
+
+- Archivos: `kebab-case.tsx` (ej: `match-card.tsx`)
+- Componentes: `PascalCase` (ej: `MatchCard`)
+- Hooks: `camelCase` con prefijo `use` (ej: `useLogin`)
+- Use cases: `PascalCase` con sufijo `UseCase` (ej: `LoginUseCase`)
+
+---
+
+## 🎯 Flujo de Desarrollo - Añadir Feature
+
+**Ejemplo: Sistema de predicciones**
+
+### 1. Domain Layer
+
+```typescript
 // domain/entities/prediction.ts
 export interface Prediction {
   id: string;
   userId: string;
   matchId: string;
-  predictedScore: {
-    home: number;
-    away: number;
-  };
-  confidence: number;
-  createdAt: Date;
-}
-```
-
-**Use Cases (`domain/use-cases/`):**
-```typescript
-// domain/use-cases/predictions/create-prediction-use-case.ts
-import type { Prediction } from '@/domain/entities/prediction';
-import type { PredictionRepository } from '@/domain/repositories/prediction-repository';
-
-export interface CreatePredictionParams {
-  userId: string;
-  matchId: string;
   homeScore: number;
   awayScore: number;
-  confidence: number;
+  points: number;
 }
 
+// domain/repositories/prediction-repository.ts
+export interface PredictionRepository {
+  create(data: Omit<Prediction, "id">): Promise<Prediction>;
+  findByUser(userId: string): Promise<Prediction[]>;
+}
+
+// domain/use-cases/predictions/create-prediction-use-case.ts
 export class CreatePredictionUseCase {
-  constructor(private repository: PredictionRepository) {}
+  constructor(private repo: PredictionRepository) {}
 
   async execute(params: CreatePredictionParams): Promise<Prediction> {
-    // Business validation
-    if (params.homeScore < 0 || params.awayScore < 0) {
-      throw new Error('Scores cannot be negative');
-    }
-
-    if (params.confidence < 0 || params.confidence > 100) {
-      throw new Error('Confidence must be between 0 and 100');
-    }
-
-    // Delegate to repository
-    return await this.repository.create({
-      userId: params.userId,
-      matchId: params.matchId,
-      predictedScore: {
-        home: params.homeScore,
-        away: params.awayScore,
-      },
-      confidence: params.confidence,
-      createdAt: new Date(),
-    });
+    // Validación de negocio aquí
+    return await this.repo.create(params);
   }
 }
 ```
 
-**Repository Interfaces (`domain/repositories/`):**
+### 2. Infrastructure Layer
+
 ```typescript
-// domain/repositories/prediction-repository.ts
-import type { Prediction } from '@/domain/entities/prediction';
-
-export interface PredictionRepository {
-  create(data: Omit<Prediction, 'id'>): Promise<Prediction>;
-  findById(id: string): Promise<Prediction | null>;
-  findByUserId(userId: string): Promise<Prediction[]>;
-  findByMatchId(matchId: string): Promise<Prediction[]>;
-  update(id: string, data: Partial<Prediction>): Promise<Prediction>;
-  delete(id: string): Promise<void>;
-}
-```
-
-### Infrastructure Layer Patterns
-
-**Repository Implementation (`infrastructure/repositories/`):**
-```typescript
-// infrastructure/repositories/prediction-repository-impl.ts
-import type { Prediction } from '@/domain/entities/prediction';
-import type { PredictionRepository } from '@/domain/repositories/prediction-repository';
-import { httpClient } from '@/infrastructure/http/client';
-import { PredictionMapper } from '@/infrastructure/mappers/prediction-mapper';
-
-export class PredictionRepositoryImpl implements PredictionRepository {
-  private baseUrl = '/api/predictions';
-
-  async create(data: Omit<Prediction, 'id'>): Promise<Prediction> {
-    const dto = PredictionMapper.toDTO(data);
-    const response = await httpClient.post(this.baseUrl, dto);
-    return PredictionMapper.toDomain(response.data);
-  }
-
-  async findById(id: string): Promise<Prediction | null> {
-    try {
-      const response = await httpClient.get(`${this.baseUrl}/${id}`);
-      return PredictionMapper.toDomain(response.data);
-    } catch (error) {
-      if (error.status === 404) return null;
-      throw error;
-    }
-  }
-
-  async findByUserId(userId: string): Promise<Prediction[]> {
-    const response = await httpClient.get(`${this.baseUrl}?userId=${userId}`);
-    return response.data.map(PredictionMapper.toDomain);
-  }
-
-  // ... other methods
-}
-```
-
-**Mappers (`infrastructure/mappers/`):**
-```typescript
-// infrastructure/mappers/prediction-mapper.ts
-import type { Prediction } from '@/domain/entities/prediction';
-
-interface PredictionDTO {
+// infrastructure/http/dtos/prediction-dto.ts
+export interface PredictionDTO {
   id: string;
   user_id: string;
   match_id: string;
-  predicted_home_score: number;
-  predicted_away_score: number;
-  confidence: number;
-  created_at: string;
+  home_score: number;
+  away_score: number;
+  points: number;
 }
 
+// infrastructure/mappers/prediction-mapper.ts
 export class PredictionMapper {
   static toDomain(dto: PredictionDTO): Prediction {
     return {
       id: dto.id,
       userId: dto.user_id,
       matchId: dto.match_id,
-      predictedScore: {
-        home: dto.predicted_home_score,
-        away: dto.predicted_away_score,
-      },
-      confidence: dto.confidence,
-      createdAt: new Date(dto.created_at),
-    };
-  }
-
-  static toDTO(domain: Omit<Prediction, 'id'>): Omit<PredictionDTO, 'id'> {
-    return {
-      user_id: domain.userId,
-      match_id: domain.matchId,
-      predicted_home_score: domain.predictedScore.home,
-      predicted_away_score: domain.predictedScore.away,
-      confidence: domain.confidence,
-      created_at: domain.createdAt.toISOString(),
+      homeScore: dto.home_score,
+      awayScore: dto.away_score,
+      points: dto.points,
     };
   }
 }
-```
 
-**HTTP Client (`infrastructure/http/`):**
-```typescript
-// infrastructure/http/client.ts
-interface HttpClient {
-  get<T>(url: string): Promise<{ data: T }>;
-  post<T>(url: string, body: unknown): Promise<{ data: T }>;
-  put<T>(url: string, body: unknown): Promise<{ data: T }>;
-  delete<T>(url: string): Promise<{ data: T }>;
-}
+// infrastructure/repositories/prediction-repository-impl.ts
+export class PredictionRepositoryImpl implements PredictionRepository {
+  constructor(private httpClient: HttpClient) {}
 
-export const httpClient: HttpClient = {
-  async get(url) {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) throw new Error(response.statusText);
-    return { data: await response.json() };
-  },
-
-  async post(url, body) {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) throw new Error(response.statusText);
-    return { data: await response.json() };
-  },
-
-  // ... other methods
-};
-```
-
-### Dependency Injection Patterns
-
-**DI Context (`di/context/`):**
-```typescript
-// di/context/repository-context.tsx
-"use client";
-import { createContext, useContext, type ReactNode } from 'react';
-import type { PredictionRepository } from '@/domain/repositories/prediction-repository';
-import { PredictionRepositoryImpl } from '@/infrastructure/repositories/prediction-repository-impl';
-
-interface RepositoryContextValue {
-  predictionRepository: PredictionRepository;
-  // ... other repositories
-}
-
-const RepositoryContext = createContext<RepositoryContextValue | null>(null);
-
-export function RepositoryProvider({ children }: { children: ReactNode }) {
-  const value: RepositoryContextValue = {
-    predictionRepository: new PredictionRepositoryImpl(),
-    // ... other repositories
-  };
-
-  return (
-    <RepositoryContext.Provider value={value}>
-      {children}
-    </RepositoryContext.Provider>
-  );
-}
-
-export function useRepositories() {
-  const context = useContext(RepositoryContext);
-  if (!context) {
-    throw new Error('useRepositories must be used within RepositoryProvider');
+  async create(data: Omit<Prediction, "id">): Promise<Prediction> {
+    const dto = PredictionMapper.toDTO(data);
+    const response = await this.httpClient.post<PredictionDTO>(
+      "/predictions",
+      dto
+    );
+    return PredictionMapper.toDomain(response.data);
   }
-  return context;
 }
 ```
 
-**DI Hooks (`di/hooks/`):**
-```typescript
-// di/hooks/use-predictions.ts
-"use client";
-import { useMemo } from 'react';
-import { useRepositories } from '@/di/context/repository-context';
-import { CreatePredictionUseCase } from '@/domain/use-cases/predictions/create-prediction-use-case';
-import { GetPredictionsByUserUseCase } from '@/domain/use-cases/predictions/get-predictions-by-user-use-case';
+### 3. Presentation Layer
 
-export function useCreatePrediction() {
-  const { predictionRepository } = useRepositories();
-  return useMemo(
-    () => new CreatePredictionUseCase(predictionRepository),
-    [predictionRepository]
-  );
-}
-
-export function useGetPredictionsByUser() {
-  const { predictionRepository } = useRepositories();
-  return useMemo(
-    () => new GetPredictionsByUserUseCase(predictionRepository),
-    [predictionRepository]
-  );
-}
-```
-
-**DI Provider Setup (`app/layout.tsx`):**
-```tsx
-// app/layout.tsx
-import { RepositoryProvider } from '@/di/context/repository-context';
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="es">
-      <body>
-        <RepositoryProvider>
-          {children}
-        </RepositoryProvider>
-      </body>
-    </html>
-  );
-}
-```
-
-### Presentation Layer Patterns
-
-**Custom Hooks (`presentation/hooks/`):**
-```typescript
-// presentation/hooks/predictions/use-user-predictions.ts
-"use client";
-import { useState, useEffect } from 'react';
-import { useGetPredictionsByUser } from '@/di/hooks/use-predictions';
-import type { Prediction } from '@/domain/entities/prediction';
-
-export function useUserPredictions(userId: string) {
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  const getPredictions = useGetPredictionsByUser();
-
-  useEffect(() => {
-    getPredictions
-      .execute(userId)
-      .then(setPredictions)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [userId, getPredictions]);
-
-  return { predictions, loading, error };
-}
-```
-
-**Form Schemas (`presentation/schemas/`):**
 ```typescript
 // presentation/schemas/prediction-schema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const predictionSchema = z.object({
-  matchId: z.string().min(1, 'Match ID is required'),
-  homeScore: z.number().min(0, 'Score must be positive').int(),
-  awayScore: z.number().min(0, 'Score must be positive').int(),
-  confidence: z.number().min(0).max(100, 'Confidence must be 0-100'),
+  matchId: z.string(),
+  homeScore: z.number().int().min(0),
+  awayScore: z.number().int().min(0),
 });
 
-export type PredictionFormData = z.infer<typeof predictionSchema>;
-```
+// presentation/hooks/predictions/use-create-prediction.ts
+("use client");
+import { useState } from "react";
+import { useCreatePredictionUseCase } from "@/di/client/hooks/use-prediction-dependencies";
 
-**Components (`presentation/components/`):**
-```tsx
-// presentation/components/predictions/prediction-form.tsx
-"use client";
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { predictionSchema, type PredictionFormData } from '@/presentation/schemas/prediction-schema';
-import { useCreatePrediction } from '@/di/hooks/use-predictions';
-import { Button } from '@/presentation/components/ui/button';
-import { Input } from '@/presentation/components/ui/input';
+export function useCreatePrediction() {
+  const createUseCase = useCreatePredictionUseCase();
+  const [loading, setLoading] = useState(false);
 
-interface PredictionFormProps {
-  matchId: string;
-  userId: string;
-  onSuccess?: () => void;
-}
-
-export function PredictionForm({ matchId, userId, onSuccess }: PredictionFormProps) {
-  const createPrediction = useCreatePrediction();
-
-  const form = useForm<PredictionFormData>({
-    resolver: zodResolver(predictionSchema),
-    defaultValues: {
-      matchId,
-      homeScore: 0,
-      awayScore: 0,
-      confidence: 50,
-    },
-  });
-
-  const onSubmit = async (data: PredictionFormData) => {
+  const create = async (data) => {
+    setLoading(true);
     try {
-      await createPrediction.execute({
-        userId,
-        matchId: data.matchId,
-        homeScore: data.homeScore,
-        awayScore: data.awayScore,
-        confidence: data.confidence,
-      });
-      onSuccess?.();
-    } catch (error) {
-      console.error('Failed to create prediction:', error);
+      return await createUseCase.execute(data);
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-      <Input
-        type="number"
-        placeholder="Home Score"
-        {...form.register('homeScore', { valueAsNumber: true })}
-      />
-      <Input
-        type="number"
-        placeholder="Away Score"
-        {...form.register('awayScore', { valueAsNumber: true })}
-      />
-      <Input
-        type="number"
-        placeholder="Confidence (0-100)"
-        {...form.register('confidence', { valueAsNumber: true })}
-      />
-      <Button type="submit" disabled={form.formState.isSubmitting}>
-        Submit Prediction
-      </Button>
-    </form>
-  );
+  return { create, loading };
+}
+
+// presentation/components/predictions/prediction-form.tsx
+("use client");
+import { useForm } from "react-hook-form";
+import { useCreatePrediction } from "@/presentation/hooks/predictions/use-create-prediction";
+
+export function PredictionForm({ matchId }: { matchId: string }) {
+  const { create, loading } = useCreatePrediction();
+  const form = useForm({ resolver: zodResolver(predictionSchema) });
+
+  const onSubmit = async (data) => {
+    await create(data);
+  };
+
+  return <form onSubmit={form.handleSubmit(onSubmit)}>...</form>;
 }
 ```
 
-### Server Component Patterns (Next.js 15)
+### 4. App Layer (Page)
 
-**Server Component with Direct Use Case:**
 ```tsx
 // app/(app)/predictions/page.tsx
-import { PredictionRepositoryImpl } from '@/infrastructure/repositories/prediction-repository-impl';
-import { GetPredictionsByUserUseCase } from '@/domain/use-cases/predictions/get-predictions-by-user-use-case';
-import { PredictionList } from '@/presentation/components/predictions/prediction-list';
-import { getCurrentUser } from '@/lib/auth';
+"use client";
 
-export default async function PredictionsPage() {
-  const user = await getCurrentUser();
+import { PredictionForm } from "@/presentation/components/predictions/prediction-form";
 
-  // Instantiate use case directly in Server Component
-  const repository = new PredictionRepositoryImpl();
-  const getPredictions = new GetPredictionsByUserUseCase(repository);
-
-  const predictions = await getPredictions.execute(user.id);
-
+export default function PredictionsPage() {
   return (
     <div>
-      <h1>My Predictions</h1>
-      <PredictionList predictions={predictions} />
+      <h1>Crear Predicción</h1>
+      <PredictionForm matchId="match-123" />
     </div>
   );
 }
 ```
 
-## Development Guidelines
+---
 
-### File Organization
+## 📚 Documentación Adicional
 
-**Naming Conventions:**
-- Components: `kebab-case.tsx` (e.g., `match-prediction-card.tsx`)
-- Hooks: `use-feature-name.ts` (e.g., `use-user-predictions.ts`)
-- Use cases: `action-entity-use-case.ts` (e.g., `create-prediction-use-case.ts`)
-- Repositories: `entity-repository.ts` for interfaces, `entity-repository-impl.ts` for implementations
-- Entities: `entity-name.ts` (e.g., `prediction.ts`, `match.ts`)
+### Documentos de Referencia
 
-**Code Conventions:**
-- Components: PascalCase (e.g., `PredictionForm`)
-- Hooks: camelCase starting with `use` (e.g., `useUserPredictions`)
-- Use cases: PascalCase ending with `UseCase` (e.g., `CreatePredictionUseCase`)
-- Interfaces: PascalCase (e.g., `PredictionRepository`)
+| Archivo                                                        | Contenido                                     |
+| -------------------------------------------------------------- | --------------------------------------------- |
+| [AUTHENTICATION_FLOW.md](./AUTHENTICATION_FLOW.md)             | Flujo completo de autenticación con diagramas |
+| [PAYMENT_FLOW.md](./PAYMENT_FLOW.md)                           | Integración de Stripe y flujo de checkout     |
+| [LEAGUE_MANAGEMENT.md](./LEAGUE_MANAGEMENT.md)                 | Sistema de ligas y gestión de estado          |
+| [ROUTING.md](./ROUTING.md)                                     | Route Groups y protección de rutas            |
+| [STRIPE_CUSTOMIZATION.md](./STRIPE_CUSTOMIZATION.md)           | Personalización de Stripe Checkout            |
+| [di/README.md](./di/README.md)                                 | Dependency Injection (Server vs Client)       |
+| [infrastructure/README.md](./infrastructure/README.md)         | HTTP Client, DTOs, Mappers, Repositories      |
+| [presentation/hooks/README.md](./presentation/hooks/README.md) | Custom hooks patterns                         |
 
-### Common Tasks
+---
 
-**Adding a New Feature (Complete Flow):**
+## 🚨 Reglas Críticas
 
-1. **Define Entity** (`domain/entities/feature.ts`):
-```typescript
-export interface Feature {
-  id: string;
-  // ... properties
-}
+### Domain Layer
+
+- ✅ **Solo TypeScript puro** - No React, No Next.js, No librerías externas
+- ❌ **Nunca importar** de infrastructure, presentation, di, app
+
+### Infrastructure Layer
+
+- ✅ Puede importar de `domain`
+- ❌ No puede importar de `presentation`, `di`, `app`
+- ✅ Usa mappers para transformar DTOs ↔ Entities
+
+### Presentation Layer
+
+- ✅ Puede importar de `domain` e `infrastructure`
+- ✅ Siempre usar `Field` components para formularios
+- ✅ Validación con Zod + react-hook-form
+- ❌ No llamar API directamente (usar use cases)
+
+### Autenticación
+
+- ✅ **Client Components** para endpoints autenticados (cookies funcionan)
+- ✅ **Server Components** solo para endpoints públicos
+- ❌ No guardar accessToken en localStorage (usar memoria)
+- ✅ Confiar en refresh automático del httpClient
+
+### State Management
+
+- ✅ Zustand solo para auth y leagues
+- ✅ Custom hooks con useState para datos de API
+- ✅ react-hook-form para formularios
+- ❌ No usar Zustand para todo
+
+---
+
+## 🎯 Mejores Prácticas
+
+### Código Limpio
+
+1. **Un archivo, una responsabilidad**
+2. **Nombres descriptivos** - `getUserById` en lugar de `get`
+3. **Tipado fuerte** - Evitar `any`, usar interfaces
+4. **Error handling** - Siempre try/catch en async functions
+5. **Logging** - Console.log con prefijo `[ComponentName]`
+
+### Performance
+
+1. **Server Components por defecto** - Client solo cuando necesario
+2. **Selectores Zustand optimizados** - Evitar re-renders innecesarios
+3. **Lazy loading** - Componentes pesados con dynamic import
+4. **Memoización** - useMemo para cálculos costosos
+
+### Seguridad
+
+1. **HTTP-only cookies** para tokens
+2. **Validación en backend** - Frontend solo UX
+3. **Sanitización de inputs** - Zod schemas
+4. **HTTPS en producción** - Configurar secure cookies
+
+### Testing (Futuro)
+
+- Unit tests para use cases
+- Integration tests para repositories
+- Component tests con React Testing Library
+- E2E tests con Playwright
+
+---
+
+## 🔍 Debugging
+
+### Ver estado de autenticación
+
+```javascript
+// Consola del navegador
+document.cookie; // Ver cookies
+JSON.parse(localStorage.getItem("porraza-auth")); // Zustand auth
+JSON.parse(localStorage.getItem("porraza-leagues")); // Zustand leagues
 ```
 
-2. **Create Repository Interface** (`domain/repositories/feature-repository.ts`):
-```typescript
-export interface FeatureRepository {
-  create(data: Omit<Feature, 'id'>): Promise<Feature>;
-  findById(id: string): Promise<Feature | null>;
-  // ... other methods
-}
+### Ver headers de requests
+
+```
+DevTools → Network → Request → Headers
+
+Request Headers:
+  Cookie: accessToken=...; refreshToken=...
+  Authorization: Bearer ... (solo Client Components)
 ```
 
-3. **Create Use Cases** (`domain/use-cases/feature/`):
-```typescript
-// create-feature-use-case.ts
-export class CreateFeatureUseCase {
-  constructor(private repository: FeatureRepository) {}
-  async execute(params: CreateFeatureParams): Promise<Feature> {
-    // Business logic
-  }
-}
-```
+### Common issues
 
-4. **Implement Repository** (`infrastructure/repositories/feature-repository-impl.ts`):
-```typescript
-export class FeatureRepositoryImpl implements FeatureRepository {
-  async create(data: Omit<Feature, 'id'>): Promise<Feature> {
-    // API call
-  }
-}
-```
+- **401 Unauthorized:** Token expirado → Refresh automático debería funcionar
+- **CORS errors:** Verificar `credentials: 'include'` en httpClient
+- **Hydration errors:** Usar `suppressHydrationWarning` en `<html>`
+- **League no seleccionada:** Verificar que `setLeagues` fue llamado
 
-5. **Create Mapper** (`infrastructure/mappers/feature-mapper.ts`):
-```typescript
-export class FeatureMapper {
-  static toDomain(dto: FeatureDTO): Feature { /* ... */ }
-  static toDTO(domain: Feature): FeatureDTO { /* ... */ }
-}
-```
+---
 
-6. **Add DI Hooks** (`di/hooks/use-feature.ts`):
-```typescript
-export function useCreateFeature() {
-  const { featureRepository } = useRepositories();
-  return useMemo(() => new CreateFeatureUseCase(featureRepository), [featureRepository]);
-}
-```
+## ✅ Checklist de Calidad
 
-7. **Create Presentation Hook** (`presentation/hooks/feature/use-features.ts`):
-```typescript
-export function useFeatures() {
-  const getFeatures = useGetFeatures();
-  const [features, setFeatures] = useState([]);
-  // ... logic
-  return { features, loading, error };
-}
-```
+Antes de commit:
 
-8. **Create Form Schema** (`presentation/schemas/feature-schema.ts`):
-```typescript
-export const featureSchema = z.object({ /* ... */ });
-```
+- [ ] Código sigue Clean Architecture
+- [ ] No hay `any` types
+- [ ] Formularios usan Field components + Zod
+- [ ] Client Components solo cuando necesario
+- [ ] Error handling implementado
+- [ ] No hay imports circulares
+- [ ] No hay archivos index.ts barrel
+- [ ] Console.logs tienen prefijo descriptivo
+- [ ] Naming conventions seguidas
 
-9. **Create Components** (`presentation/components/feature/`):
-```tsx
-export function FeatureForm() { /* ... */ }
-export function FeatureList() { /* ... */ }
-```
+---
 
-10. **Create Page** (`app/(app)/features/page.tsx`):
-```tsx
-export default async function FeaturesPage() {
-  // Server Component with direct use case
-}
-```
+**Última actualización:** 2025-01-25
 
-## Testing
+**Versión:** 1.0.0
 
-**No tests are currently configured for this project.** Testing infrastructure will be added in the future. For now, focus on manual testing and code quality.
-
-## Important Notes
-
-- **Middleware** runs on Edge Runtime - some Node.js APIs are unavailable
-- **Route Groups** are for organization only, they don't affect URLs or routing
-- **Middleware matcher** pattern is critical for performance - avoid matching static assets
-- **Client Components** require `"use client"` directive when using hooks or event handlers
-- **⚠️ CRITICAL: Use Client Components for authenticated endpoints** - Server Components don't have access to browser cookies
-- **Server Components** are for PUBLIC data only - authenticated data must use Client Components
-- **Domain layer** must remain pure TypeScript - no React, no Next.js, no external dependencies
-- **Use Cases** should contain business logic only - no HTTP calls, no UI concerns
-- **Repositories** handle all external communication - API calls, database, third-party services
-- **Mappers** transform between DTOs (API format) and domain entities
-- **Zustand** should be used minimally - use custom hooks with useState for API data
-- **DI is Client-side only** - `di/server` was removed, all DI happens in `di/client`
-- **No tests yet** - testing infrastructure will be added later
-
-## Authentication Architecture
-
-**See these files for detailed information:**
-- [AUTHENTICATION_FIXED.md](./AUTHENTICATION_FIXED.md) - Complete solution explanation
-- [AUTHENTICATION_FLOW.md](./AUTHENTICATION_FLOW.md) - Detailed authentication flow
-- [AUTHENTICATION_DEBUG.md](./AUTHENTICATION_DEBUG.md) - Debugging guide
-
-**Key Points:**
-- This project uses **HTTP-only cookies** for authentication (more secure)
-- **Client Components are REQUIRED** for authenticated endpoints
-- Server Components cannot access browser cookies when using `fetch`
-- All authenticated pages must be Client Components with `"use client"`
-- Custom hooks (e.g., `useMatchCalendar`, `useStadiums`) handle data fetching from the browser
+**Estado:** ✅ Producción (funcional con autenticación, pagos y ligas)

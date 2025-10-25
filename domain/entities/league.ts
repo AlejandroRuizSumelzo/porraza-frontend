@@ -10,7 +10,7 @@ export interface League {
   adminUserId: string;
   maxMembers: number;
   currentMembers: number;
-  inviteCode: string | null;
+  code: string;
   logoUrl: string | null;
   isAdmin: boolean;
   isMember: boolean;

@@ -144,6 +144,37 @@ export class LeagueRepositoryImpl implements LeagueRepository {
   }
 
   /**
+   * Get a league by its unique code
+   * Useful for discovering and sharing leagues (both public and private)
+   */
+  async getByInviteCode(code: string): Promise<League | null> {
+    try {
+      const response = await this.httpClient.get<LeagueDTO>(
+        `${this.baseUrl}/find/${code}`
+      );
+      return LeagueMapper.toDomain(response.data);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        // Return null if league not found
+        if (error.status === 404) {
+          return null;
+        }
+
+        console.error(
+          "[LeagueRepository] Error fetching league by code:",
+          {
+            status: error.status,
+            message: error.message,
+            response: error.response,
+          }
+        );
+        throw new Error(`Failed to fetch league by code: ${error.message}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Update league information (admin only)
    */
   async update(
@@ -212,11 +243,11 @@ export class LeagueRepositoryImpl implements LeagueRepository {
   }
 
   /**
-   * Join a league (public or private with invite code)
+   * Join a league (public or private with code)
    */
-  async join(id: string, inviteCode?: string): Promise<League> {
+  async join(id: string, code?: string): Promise<League> {
     try {
-      const dto = LeagueMapper.toJoinDTO(inviteCode);
+      const dto = LeagueMapper.toJoinDTO(code);
       const response = await this.httpClient.post<LeagueDTO>(
         `${this.baseUrl}/${id}/join`,
         dto
@@ -231,7 +262,7 @@ export class LeagueRepositoryImpl implements LeagueRepository {
         });
 
         if (error.status === 400) {
-          throw new Error("Invalid invite code or league is full");
+          throw new Error("Invalid league code or league is full");
         }
 
         if (error.status === 403) {

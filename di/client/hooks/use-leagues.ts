@@ -48,6 +48,14 @@ export function useGetLeagueById() {
 }
 
 /**
+ * Hook to get the GetLeagueByInviteCodeUseCase
+ */
+export function useGetLeagueByInviteCode() {
+  const { getLeagueByInviteCodeUseCase } = useDependencies();
+  return getLeagueByInviteCodeUseCase;
+}
+
+/**
  * Hook to get the UpdateLeagueUseCase
  */
 export function useUpdateLeague() {

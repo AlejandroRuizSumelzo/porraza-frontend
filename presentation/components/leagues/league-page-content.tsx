@@ -64,7 +64,7 @@ export function LeaguePageContent() {
   const [confirmJoinDialog, setConfirmJoinDialog] = useState<{
     open: boolean;
     league: League | null;
-    inviteCode?: string;
+    code?: string;
   }>({
     open: false,
     league: null,
@@ -102,19 +102,19 @@ export function LeaguePageContent() {
     });
   };
 
-  const openJoinConfirmation = (league: League, inviteCode?: string) => {
+  const openJoinConfirmation = (league: League, code?: string) => {
     setConfirmJoinDialog({
       open: true,
       league,
-      inviteCode,
+      code,
     });
   };
 
   const confirmJoin = async () => {
-    const { league, inviteCode } = confirmJoinDialog;
+    const { league, code } = confirmJoinDialog;
     if (!league) return;
 
-    const joinedLeague = await joinLeague(league.id, inviteCode);
+    const joinedLeague = await joinLeague(league.id, code);
 
     if (joinedLeague) {
       // Add the joined league to the Zustand store immediately

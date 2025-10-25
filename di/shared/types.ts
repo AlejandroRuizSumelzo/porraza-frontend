@@ -21,6 +21,7 @@ import type { GetAllLeaguesUseCase } from "@/domain/use-cases/leagues/get-all-le
 import type { GetPublicLeaguesUseCase } from "@/domain/use-cases/leagues/get-public-leagues-use-case";
 import type { GetMyLeaguesUseCase } from "@/domain/use-cases/leagues/get-my-leagues-use-case";
 import type { GetLeagueByIdUseCase } from "@/domain/use-cases/leagues/get-league-by-id-use-case";
+import type { GetLeagueByInviteCodeUseCase } from "@/domain/use-cases/leagues/get-league-by-invite-code-use-case";
 import type { UpdateLeagueUseCase } from "@/domain/use-cases/leagues/update-league-use-case";
 import type { DeleteLeagueUseCase } from "@/domain/use-cases/leagues/delete-league-use-case";
 import type { JoinLeagueUseCase } from "@/domain/use-cases/leagues/join-league-use-case";
@@ -75,6 +76,7 @@ export interface Dependencies {
   getPublicLeaguesUseCase: GetPublicLeaguesUseCase;
   getMyLeaguesUseCase: GetMyLeaguesUseCase;
   getLeagueByIdUseCase: GetLeagueByIdUseCase;
+  getLeagueByInviteCodeUseCase: GetLeagueByInviteCodeUseCase;
   updateLeagueUseCase: UpdateLeagueUseCase;
   deleteLeagueUseCase: DeleteLeagueUseCase;
   joinLeagueUseCase: JoinLeagueUseCase;

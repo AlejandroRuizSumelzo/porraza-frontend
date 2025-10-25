@@ -49,7 +49,7 @@ export function JoinLeagueTab({
   const joinCodeForm = useForm<JoinLeagueCodeFormData>({
     resolver: zodResolver(joinLeagueCodeSchema),
     defaultValues: {
-      inviteCode: "",
+      code: "",
     },
   });
 
@@ -60,10 +60,10 @@ export function JoinLeagueTab({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <Lock className="h-5 w-5" />
-            Código de Liga Privada
+            Código de Liga
           </CardTitle>
           <CardDescription>
-            Ingresa el código de invitación de 8 caracteres
+            Ingresa el código de la liga (6-20 caracteres)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -73,14 +73,14 @@ export function JoinLeagueTab({
           >
             <div className="flex-1">
               <Input
-                placeholder="ABC12345"
-                maxLength={8}
+                placeholder="PORRAZA2026"
+                maxLength={20}
                 className="uppercase"
-                {...joinCodeForm.register("inviteCode")}
+                {...joinCodeForm.register("code")}
               />
-              {joinCodeForm.formState.errors.inviteCode && (
+              {joinCodeForm.formState.errors.code && (
                 <p className="mt-1 text-sm text-destructive">
-                  {joinCodeForm.formState.errors.inviteCode.message}
+                  {joinCodeForm.formState.errors.code.message}
                 </p>
               )}
             </div>

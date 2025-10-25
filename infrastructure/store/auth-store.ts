@@ -4,6 +4,30 @@ import type { User } from "@/domain/entities/user";
 import type { AuthResponse } from "@/domain/entities/auth-response";
 
 /**
+ * Sync auth state to a cookie for middleware access
+ * This creates a non-HTTP-only cookie that the middleware can read
+ */
+function syncAuthStateToCookie(
+  state: { userId?: string; accessToken?: string | null } | null
+) {
+  if (typeof document === "undefined") return; // Skip on server
+
+  if (state?.userId && state?.accessToken) {
+    // Set auth state cookie (expires in 7 days)
+    const expiresIn7Days = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
+    ).toUTCString();
+    document.cookie = `porraza-auth-state=${JSON.stringify({
+      state,
+    })}; path=/; expires=${expiresIn7Days}; SameSite=Lax`;
+  } else {
+    // Clear auth state cookie
+    document.cookie =
+      "porraza-auth-state=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }
+}
+
+/**
  * Auth Store State Interface
  * Manages authentication state globally
  */
@@ -110,6 +134,12 @@ export const useAuthStore = create<AuthState>()(
           expiresAt,
         });
 
+        // Sync auth state to cookie for middleware access
+        syncAuthStateToCookie({
+          userId: authResponse.user.id,
+          accessToken: authResponse.tokens.accessToken,
+        });
+
         console.log("[AuthStore] Authentication set:", {
           userId: authResponse.user.id,
           expiresIn: authResponse.tokens.expiresIn,
@@ -125,6 +155,15 @@ export const useAuthStore = create<AuthState>()(
           expiresAt,
         });
 
+        // Sync updated token to cookie for middleware access
+        const userId = get().user?.id;
+        if (userId) {
+          syncAuthStateToCookie({
+            userId,
+            accessToken,
+          });
+        }
+
         console.log("[AuthStore] Access token updated:", {
           expiresIn,
           expiresAt: new Date(expiresAt).toISOString(),
@@ -138,6 +177,9 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           expiresAt: null,
         });
+
+        // Clear auth state cookie
+        syncAuthStateToCookie(null);
 
         console.log("[AuthStore] Authentication cleared");
       },

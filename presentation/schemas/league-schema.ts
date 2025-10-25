@@ -35,18 +35,20 @@ export type CreateLeagueFormData = z.infer<typeof createLeagueSchema>;
 
 /**
  * Join League with Code Schema
- * Validation for joining a private league with invite code
- * - inviteCode: exactly 8 uppercase alphanumeric characters
+ * Validation for joining a league with code
+ * - code: 6-20 alphanumeric characters (case-insensitive)
  */
 export const joinLeagueCodeSchema = z.object({
-  inviteCode: z
+  code: z
     .string()
-    .length(8, "El código debe tener exactamente 8 caracteres")
+    .min(6, "El código debe tener al menos 6 caracteres")
+    .max(20, "El código no puede exceder 20 caracteres")
     .regex(
-      /^[A-Z0-9]{8}$/,
-      "El código debe contener solo letras mayúsculas y números"
+      /^[A-Z0-9]+$/i,
+      "El código debe contener solo letras y números"
     )
-    .trim(),
+    .trim()
+    .transform((val) => val.toUpperCase()),
 });
 
 export type JoinLeagueCodeFormData = z.infer<typeof joinLeagueCodeSchema>;

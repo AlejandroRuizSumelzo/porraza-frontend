@@ -43,6 +43,14 @@ export interface LeagueRepository {
   getById(id: string): Promise<League | null>;
 
   /**
+   * Get a league by its unique code
+   * Useful for discovering and sharing leagues (both public and private)
+   * @param code 6-20 character alphanumeric code (case-insensitive)
+   * @returns League or null if not found
+   */
+  getByInviteCode(code: string): Promise<League | null>;
+
+  /**
    * Update league information (admin only)
    * @param id League UUID
    * @param data Updated league data
@@ -64,12 +72,12 @@ export interface LeagueRepository {
   delete(id: string): Promise<void>;
 
   /**
-   * Join a league (public or private with invite code)
+   * Join a league (public or private with code)
    * @param id League UUID
-   * @param inviteCode Optional invite code for private leagues
+   * @param code Optional league code for private leagues
    * @returns Updated league
    */
-  join(id: string, inviteCode?: string): Promise<League>;
+  join(id: string, code?: string): Promise<League>;
 
   /**
    * Leave a league
