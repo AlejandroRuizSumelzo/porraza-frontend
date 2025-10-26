@@ -3,37 +3,45 @@
 import { Lock, MapPin, Calendar, Clock } from "lucide-react";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Input } from "@/presentation/components/ui/input";
+import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import { cn } from "@/presentation/lib/utils";
-
-interface Match {
-  id: number;
-  team1: string;
-  team2: string;
-  flag1: string;
-  flag2: string;
-  date: string;
-  time: string;
-  stadium: string;
-  status: "pending" | "locked" | "completed";
-}
+import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 
 interface MatchPredictionCardProps {
-  match: Match;
-  prediction?: { score1: string; score2: string };
+  matchWithPrediction: MatchWithPrediction;
+  prediction?: { homeScore: string; awayScore: string };
   onScoreChange: (
-    matchId: number,
-    team: "score1" | "score2",
+    matchId: string,
+    team: "homeScore" | "awayScore",
     value: string
   ) => void;
 }
 
 export function MatchPredictionCard({
-  match,
+  matchWithPrediction,
   prediction,
   onScoreChange,
 }: MatchPredictionCardProps) {
-  const isLocked = match.status === "locked";
-  const hasPrediction = prediction?.score1 && prediction?.score2;
+  const { match } = matchWithPrediction;
+
+  // Check if predictions are locked
+  const isLocked = new Date() > new Date(match.predictionsLockedAt);
+  const hasPrediction =
+    prediction?.homeScore !== undefined && prediction?.awayScore !== undefined;
+
+  // Format date
+  const formatDate = (dateString: Date) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("es-ES", {
+      day: "numeric",
+      month: "short",
+    }).format(date);
+  };
+
+  // Format time
+  const formatTime = (timeString: string) => {
+    return timeString.slice(0, 5); // "20:00:00" -> "20:00"
+  };
 
   return (
     <div
@@ -50,32 +58,30 @@ export function MatchPredictionCard({
           <div className="flex items-center gap-3 text-xs sm:gap-4 sm:text-sm">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <Calendar className="size-3.5 text-primary/70 sm:size-4" />
-              <span>{match.date}</span>
+              <span>{formatDate(match.matchDate)}</span>
             </div>
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <Clock className="size-3.5 text-primary/70 sm:size-4" />
-              <span>{match.time}</span>
+              <span>{formatTime(match.matchTime)}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {match.stadium && (
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
-                <MapPin className="size-3 sm:size-3.5" />
-                <span className="hidden sm:inline">{match.stadium}</span>
-                <span className="sm:hidden">
-                  {match.stadium.length > 20
-                    ? match.stadium.substring(0, 20) + "..."
-                    : match.stadium}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground sm:text-sm">
+              <MapPin className="size-3 sm:size-3.5" />
+              <span className="hidden sm:inline">{match.stadium.name}</span>
+              <span className="sm:hidden">
+                {match.stadium.name.length > 20
+                  ? match.stadium.name.substring(0, 20) + "..."
+                  : match.stadium.name}
+              </span>
+            </div>
             {isLocked && (
               <Badge
                 variant="outline"
                 className="gap-1 border-border/50 text-muted-foreground"
               >
                 <Lock className="size-3" />
-                Locked
+                Cerrado
               </Badge>
             )}
           </div>
@@ -85,13 +91,24 @@ export function MatchPredictionCard({
       {/* Match Content */}
       <div className="p-4 sm:p-6">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-6">
-          {/* Team 1 */}
+          {/* Home Team */}
           <div className="flex items-center justify-end gap-3">
             <div className="text-right">
               <p className="text-sm font-medium leading-tight text-foreground sm:text-base">
-                {match.team1}
+                {match.homeTeam.name}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {match.homeTeam.confederation}
               </p>
             </div>
+            <TeamFlag
+              fifaCode={match.homeTeam.fifaCode}
+              teamName={match.homeTeam.name}
+              size="lg"
+              rounded="md"
+              bordered
+              className="shrink-0"
+            />
           </div>
 
           {/* Score Inputs */}
@@ -101,9 +118,9 @@ export function MatchPredictionCard({
                 type="number"
                 min="0"
                 max="20"
-                value={prediction?.score1 || ""}
+                value={prediction?.homeScore ?? "0"}
                 onChange={(e) =>
-                  onScoreChange(match.id, "score1", e.target.value)
+                  onScoreChange(match.id, "homeScore", e.target.value)
                 }
                 disabled={isLocked}
                 className={cn(
@@ -112,11 +129,11 @@ export function MatchPredictionCard({
                   "focus:ring-2 focus:ring-offset-0",
                   isLocked
                     ? "border-border/50 bg-muted/50"
-                    : prediction?.score1
+                    : prediction?.homeScore !== undefined
                     ? "border-primary/40 bg-primary/5 focus:border-primary focus:ring-primary/20"
                     : "border-border bg-background focus:border-primary focus:ring-primary/20"
                 )}
-                placeholder="–"
+                placeholder="0"
               />
               <span className="select-none text-xl font-bold text-muted-foreground/40 sm:text-2xl">
                 :
@@ -125,9 +142,9 @@ export function MatchPredictionCard({
                 type="number"
                 min="0"
                 max="20"
-                value={prediction?.score2 || ""}
+                value={prediction?.awayScore ?? "0"}
                 onChange={(e) =>
-                  onScoreChange(match.id, "score2", e.target.value)
+                  onScoreChange(match.id, "awayScore", e.target.value)
                 }
                 disabled={isLocked}
                 className={cn(
@@ -136,11 +153,11 @@ export function MatchPredictionCard({
                   "focus:ring-2 focus:ring-offset-0",
                   isLocked
                     ? "border-border/50 bg-muted/50"
-                    : prediction?.score2
+                    : prediction?.awayScore !== undefined
                     ? "border-primary/40 bg-primary/5 focus:border-primary focus:ring-primary/20"
                     : "border-border bg-background focus:border-primary focus:ring-primary/20"
                 )}
-                placeholder="–"
+                placeholder="0"
               />
             </div>
             {hasPrediction && !isLocked && (
@@ -150,11 +167,22 @@ export function MatchPredictionCard({
             )}
           </div>
 
-          {/* Team 2 */}
+          {/* Away Team */}
           <div className="flex items-center gap-3">
+            <TeamFlag
+              fifaCode={match.awayTeam.fifaCode}
+              teamName={match.awayTeam.name}
+              size="lg"
+              rounded="md"
+              bordered
+              className="shrink-0"
+            />
             <div className="text-left">
               <p className="text-sm font-medium leading-tight text-foreground sm:text-base">
-                {match.team2}
+                {match.awayTeam.name}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {match.awayTeam.confederation}
               </p>
             </div>
           </div>

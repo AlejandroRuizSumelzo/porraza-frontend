@@ -1,606 +1,242 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
+import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import { MatchPredictionCard } from "@/presentation/components/predictions/match-prediction-card";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { ButtonGroup } from "@/presentation/components/ui/button-group";
-import { Save, Info, CheckCircle2 } from "lucide-react";
+import {
+  FieldSet,
+  FieldLegend,
+  FieldGroup,
+} from "@/presentation/components/ui/field";
+import { Save, Info, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/presentation/lib/utils";
 
-const groups = {
-  A: [
-    {
-      id: 1,
-      team1: "Qatar",
-      team2: "Ecuador",
-      flag1: "QA",
-      flag2: "EC",
-      date: "20 nov",
-      time: "14:00",
-      stadium: "Al Bayt Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 2,
-      team1: "Senegal",
-      team2: "Netherlands",
-      flag1: "SN",
-      flag2: "NL",
-      date: "21 nov",
-      time: "11:00",
-      stadium: "Al Thumama Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 3,
-      team1: "Qatar",
-      team2: "Senegal",
-      flag1: "QA",
-      flag2: "SN",
-      date: "25 nov",
-      time: "14:00",
-      stadium: "Al Thumama Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 4,
-      team1: "Netherlands",
-      team2: "Ecuador",
-      flag1: "NL",
-      flag2: "EC",
-      date: "25 nov",
-      time: "17:00",
-      stadium: "Khalifa International Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 5,
-      team1: "Netherlands",
-      team2: "Qatar",
-      flag1: "NL",
-      flag2: "QA",
-      date: "29 nov",
-      time: "16:00",
-      stadium: "Al Bayt Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 6,
-      team1: "Ecuador",
-      team2: "Senegal",
-      flag1: "EC",
-      flag2: "SN",
-      date: "29 nov",
-      time: "16:00",
-      stadium: "Khalifa International Stadium",
-      status: "pending" as const,
-    },
-  ],
-  B: [
-    {
-      id: 7,
-      team1: "England",
-      team2: "Iran",
-      flag1: "GB-ENG",
-      flag2: "IR",
-      date: "21 nov",
-      time: "14:00",
-      stadium: "Khalifa International Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 8,
-      team1: "USA",
-      team2: "Wales",
-      flag1: "US",
-      flag2: "GB-WLS",
-      date: "21 nov",
-      time: "20:00",
-      stadium: "Ahmad Bin Ali Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 9,
-      team1: "Wales",
-      team2: "Iran",
-      flag1: "GB-WLS",
-      flag2: "IR",
-      date: "25 nov",
-      time: "11:00",
-      stadium: "Ahmad Bin Ali Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 10,
-      team1: "England",
-      team2: "USA",
-      flag1: "GB-ENG",
-      flag2: "US",
-      date: "25 nov",
-      time: "20:00",
-      stadium: "Al Bayt Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 11,
-      team1: "Wales",
-      team2: "England",
-      flag1: "GB-WLS",
-      flag2: "GB-ENG",
-      date: "29 nov",
-      time: "20:00",
-      stadium: "Ahmad Bin Ali Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 12,
-      team1: "Iran",
-      team2: "USA",
-      flag1: "IR",
-      flag2: "US",
-      date: "29 nov",
-      time: "20:00",
-      stadium: "Al Thumama Stadium",
-      status: "pending" as const,
-    },
-  ],
-  C: [
-    {
-      id: 13,
-      team1: "Argentina",
-      team2: "Saudi Arabia",
-      flag1: "AR",
-      flag2: "SA",
-      date: "22 nov",
-      time: "11:00",
-      stadium: "Lusail Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 14,
-      team1: "Mexico",
-      team2: "Poland",
-      flag1: "MX",
-      flag2: "PL",
-      date: "22 nov",
-      time: "17:00",
-      stadium: "Stadium 974",
-      status: "pending" as const,
-    },
-    {
-      id: 15,
-      team1: "Poland",
-      team2: "Saudi Arabia",
-      flag1: "PL",
-      flag2: "SA",
-      date: "26 nov",
-      time: "14:00",
-      stadium: "Education City Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 16,
-      team1: "Argentina",
-      team2: "Mexico",
-      flag1: "AR",
-      flag2: "MX",
-      date: "26 nov",
-      time: "20:00",
-      stadium: "Lusail Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 17,
-      team1: "Poland",
-      team2: "Argentina",
-      flag1: "PL",
-      flag2: "AR",
-      date: "30 nov",
-      time: "20:00",
-      stadium: "Stadium 974",
-      status: "pending" as const,
-    },
-    {
-      id: 18,
-      team1: "Saudi Arabia",
-      team2: "Mexico",
-      flag1: "SA",
-      flag2: "MX",
-      date: "30 nov",
-      time: "20:00",
-      stadium: "Lusail Stadium",
-      status: "pending" as const,
-    },
-  ],
-  D: [
-    {
-      id: 19,
-      team1: "France",
-      team2: "Australia",
-      flag1: "FR",
-      flag2: "AU",
-      date: "22 nov",
-      time: "20:00",
-      stadium: "Al Janoub Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 20,
-      team1: "Denmark",
-      team2: "Tunisia",
-      flag1: "DK",
-      flag2: "TN",
-      date: "22 nov",
-      time: "14:00",
-      stadium: "Education City Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 21,
-      team1: "Tunisia",
-      team2: "Australia",
-      flag1: "TN",
-      flag2: "AU",
-      date: "26 nov",
-      time: "11:00",
-      stadium: "Al Janoub Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 22,
-      team1: "France",
-      team2: "Denmark",
-      flag1: "FR",
-      flag2: "DK",
-      date: "26 nov",
-      time: "17:00",
-      stadium: "Stadium 974",
-      status: "pending" as const,
-    },
-    {
-      id: 23,
-      team1: "Tunisia",
-      team2: "France",
-      flag1: "TN",
-      flag2: "FR",
-      date: "30 nov",
-      time: "16:00",
-      stadium: "Education City Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 24,
-      team1: "Australia",
-      team2: "Denmark",
-      flag1: "AU",
-      flag2: "DK",
-      date: "30 nov",
-      time: "16:00",
-      stadium: "Al Janoub Stadium",
-      status: "pending" as const,
-    },
-  ],
-  E: [
-    {
-      id: 25,
-      team1: "Germany",
-      team2: "Japan",
-      flag1: "DE",
-      flag2: "JP",
-      date: "23 nov",
-      time: "14:00",
-      stadium: "Khalifa International Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 26,
-      team1: "Spain",
-      team2: "Costa Rica",
-      flag1: "ES",
-      flag2: "CR",
-      date: "23 nov",
-      time: "17:00",
-      stadium: "Al Thumama Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 27,
-      team1: "Japan",
-      team2: "Costa Rica",
-      flag1: "JP",
-      flag2: "CR",
-      date: "27 nov",
-      time: "11:00",
-      stadium: "Ahmad Bin Ali Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 28,
-      team1: "Spain",
-      team2: "Germany",
-      flag1: "ES",
-      flag2: "DE",
-      date: "27 nov",
-      time: "20:00",
-      stadium: "Al Bayt Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 29,
-      team1: "Japan",
-      team2: "Spain",
-      flag1: "JP",
-      flag2: "ES",
-      date: "01 dic",
-      time: "20:00",
-      stadium: "Khalifa International Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 30,
-      team1: "Costa Rica",
-      team2: "Germany",
-      flag1: "CR",
-      flag2: "DE",
-      date: "01 dic",
-      time: "20:00",
-      stadium: "Al Bayt Stadium",
-      status: "pending" as const,
-    },
-  ],
-  F: [
-    {
-      id: 31,
-      team1: "Morocco",
-      team2: "Croatia",
-      flag1: "MA",
-      flag2: "HR",
-      date: "23 nov",
-      time: "11:00",
-      stadium: "Al Bayt Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 32,
-      team1: "Belgium",
-      team2: "Canada",
-      flag1: "BE",
-      flag2: "CA",
-      date: "23 nov",
-      time: "20:00",
-      stadium: "Ahmad Bin Ali Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 33,
-      team1: "Belgium",
-      team2: "Morocco",
-      flag1: "BE",
-      flag2: "MA",
-      date: "27 nov",
-      time: "14:00",
-      stadium: "Al Thumama Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 34,
-      team1: "Croatia",
-      team2: "Canada",
-      flag1: "HR",
-      flag2: "CA",
-      date: "27 nov",
-      time: "17:00",
-      stadium: "Khalifa International Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 35,
-      team1: "Croatia",
-      team2: "Belgium",
-      flag1: "HR",
-      flag2: "BE",
-      date: "01 dic",
-      time: "16:00",
-      stadium: "Ahmad Bin Ali Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 36,
-      team1: "Canada",
-      team2: "Morocco",
-      flag1: "CA",
-      flag2: "MA",
-      date: "01 dic",
-      time: "16:00",
-      stadium: "Al Thumama Stadium",
-      status: "pending" as const,
-    },
-  ],
-  G: [
-    {
-      id: 37,
-      team1: "Switzerland",
-      team2: "Cameroon",
-      flag1: "CH",
-      flag2: "CM",
-      date: "24 nov",
-      time: "11:00",
-      stadium: "Al Janoub Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 38,
-      team1: "Brazil",
-      team2: "Serbia",
-      flag1: "BR",
-      flag2: "RS",
-      date: "24 nov",
-      time: "20:00",
-      stadium: "Lusail Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 39,
-      team1: "Cameroon",
-      team2: "Serbia",
-      flag1: "CM",
-      flag2: "RS",
-      date: "28 nov",
-      time: "11:00",
-      stadium: "Al Janoub Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 40,
-      team1: "Brazil",
-      team2: "Switzerland",
-      flag1: "BR",
-      flag2: "CH",
-      date: "28 nov",
-      time: "17:00",
-      stadium: "Stadium 974",
-      status: "pending" as const,
-    },
-    {
-      id: 41,
-      team1: "Serbia",
-      team2: "Switzerland",
-      flag1: "RS",
-      flag2: "CH",
-      date: "02 dic",
-      time: "20:00",
-      stadium: "Stadium 974",
-      status: "pending" as const,
-    },
-    {
-      id: 42,
-      team1: "Cameroon",
-      team2: "Brazil",
-      flag1: "CM",
-      flag2: "BR",
-      date: "02 dic",
-      time: "20:00",
-      stadium: "Lusail Stadium",
-      status: "pending" as const,
-    },
-  ],
-  H: [
-    {
-      id: 43,
-      team1: "Uruguay",
-      team2: "South Korea",
-      flag1: "UY",
-      flag2: "KR",
-      date: "24 nov",
-      time: "14:00",
-      stadium: "Education City Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 44,
-      team1: "Portugal",
-      team2: "Ghana",
-      flag1: "PT",
-      flag2: "GH",
-      date: "24 nov",
-      time: "17:00",
-      stadium: "Stadium 974",
-      status: "pending" as const,
-    },
-    {
-      id: 45,
-      team1: "South Korea",
-      team2: "Ghana",
-      flag1: "KR",
-      flag2: "GH",
-      date: "28 nov",
-      time: "14:00",
-      stadium: "Education City Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 46,
-      team1: "Portugal",
-      team2: "Uruguay",
-      flag1: "PT",
-      flag2: "UY",
-      date: "28 nov",
-      time: "20:00",
-      stadium: "Lusail Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 47,
-      team1: "Ghana",
-      team2: "Uruguay",
-      flag1: "GH",
-      flag2: "UY",
-      date: "02 dic",
-      time: "16:00",
-      stadium: "Al Janoub Stadium",
-      status: "pending" as const,
-    },
-    {
-      id: 48,
-      team1: "South Korea",
-      team2: "Portugal",
-      flag1: "KR",
-      flag2: "PT",
-      date: "02 dic",
-      time: "16:00",
-      stadium: "Education City Stadium",
-      status: "pending" as const,
-    },
-  ],
-};
+interface GroupStagePredictionsProps {
+  matches: MatchWithPrediction[];
+  predictionId: string | null;
+  leagueId: string | null;
+  isLoading: boolean;
+  error: string | null;
+  onSave: (
+    groupId: string,
+    matchPredictions: MatchPrediction[]
+  ) => Promise<void>;
+  isSaving: boolean;
+}
 
-export function GroupStagePredictions() {
+export function GroupStagePredictions({
+  matches,
+  predictionId,
+  leagueId,
+  isLoading,
+  error,
+  onSave,
+  isSaving,
+}: GroupStagePredictionsProps) {
   const [predictions, setPredictions] = useState<
-    Record<number, { score1: string; score2: string }>
+    Record<string, { homeScore: string; awayScore: string }>
   >({});
-  const [selectedGroup, setSelectedGroup] = useState<keyof typeof groups>("A");
+  const [selectedGroup, setSelectedGroup] = useState<string>("A");
+
+  // Group matches by group name
+  const groupedMatches = useMemo(() => {
+    const groups: Record<string, MatchWithPrediction[]> = {};
+
+    matches.forEach((matchWithPrediction) => {
+      const groupName = matchWithPrediction.match.group.name;
+      if (!groups[groupName]) {
+        groups[groupName] = [];
+      }
+      groups[groupName].push(matchWithPrediction);
+    });
+
+    return groups;
+  }, [matches]);
+
+  // Get available groups sorted alphabetically
+  const availableGroups = useMemo(() => {
+    return Object.keys(groupedMatches).sort();
+  }, [groupedMatches]);
+
+  // Initialize predictions from API data with default 0-0
+  useMemo(() => {
+    const initialPredictions: Record<
+      string,
+      { homeScore: string; awayScore: string }
+    > = {};
+
+    matches.forEach((matchWithPrediction) => {
+      const { match, userPrediction } = matchWithPrediction;
+
+      // Set user prediction if exists, otherwise default to 0-0
+      if (userPrediction.id !== null) {
+        initialPredictions[match.id] = {
+          homeScore: userPrediction.homeScore.toString(),
+          awayScore: userPrediction.awayScore.toString(),
+        };
+      } else {
+        // Default values: 0-0
+        initialPredictions[match.id] = {
+          homeScore: "0",
+          awayScore: "0",
+        };
+      }
+    });
+
+    setPredictions(initialPredictions);
+  }, [matches]);
 
   const handleScoreChange = (
-    matchId: number,
-    team: "score1" | "score2",
+    matchId: string,
+    team: "homeScore" | "awayScore",
     value: string
   ) => {
     setPredictions((prev) => ({
       ...prev,
       [matchId]: {
-        ...prev[matchId],
-        score1: team === "score1" ? value : prev[matchId]?.score1 || "",
-        score2: team === "score2" ? value : prev[matchId]?.score2 || "",
+        homeScore:
+          team === "homeScore" ? value : prev[matchId]?.homeScore || "0",
+        awayScore:
+          team === "awayScore" ? value : prev[matchId]?.awayScore || "0",
       },
     }));
   };
 
-  const handleSave = () => {
-    toast.success("Predicciones guardadas correctamente");
+  const handleSave = async () => {
+    if (!leagueId) {
+      toast.error("No se ha seleccionado una liga");
+      return;
+    }
+
+    // Get the group ID for the selected group
+    const currentMatches = groupedMatches[selectedGroup];
+    if (!currentMatches || currentMatches.length === 0) {
+      toast.error("No hay partidos en este grupo");
+      return;
+    }
+
+    const groupId = currentMatches[0].match.group.id;
+
+    // Prepare match predictions for the current group
+    const matchPredictions: MatchPrediction[] = [];
+
+    for (const matchWithPrediction of currentMatches) {
+      const matchId = matchWithPrediction.match.id;
+      const prediction = predictions[matchId];
+
+      // Validate that all matches have predictions (should have defaults)
+      if (!prediction) {
+        toast.error(
+          `Por favor, completa todas las predicciones del Grupo ${selectedGroup}`
+        );
+        return;
+      }
+
+      const homeScore = parseInt(prediction.homeScore, 10);
+      const awayScore = parseInt(prediction.awayScore, 10);
+
+      // Validate scores are valid numbers
+      if (
+        isNaN(homeScore) ||
+        isNaN(awayScore) ||
+        homeScore < 0 ||
+        awayScore < 0
+      ) {
+        toast.error(
+          "Los marcadores deben ser números válidos mayores o iguales a 0"
+        );
+        return;
+      }
+
+      matchPredictions.push({
+        matchId,
+        homeScore,
+        awayScore,
+        homeScoreET: null,
+        awayScoreET: null,
+        penaltiesWinner: null,
+      });
+    }
+
+    // Validate we have exactly 6 predictions
+    if (matchPredictions.length !== 6) {
+      toast.error(
+        `El Grupo ${selectedGroup} debe tener exactamente 6 partidos. Tiene ${matchPredictions.length}`
+      );
+      return;
+    }
+
+    try {
+      await onSave(groupId, matchPredictions);
+      toast.success(
+        `Predicciones del Grupo ${selectedGroup} guardadas correctamente`
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al guardar predicciones";
+      toast.error(errorMessage);
+    }
   };
 
-  const currentMatches = groups[selectedGroup];
-  const pendingCount = currentMatches.filter(
-    (m) => m.status === "pending"
-  ).length;
-  const predictedCount = currentMatches.filter((m) => {
-    const pred = predictions[m.id];
-    return pred?.score1 !== "" && pred?.score2 !== "" && m.status === "pending";
-  }).length;
+  // Helper: Check if a match has a valid prediction
+  const hasValidPrediction = (matchWithPrediction: MatchWithPrediction) => {
+    // A prediction is valid only if the userPrediction has an id (was saved to DB)
+    return matchWithPrediction.userPrediction.id !== null;
+  };
 
-  const allGroupsCount = Object.values(groups).flat().length;
-  const allPredictedCount = Object.values(groups)
-    .flat()
-    .filter((m) => {
-      const pred = predictions[m.id];
-      return pred?.score1 !== "" && pred?.score2 !== "";
-    }).length;
+  // Calculate statistics for current group
+  const currentMatches = groupedMatches[selectedGroup] || [];
+  const pendingCount = currentMatches.length;
+  const predictedCount = currentMatches.filter(hasValidPrediction).length;
+
+  // Calculate global statistics
+  const allMatchesCount = matches.length;
+  const allPredictedCount = matches.filter(hasValidPrediction).length;
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="size-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="rounded-xl border border-destructive bg-destructive/10 p-12 text-center">
+        <p className="text-sm text-destructive">{error}</p>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (matches.length === 0) {
+    return (
+      <div className="rounded-xl border bg-card p-12 text-center">
+        <Info className="mx-auto mb-4 size-12 text-muted-foreground" />
+        <h3 className="mb-2 text-lg font-semibold">
+          No hay partidos disponibles
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          Los partidos de la fase de grupos aparecerán aquí próximamente.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Info Card */}
       <Card className="bg-gradient-primary border-primary/20">
         <CardContent className="p-4 sm:p-5">
           <div className="flex items-start gap-2.5 sm:gap-3">
@@ -631,23 +267,21 @@ export function GroupStagePredictions() {
         </CardContent>
       </Card>
 
+      {/* Progress Badge */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Badge variant="outline" className="gap-1.5 text-xs sm:text-sm">
           <span className="text-muted-foreground">Progreso:</span>
           <span className="font-semibold text-foreground">
-            {allPredictedCount}/{allGroupsCount}
+            {allPredictedCount}/{allMatchesCount}
           </span>
         </Badge>
       </div>
 
       {/* Group Selector - Grid on mobile, ButtonGroup on tablet+ */}
       <div className="grid grid-cols-4 gap-2 sm:hidden">
-        {(Object.keys(groups) as Array<keyof typeof groups>).map((group) => {
-          const groupMatches = groups[group];
-          const groupPredicted = groupMatches.filter((m) => {
-            const pred = predictions[m.id];
-            return pred?.score1 !== "" && pred?.score2 !== "";
-          }).length;
+        {availableGroups.map((group) => {
+          const groupMatches = groupedMatches[group] || [];
+          const groupPredicted = groupMatches.filter(hasValidPrediction).length;
           const isComplete = groupPredicted === groupMatches.length;
           const isSelected = selectedGroup === group;
 
@@ -669,12 +303,9 @@ export function GroupStagePredictions() {
       </div>
 
       <ButtonGroup className="hidden w-full sm:flex">
-        {(Object.keys(groups) as Array<keyof typeof groups>).map((group) => {
-          const groupMatches = groups[group];
-          const groupPredicted = groupMatches.filter((m) => {
-            const pred = predictions[m.id];
-            return pred?.score1 !== "" && pred?.score2 !== "";
-          }).length;
+        {availableGroups.map((group) => {
+          const groupMatches = groupedMatches[group] || [];
+          const groupPredicted = groupMatches.filter(hasValidPrediction).length;
           const isComplete = groupPredicted === groupMatches.length;
           const isSelected = selectedGroup === group;
 
@@ -694,6 +325,7 @@ export function GroupStagePredictions() {
         })}
       </ButtonGroup>
 
+      {/* Current Group Stats */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Badge variant="outline" className="gap-1.5 text-xs sm:text-sm">
           <span className="text-muted-foreground">Predichos:</span>
@@ -709,26 +341,44 @@ export function GroupStagePredictions() {
         )}
       </div>
 
-      <div className="space-y-2.5 sm:space-y-3">
-        {currentMatches.map((match) => (
-          <MatchPredictionCard
-            key={match.id}
-            match={match}
-            prediction={predictions[match.id]}
-            onScoreChange={handleScoreChange}
-          />
-        ))}
-      </div>
+      {/* Match Cards wrapped in FieldSet */}
+      <FieldSet>
+        <FieldLegend variant="legend">
+          Grupo {selectedGroup} - Predicciones
+        </FieldLegend>
+        <FieldGroup className="space-y-2.5 sm:space-y-3">
+          {currentMatches.map((matchWithPrediction) => (
+            <MatchPredictionCard
+              key={matchWithPrediction.match.id}
+              matchWithPrediction={matchWithPrediction}
+              prediction={predictions[matchWithPrediction.match.id]}
+              onScoreChange={handleScoreChange}
+            />
+          ))}
+        </FieldGroup>
+      </FieldSet>
 
+      {/* Save Button */}
       <div className="sticky bottom-4 flex justify-center pt-4 sm:bottom-6">
         <Button
           onClick={handleSave}
           size="lg"
           className="gap-2 shadow-primary w-full sm:w-auto"
+          disabled={isSaving}
         >
-          <Save className="size-4" />
-          <span className="hidden sm:inline">Guardar predicciones</span>
-          <span className="sm:hidden">Guardar</span>
+          {isSaving ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              <span className="hidden sm:inline">Guardando...</span>
+              <span className="sm:hidden">Guardando...</span>
+            </>
+          ) : (
+            <>
+              <Save className="size-4" />
+              <span className="hidden sm:inline">Guardar predicciones</span>
+              <span className="sm:hidden">Guardar</span>
+            </>
+          )}
         </Button>
       </div>
     </div>

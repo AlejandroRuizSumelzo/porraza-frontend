@@ -9,6 +9,7 @@ import type { HttpClient } from "@/infrastructure/http/client";
 import type { PredictionDTO } from "@/infrastructure/http/dtos/prediction-dto";
 import type { PredictionStatsDTO } from "@/infrastructure/http/dtos/prediction-stats-dto";
 import type { PredictionRankingDTO } from "@/infrastructure/http/dtos/prediction-ranking-dto";
+import type { MatchWithPredictionDTO } from "@/infrastructure/http/dtos/match-with-prediction-dto";
 import { PredictionMapper } from "@/infrastructure/mappers/prediction-mapper";
 import { HttpError } from "@/infrastructure/http/client";
 
@@ -18,6 +19,7 @@ import { HttpError } from "@/infrastructure/http/client";
 interface GetOrCreatePredictionAPIResponse {
   prediction: PredictionDTO;
   ranking: PredictionRankingDTO;
+  matches: MatchWithPredictionDTO[];
 }
 
 /**
@@ -52,6 +54,9 @@ export class PredictionRepositoryImpl implements PredictionRepository {
           response.data.prediction
         ),
         ranking: PredictionMapper.rankingToDomain(response.data.ranking),
+        matches: PredictionMapper.matchesWithPredictionsToDomain(
+          response.data.matches
+        ),
       };
     } catch (error) {
       if (error instanceof HttpError) {

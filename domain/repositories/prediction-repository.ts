@@ -2,6 +2,7 @@ import { Prediction } from "@/domain/entities/prediction";
 import { PredictionStats } from "@/domain/entities/prediction-stats";
 import { PredictionRanking } from "@/domain/entities/prediction-ranking";
 import { MatchPrediction } from "@/domain/entities/match-prediction";
+import { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 
 /**
  * Response for GetOrCreatePrediction
@@ -9,6 +10,7 @@ import { MatchPrediction } from "@/domain/entities/match-prediction";
 export interface GetOrCreatePredictionResponse {
   prediction: Prediction;
   ranking: PredictionRanking;
+  matches: MatchWithPrediction[];
 }
 
 /**
@@ -20,7 +22,7 @@ export interface PredictionRepository {
    * Get or create prediction for a league
    * Auto-creates if not exists
    * @param leagueId - League UUID
-   * @returns Promise with prediction and ranking
+   * @returns Promise with prediction, ranking, and matches with user predictions
    */
   getOrCreate(leagueId: string): Promise<GetOrCreatePredictionResponse>;
 

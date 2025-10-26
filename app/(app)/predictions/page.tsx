@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   SidebarTrigger,
   useSidebar,
@@ -12,9 +13,48 @@ import {
 } from "@/presentation/components/ui/tabs";
 import { GroupStagePredictions } from "@/presentation/components/predictions/group-stage-predictions";
 import { Trophy, Target, Award } from "lucide-react";
+import { selectSelectedLeagueId } from "@/infrastructure/store/selectors";
+import { usePrediction } from "@/presentation/hooks/predictions/use-prediction-client";
 
 export default function PredictionsPage() {
   const { open, isMobile } = useSidebar();
+  const selectedLeagueId = selectSelectedLeagueId();
+
+  const {
+    prediction,
+    matches,
+    isLoading,
+    error,
+    saveGroupPredictions,
+    isSaving,
+  } = usePrediction(selectedLeagueId);
+
+  useEffect(() => {
+    console.log("[PredictionsPage] Selected League ID:", selectedLeagueId);
+  }, [selectedLeagueId]);
+
+  useEffect(() => {
+    if (prediction) {
+      console.log("[PredictionsPage] Prediction data:", prediction);
+    }
+  }, [prediction]);
+
+  useEffect(() => {
+    if (matches.length > 0) {
+      console.log("[PredictionsPage] Matches with predictions:", matches);
+      console.log("[PredictionsPage] Total matches:", matches.length);
+    }
+  }, [matches]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("[PredictionsPage] Error:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    console.log("[PredictionsPage] Loading state:", isLoading);
+  }, [isLoading]);
 
   return (
     <div className="flex h-full flex-col">
@@ -41,7 +81,15 @@ export default function PredictionsPage() {
             </TabsList>
 
             <TabsContent value="groups">
-              <GroupStagePredictions />
+              <GroupStagePredictions
+                matches={matches}
+                predictionId={prediction?.id || null}
+                leagueId={selectedLeagueId}
+                isLoading={isLoading}
+                error={error}
+                onSave={saveGroupPredictions}
+                isSaving={isSaving}
+              />
             </TabsContent>
 
             <TabsContent value="knockout">

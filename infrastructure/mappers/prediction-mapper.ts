@@ -5,10 +5,23 @@ import type {
 } from "@/domain/entities/match-prediction";
 import type { PredictionStats } from "@/domain/entities/prediction-stats";
 import type { PredictionRanking } from "@/domain/entities/prediction-ranking";
+import type {
+  MatchWithPrediction,
+  RawMatch,
+  UserMatchPrediction,
+} from "@/domain/entities/match-with-prediction";
 import type { PredictionDTO } from "@/infrastructure/http/dtos/prediction-dto";
 import type { MatchPredictionDTO } from "@/infrastructure/http/dtos/match-prediction-dto";
 import type { PredictionStatsDTO } from "@/infrastructure/http/dtos/prediction-stats-dto";
 import type { PredictionRankingDTO } from "@/infrastructure/http/dtos/prediction-ranking-dto";
+import type {
+  MatchWithPredictionDTO,
+  RawMatchDTO,
+  UserMatchPredictionDTO,
+} from "@/infrastructure/http/dtos/match-with-prediction-dto";
+import { TeamMapper } from "@/infrastructure/mappers/team-mapper";
+import { StadiumMapper } from "@/infrastructure/mappers/stadium-mapper";
+import { GroupMapper } from "@/infrastructure/mappers/group-mapper";
 
 /**
  * Prediction Mapper
@@ -135,5 +148,78 @@ export class PredictionMapper {
       leagueId: dto.leagueId,
       totalParticipants: dto.totalParticipants,
     };
+  }
+
+  /**
+   * Transform RawMatchDTO to Domain Entity
+   */
+  static rawMatchToDomain(dto: RawMatchDTO): RawMatch {
+    return {
+      id: dto.id,
+      matchNumber: dto.matchNumber,
+      homeTeam: TeamMapper.toDomain(dto.homeTeam),
+      awayTeam: TeamMapper.toDomain(dto.awayTeam),
+      homeTeamPlaceholder: dto.homeTeamPlaceholder,
+      awayTeamPlaceholder: dto.awayTeamPlaceholder,
+      stadium: StadiumMapper.toDomain(dto.stadium),
+      group: GroupMapper.toDomain(dto.group),
+      phase: dto.phase,
+      matchDate: new Date(dto.matchDate),
+      matchTime: dto.matchTime,
+      homeScore: dto.homeScore,
+      awayScore: dto.awayScore,
+      homeScoreEt: dto.homeScoreEt,
+      awayScoreEt: dto.awayScoreEt,
+      homePenalties: dto.homePenalties,
+      awayPenalties: dto.awayPenalties,
+      status: dto.status,
+      predictionsLockedAt: new Date(dto.predictionsLockedAt),
+      dependsOnMatchIds: dto.dependsOnMatchIds,
+      createdAt: new Date(dto.createdAt),
+      updatedAt: new Date(dto.updatedAt),
+    };
+  }
+
+  /**
+   * Transform UserMatchPredictionDTO to Domain Entity
+   */
+  static userMatchPredictionToDomain(
+    dto: UserMatchPredictionDTO
+  ): UserMatchPrediction {
+    return {
+      id: dto.id,
+      predictionId: dto.predictionId,
+      matchId: dto.matchId,
+      homeScore: dto.homeScore,
+      awayScore: dto.awayScore,
+      homeScoreET: dto.homeScoreET,
+      awayScoreET: dto.awayScoreET,
+      penaltiesWinner: dto.penaltiesWinner,
+      pointsEarned: dto.pointsEarned,
+      pointsBreakdown: dto.pointsBreakdown,
+      createdAt: dto.createdAt ? new Date(dto.createdAt) : null,
+      updatedAt: dto.updatedAt ? new Date(dto.updatedAt) : null,
+    };
+  }
+
+  /**
+   * Transform MatchWithPredictionDTO to Domain Entity
+   */
+  static matchWithPredictionToDomain(
+    dto: MatchWithPredictionDTO
+  ): MatchWithPrediction {
+    return {
+      match: this.rawMatchToDomain(dto.match),
+      userPrediction: this.userMatchPredictionToDomain(dto.userPrediction),
+    };
+  }
+
+  /**
+   * Transform array of MatchWithPredictionDTO to Domain
+   */
+  static matchesWithPredictionsToDomain(
+    dtos: MatchWithPredictionDTO[]
+  ): MatchWithPrediction[] {
+    return dtos.map((dto) => this.matchWithPredictionToDomain(dto));
   }
 }
