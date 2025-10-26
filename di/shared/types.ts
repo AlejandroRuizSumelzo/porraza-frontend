@@ -3,6 +3,9 @@ import type { AuthRepository } from "@/domain/repositories/auth-repository";
 import type { PaymentRepository } from "@/domain/repositories/payment-repository";
 import type { MatchRepository } from "@/domain/repositories/match-repository";
 import type { StadiumRepository } from "@/domain/repositories/stadium-repository";
+import type { TeamRepository } from "@/domain/repositories/team-repository";
+import type { PlayerRepository } from "@/domain/repositories/player-repository";
+import type { PredictionRepository } from "@/domain/repositories/prediction-repository";
 import type { LeagueRepository } from "@/domain/repositories/league-repository";
 import type { LoginUseCase } from "@/domain/use-cases/auth/login-use-case";
 import type { RegisterUseCase } from "@/domain/use-cases/auth/register-use-case";
@@ -16,6 +19,15 @@ import type { VerifyPaymentStatusUseCase } from "@/domain/use-cases/payments/ver
 import type { GetSessionStatusUseCase } from "@/domain/use-cases/payments/get-session-status-use-case";
 import type { GetMatchCalendarUseCase } from "@/domain/use-cases/matches/get-match-calendar-use-case";
 import type { GetAllStadiumsUseCase } from "@/domain/use-cases/stadiums/get-all-stadiums-use-case";
+import type { GetAllTeamsUseCase } from "@/domain/use-cases/teams/get-all-teams-use-case";
+import type { GetTeamByIdUseCase } from "@/domain/use-cases/teams/get-team-by-id-use-case";
+import type { GetPlayersByTeamUseCase } from "@/domain/use-cases/players/get-players-by-team-use-case";
+import type { GetAllGoalkeepersUseCase } from "@/domain/use-cases/players/get-all-goalkeepers-use-case";
+import type { GetOrCreatePredictionUseCase } from "@/domain/use-cases/predictions/get-or-create-prediction-use-case";
+import type { SaveGroupPredictionsUseCase } from "@/domain/use-cases/predictions/save-group-predictions-use-case";
+import type { UpdateAwardsUseCase } from "@/domain/use-cases/predictions/update-awards-use-case";
+import type { UpdateChampionUseCase } from "@/domain/use-cases/predictions/update-champion-use-case";
+import type { GetPredictionStatsUseCase } from "@/domain/use-cases/predictions/get-prediction-stats-use-case";
 import type { CreateLeagueUseCase } from "@/domain/use-cases/leagues/create-league-use-case";
 import type { GetAllLeaguesUseCase } from "@/domain/use-cases/leagues/get-all-leagues-use-case";
 import type { GetPublicLeaguesUseCase } from "@/domain/use-cases/leagues/get-public-leagues-use-case";
@@ -48,6 +60,9 @@ export interface Dependencies {
   paymentRepository: PaymentRepository;
   matchRepository: MatchRepository;
   stadiumRepository: StadiumRepository;
+  teamRepository: TeamRepository;
+  playerRepository: PlayerRepository;
+  predictionRepository: PredictionRepository;
   leagueRepository: LeagueRepository;
 
   // Auth Use Cases
@@ -69,6 +84,21 @@ export interface Dependencies {
 
   // Stadium Use Cases
   getAllStadiumsUseCase: GetAllStadiumsUseCase;
+
+  // Team Use Cases
+  getAllTeamsUseCase: GetAllTeamsUseCase;
+  getTeamByIdUseCase: GetTeamByIdUseCase;
+
+  // Player Use Cases
+  getPlayersByTeamUseCase: GetPlayersByTeamUseCase;
+  getAllGoalkeepersUseCase: GetAllGoalkeepersUseCase;
+
+  // Prediction Use Cases
+  getOrCreatePredictionUseCase: GetOrCreatePredictionUseCase;
+  saveGroupPredictionsUseCase: SaveGroupPredictionsUseCase;
+  updateAwardsUseCase: UpdateAwardsUseCase;
+  updateChampionUseCase: UpdateChampionUseCase;
+  getPredictionStatsUseCase: GetPredictionStatsUseCase;
 
   // League Use Cases
   createLeagueUseCase: CreateLeagueUseCase;

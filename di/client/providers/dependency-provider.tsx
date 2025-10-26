@@ -10,6 +10,9 @@ import { AuthUseCaseModule } from "@/di/client/providers/modules/auth-use-case-m
 import { PaymentUseCaseModule } from "@/di/client/providers/modules/payment-use-case-module";
 import { MatchUseCaseModule } from "@/di/client/providers/modules/match-use-case-module";
 import { StadiumUseCaseModule } from "@/di/client/providers/modules/stadium-use-case-module";
+import { TeamUseCaseModule } from "@/di/client/providers/modules/team-use-case-module";
+import { PlayerUseCaseModule } from "@/di/client/providers/modules/player-use-case-module";
+import { PredictionUseCaseModule } from "@/di/client/providers/modules/prediction-use-case-module";
 import { LeagueUseCaseModule } from "@/di/client/providers/modules/league-use-case-module";
 
 interface DependencyProviderProps {
@@ -45,12 +48,18 @@ export function DependencyProvider({ children }: DependencyProviderProps) {
       paymentRepository,
       matchRepository,
       stadiumRepository,
+      teamRepository,
+      playerRepository,
+      predictionRepository,
       leagueRepository,
     } = container.getDependencies();
     container.registerModule(new AuthUseCaseModule({ authRepository }));
     container.registerModule(new PaymentUseCaseModule({ paymentRepository }));
     container.registerModule(new MatchUseCaseModule({ matchRepository }));
     container.registerModule(new StadiumUseCaseModule({ stadiumRepository }));
+    container.registerModule(new TeamUseCaseModule({ teamRepository }));
+    container.registerModule(new PlayerUseCaseModule({ playerRepository }));
+    container.registerModule(new PredictionUseCaseModule({ predictionRepository }));
     container.registerModule(new LeagueUseCaseModule({ leagueRepository }));
 
     return container.getDependencies() as Dependencies;

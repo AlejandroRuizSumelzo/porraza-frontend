@@ -4,11 +4,17 @@ import type { AuthRepository } from "@/domain/repositories/auth-repository";
 import type { PaymentRepository } from "@/domain/repositories/payment-repository";
 import type { MatchRepository } from "@/domain/repositories/match-repository";
 import type { StadiumRepository } from "@/domain/repositories/stadium-repository";
+import type { TeamRepository } from "@/domain/repositories/team-repository";
+import type { PlayerRepository } from "@/domain/repositories/player-repository";
+import type { PredictionRepository } from "@/domain/repositories/prediction-repository";
 import type { LeagueRepository } from "@/domain/repositories/league-repository";
 import { AuthRepositoryImpl } from "@/infrastructure/repositories/auth-repository-impl";
 import { PaymentRepositoryImpl } from "@/infrastructure/repositories/payment-repository-impl";
 import { MatchRepositoryImpl } from "@/infrastructure/repositories/match-repository-impl";
 import { StadiumRepositoryImpl } from "@/infrastructure/repositories/stadium-repository-impl";
+import { TeamRepositoryImpl } from "@/infrastructure/repositories/team-repository-impl";
+import { PlayerRepositoryImpl } from "@/infrastructure/repositories/player-repository-impl";
+import { PredictionRepositoryImpl } from "@/infrastructure/repositories/prediction-repository-impl";
 import { LeagueRepositoryImpl } from "@/infrastructure/repositories/league-repository-impl";
 
 /**
@@ -44,6 +50,17 @@ export class RepositoryModule implements DependencyModule {
       this.deps.httpClient
     );
 
+    const teamRepository: TeamRepository = new TeamRepositoryImpl(
+      this.deps.httpClient
+    );
+
+    const playerRepository: PlayerRepository = new PlayerRepositoryImpl(
+      this.deps.httpClient
+    );
+
+    const predictionRepository: PredictionRepository =
+      new PredictionRepositoryImpl(this.deps.httpClient);
+
     const leagueRepository: LeagueRepository = new LeagueRepositoryImpl(
       this.deps.httpClient
     );
@@ -53,6 +70,9 @@ export class RepositoryModule implements DependencyModule {
       paymentRepository,
       matchRepository,
       stadiumRepository,
+      teamRepository,
+      playerRepository,
+      predictionRepository,
       leagueRepository,
     };
   }
