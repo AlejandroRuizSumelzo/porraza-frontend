@@ -1,26 +1,28 @@
 "use client";
 
-import {
-  SidebarTrigger,
-  useSidebar,
-} from "@/presentation/components/ui/sidebar";
+import { RulesPageContent } from "@/presentation/components/rules/rules-page-content";
 
+/**
+ * Rules Page (Client Component)
+ * Displays comprehensive rules and scoring system for the World Cup prediction game
+ *
+ * Design:
+ * - Modern, minimalist UI with shadcn/ui components
+ * - Tabbed interface: Scoring, Group Stage, Knockout, FIFA Rules
+ * - Color-coded point values with badges
+ * - Expandable sections with detailed explanations
+ * - Icons for visual clarity
+ * - Responsive layout
+ *
+ * IMPORTANT: Client Component
+ * - Uses useSidebar hook for sidebar state
+ * - Manages tabs navigation client-side
+ *
+ * Clean Architecture:
+ * - Page component is THIN - only imports the content component
+ * - All UI logic is in RulesPageContent
+ * - No business logic required (static content)
+ */
 export default function RulesPage() {
-  const { open, isMobile } = useSidebar();
-
-  return (
-    <div className="flex h-full flex-col">
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        {(isMobile || !open) && <SidebarTrigger />}
-        <h1 className="text-xl font-semibold">Reglas</h1>
-      </header>
-      <main className="flex-1 overflow-auto p-4">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-muted-foreground">
-            Conoce las reglas del juego y el sistema de puntuación.
-          </p>
-        </div>
-      </main>
-    </div>
-  );
+  return <RulesPageContent />;
 }

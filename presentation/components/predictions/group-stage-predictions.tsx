@@ -4,10 +4,13 @@ import { useState, useMemo } from "react";
 import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import { MatchPredictionCard } from "@/presentation/components/predictions/match-prediction-card";
+import { GroupStandingsTable } from "@/presentation/components/predictions/group-standings-table";
+import { TiebreakerControl } from "@/presentation/components/predictions/tiebreaker-control";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { ButtonGroup } from "@/presentation/components/ui/button-group";
+import { Progress } from "@/presentation/components/ui/progress";
 import {
   FieldSet,
   FieldLegend,
@@ -16,6 +19,10 @@ import {
 import { Save, Info, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/presentation/lib/utils";
+import {
+  calculateGroupStandings,
+  getTiedTeamGroups,
+} from "@/presentation/lib/calculate-standings";
 
 interface GroupStagePredictionsProps {
   matches: MatchWithPrediction[];
@@ -43,6 +50,11 @@ export function GroupStagePredictions({
     Record<string, { homeScore: string; awayScore: string }>
   >({});
   const [selectedGroup, setSelectedGroup] = useState<string>("A");
+
+  // Manual tiebreaker state: { groupName: { teamId: order } }
+  const [manualTiebreakers, setManualTiebreakers] = useState<
+    Record<string, Record<string, number>>
+  >({});
 
   // Group matches by group name
   const groupedMatches = useMemo(() => {
@@ -201,6 +213,37 @@ export function GroupStagePredictions({
   const allMatchesCount = matches.length;
   const allPredictedCount = matches.filter(hasValidPrediction).length;
 
+  // Calculate group standings based on current predictions
+  const standings = useMemo(() => {
+    return calculateGroupStandings(
+      currentMatches,
+      predictions,
+      manualTiebreakers[selectedGroup]
+    );
+  }, [currentMatches, predictions, manualTiebreakers, selectedGroup]);
+
+  // Get tied team groups for tiebreaker UI
+  const tiedTeamGroups = useMemo(() => {
+    return getTiedTeamGroups(standings);
+  }, [standings]);
+
+  // Check if group has unsaved predictions (preview mode)
+  const isPreview = currentMatches.some((m) => m.userPrediction.id === null);
+
+  // Handler: Reorder tied teams
+  const handleTiebreakerReorder = (tiedTeams: string[]) => {
+    // Convert array of team IDs to order map: { teamId: order }
+    const orderMap: Record<string, number> = {};
+    tiedTeams.forEach((teamId, index) => {
+      orderMap[teamId] = index;
+    });
+
+    setManualTiebreakers((prev) => ({
+      ...prev,
+      [selectedGroup]: orderMap,
+    }));
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -267,15 +310,33 @@ export function GroupStagePredictions({
         </CardContent>
       </Card>
 
-      {/* Progress Badge */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <Badge variant="outline" className="gap-1.5 text-xs sm:text-sm">
-          <span className="text-muted-foreground">Progreso:</span>
-          <span className="font-semibold text-foreground">
-            {allPredictedCount}/{allMatchesCount}
-          </span>
-        </Badge>
-      </div>
+      {/* Progress Bar */}
+      <Card className="overflow-hidden border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <CardContent className="space-y-2 p-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">
+                Progreso total de predicciones
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {allPredictedCount} de {allMatchesCount} partidos completados
+              </p>
+            </div>
+            <Badge
+              variant={
+                allPredictedCount === allMatchesCount ? "secondary" : "outline"
+              }
+              className="text-sm font-bold"
+            >
+              {Math.round((allPredictedCount / allMatchesCount) * 100)}%
+            </Badge>
+          </div>
+          <Progress
+            value={(allPredictedCount / allMatchesCount) * 100}
+            className="h-3"
+          />
+        </CardContent>
+      </Card>
 
       {/* Group Selector - Grid on mobile, ButtonGroup on tablet+ */}
       <div className="grid grid-cols-4 gap-2 sm:hidden">
@@ -340,6 +401,28 @@ export function GroupStagePredictions({
           </Badge>
         )}
       </div>
+
+      {/* Standings Table */}
+      <GroupStandingsTable
+        standings={standings}
+        groupName={selectedGroup}
+        isPreview={isPreview}
+      />
+
+      {/* Tiebreaker Control - Only show if:
+          1. There are tied teams
+          2. All predictions for the group are saved (not preview mode)
+      */}
+      {tiedTeamGroups.length > 0 &&
+        !isPreview &&
+        tiedTeamGroups.map((tiedGroup, index) => (
+          <TiebreakerControl
+            key={`tiebreaker-${selectedGroup}-${index}`}
+            tiedTeams={tiedGroup}
+            groupName={selectedGroup}
+            onReorder={handleTiebreakerReorder}
+          />
+        ))}
 
       {/* Match Cards wrapped in FieldSet */}
       <FieldSet>
