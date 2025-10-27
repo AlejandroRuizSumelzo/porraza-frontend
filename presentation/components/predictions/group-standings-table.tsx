@@ -175,7 +175,7 @@ export function GroupStandingsTable({
                         ? positionChange === "up"
                           ? "rgba(34, 197, 94, 0.15)" // green flash
                           : "rgba(239, 68, 68, 0.15)" // red flash
-                        : "transparent",
+                        : "rgba(0, 0, 0, 0)", // transparent (animatable)
                     }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{

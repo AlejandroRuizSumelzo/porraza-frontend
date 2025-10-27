@@ -8,6 +8,8 @@ const protectedRoutes = [
   "/settings",
   "/predictions",
   "/schedule",
+  "/stadiums",
+  "/teams",
   "/leagues",
   "/leaderboard",
   "/rules",

@@ -7,6 +7,7 @@ import {
   BookOpen,
   Settings,
   Building,
+  Shield,
 } from "lucide-react";
 
 export interface RouteItem {
@@ -46,6 +47,7 @@ export const APP_ROUTES = {
     predictions: "/predictions",
     schedule: "/schedule",
     stadiums: "/stadiums",
+    teams: "/teams",
     leagues: "/leagues",
     leaderboard: "/leaderboard",
     rules: "/rules",
@@ -84,6 +86,12 @@ export const navigationItems: RouteItem[] = [
     description: "Explora los estadios",
   },
   {
+    title: "Selecciones",
+    href: APP_ROUTES.app.teams,
+    icon: Shield,
+    description: "Equipos del Mundial 2026",
+  },
+  {
     title: "Clasificación",
     href: APP_ROUTES.app.leaderboard,
     icon: TrendingUp,
@@ -120,14 +128,15 @@ export const navigationGroups: RouteGroup[] = [
     label: "Comunidad",
     items: [
       navigationItems[3], // Estadios
-      navigationItems[4], // Clasificación (was index 5)
+      navigationItems[4], // Selecciones
+      navigationItems[5], // Clasificación
     ],
   },
   {
     label: "Información",
     items: [
-      navigationItems[5], // Reglas (was index 6)
-      navigationItems[6], // Configuración (was index 7)
+      navigationItems[6], // Reglas
+      navigationItems[7], // Configuración
     ],
   },
 ];
