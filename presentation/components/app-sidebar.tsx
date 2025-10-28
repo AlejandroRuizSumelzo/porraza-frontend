@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname, useRouter } from "@/i18n/routing";
 import {
   LogOut,
   CreditCard,
@@ -45,10 +45,14 @@ import { EmptyStateLeagues } from "@/presentation/components/sidebar/empty-state
 import { toast } from "sonner";
 
 export function AppSidebar() {
+  const tNavigation = useTranslations("navigation");
+  const tSidebar = useTranslations("sidebar");
+  const tCommon = useTranslations("common");
   const pathname = usePathname();
   const router = useRouter();
   const { logout, isLoading: isLoggingOut } = useLogout();
   const { hasPaid, isLoading: isLoadingPayment } = usePaymentStatus();
+  const premiumPrice = "€1.99";
 
   // League state
   const leagues = selectLeagues();
@@ -61,21 +65,21 @@ export function AppSidebar() {
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success("Sesión cerrada", {
-        description: "Has cerrado sesión correctamente",
+      toast.success(tSidebar("logout.success.title"), {
+        description: tSidebar("logout.success.description"),
       });
     } catch (error) {
-      toast.error("Error al cerrar sesión", {
-        description: "No se pudo cerrar la sesión. Inténtalo de nuevo.",
+      toast.error(tSidebar("logout.error.title"), {
+        description: tSidebar("logout.error.description"),
       });
     }
   };
 
   const handleLeagueSelect = (leagueId: string) => {
     setSelectedLeagueId(leagueId);
-    toast.success("Liga seleccionada", {
-      description:
-        leagues.find((l) => l.id === leagueId)?.name || "Liga actualizada",
+    const leagueName = leagues.find((l) => l.id === leagueId)?.name;
+    toast.success(tSidebar("leagues.toast.selected"), {
+      description: leagueName || tSidebar("leagues.toast.updated"),
     });
   };
 
@@ -86,10 +90,10 @@ export function AppSidebar() {
           <div className="flex items-center gap-2">
             <img
               src="/logo/porraza-icon.webp"
-              alt="Porraza Logo"
+              alt={tSidebar("branding.logo_alt")}
               className="h-8 w-8 rounded-lg"
             />
-            <span className="text-lg font-bold">Porraza</span>
+            <span className="text-lg font-bold">{tCommon("app_name")}</span>
           </div>
           <SidebarTrigger />
         </div>
@@ -108,7 +112,7 @@ export function AppSidebar() {
             >
               <CollapsibleTrigger>
                 <Users className="h-4 w-4 mr-2" />
-                <span className="font-medium">Mis Ligas</span>
+                <span className="font-medium">{tSidebar("leagues.title")}</span>
                 <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </CollapsibleTrigger>
             </SidebarGroupLabel>
@@ -155,7 +159,7 @@ export function AppSidebar() {
                         className="w-full justify-start text-xs h-8 text-muted-foreground hover:text-foreground transition-colors group/manage"
                       >
                         <Settings2 className="h-3.5 w-3.5 mr-2 transition-transform group-hover/manage:rotate-90 duration-300" />
-                        <span>Gestionar Ligas</span>
+                        <span>{tSidebar("leagues.manage")}</span>
                       </Button>
                     </div>
                   </>
@@ -174,13 +178,18 @@ export function AppSidebar() {
                   <div className="flex items-center gap-1.5 text-sm font-bold">
                     <Sparkles className="h-4 w-4 text-primary" />
                     <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                      Desbloquea Premium
+                      {tSidebar("payment.title")}
                     </span>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground/90 leading-relaxed">
-                  Solo <span className="font-bold text-primary">€1.99</span>{" "}
-                  para acceder a todas las funciones
+                  {tSidebar.rich("payment.description", {
+                    price: () => (
+                      <span className="font-bold text-primary">
+                        {premiumPrice}
+                      </span>
+                    ),
+                  })}
                 </p>
                 <Button
                   onClick={() => router.push("/checkout")}
@@ -188,7 +197,7 @@ export function AppSidebar() {
                   className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-xs h-9 font-semibold shadow-sm transition-all duration-200 hover:shadow-md group"
                 >
                   <CreditCard className="h-3.5 w-3.5 mr-1.5" />
-                  <span>Completar Pago</span>
+                  <span>{tSidebar("payment.button")}</span>
                 </Button>
               </div>
             </div>
@@ -196,11 +205,14 @@ export function AppSidebar() {
         )}
 
         <SidebarGroup>
-          <SidebarGroupLabel className="font-medium">Explora</SidebarGroupLabel>
+          <SidebarGroupLabel className="font-medium">
+            {tSidebar("navigation.section_title")}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => {
                 const isDisabled = !isLoadingPayment && !hasPaid;
+                const title = tNavigation(item.titleKey);
 
                 return (
                   <SidebarMenuItem key={item.href}>
@@ -209,8 +221,19 @@ export function AppSidebar() {
                       isActive={!isDisabled && pathname === item.href}
                       tooltip={
                         isDisabled
-                          ? "🔒 Completa el pago de €1.99 para acceder"
-                          : item.title
+                          ? {
+                              children: (
+                                <div className="flex items-center gap-2">
+                                  <Lock className="h-3.5 w-3.5" />
+                                  <span>
+                                    {tSidebar("navigation.locked_tooltip", {
+                                      price: premiumPrice,
+                                    })}
+                                  </span>
+                                </div>
+                              ),
+                            }
+                          : title
                       }
                       className={
                         isDisabled
@@ -222,14 +245,14 @@ export function AppSidebar() {
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center gap-2">
                             <item.icon className="opacity-60" />
-                            <span className="opacity-60">{item.title}</span>
+                            <span className="opacity-60">{title}</span>
                           </div>
                           <Lock className="h-3 w-3 text-muted-foreground/50 shrink-0" />
                         </div>
                       ) : (
                         <Link href={item.href}>
                           <item.icon />
-                          <span className="font-medium">{item.title}</span>
+                          <span className="font-medium">{title}</span>
                         </Link>
                       )}
                     </SidebarMenuButton>
@@ -246,12 +269,14 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={handleLogout}
-              tooltip="Cerrar sesión"
+              tooltip={tSidebar("logout.tooltip")}
               disabled={isLoggingOut}
             >
               <LogOut />
               <span>
-                {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+                {isLoggingOut
+                  ? tSidebar("logout.loading")
+                  : tSidebar("logout.label")}
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -66,7 +66,9 @@ function SuccessContent() {
                   <h2 className="text-3xl font-bold text-destructive mb-4">
                     Error al verificar pago
                   </h2>
-                  <p className="text-foreground mb-8 max-w-md mx-auto">{error}</p>
+                  <p className="text-foreground mb-8 max-w-md mx-auto">
+                    {error}
+                  </p>
                   <Button
                     onClick={() => router.push("/dashboard")}
                     variant="outline"
@@ -118,10 +120,13 @@ function SuccessContent() {
                         <span>📅</span>
                         <span>
                           Fecha:{" "}
-                          {new Date(status.paymentDate).toLocaleString("es-ES", {
-                            dateStyle: "long",
-                            timeStyle: "short",
-                          })}
+                          {new Date(status.paymentDate).toLocaleString(
+                            "es-ES",
+                            {
+                              dateStyle: "long",
+                              timeStyle: "short",
+                            }
+                          )}
                         </span>
                       </p>
                     )}
@@ -193,7 +198,8 @@ function SuccessContent() {
                   Pago Pendiente
                 </h2>
                 <p className="text-lg text-foreground mb-8 max-w-md mx-auto">
-                  Tu pago está siendo procesado. Por favor, espera unos momentos.
+                  Tu pago está siendo procesado. Por favor, espera unos
+                  momentos.
                 </p>
                 <Button
                   onClick={() => window.location.reload()}

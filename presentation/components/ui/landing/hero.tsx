@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations, useMessages } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
@@ -9,19 +10,24 @@ import { motion } from "motion/react";
 import { cn } from "@/presentation/lib/utils";
 
 export function Hero() {
-  const features = [
-    { text: "Ligas privadas y públicas", color: "primary" },
-    { text: "Puntuaciones y clasificación en vivo", color: "secondary" },
-    { text: "Plantillas de predicciones rápidas", color: "destructive" },
-    { text: "Panel para RR.HH./comités internos", color: "primary" },
+  const t = useTranslations("landing.hero");
+  const messages = useMessages();
+
+  const features = messages.landing.hero.features as string[];
+  const featureColors: Array<"primary" | "secondary" | "destructive"> = [
+    "primary",
+    "secondary",
+    "destructive",
+    "primary",
   ];
 
-  const tags = [
-    { text: "Porra Mundial 2026", variant: "primary" },
-    { text: "Quiniela entre amigos", variant: "secondary" },
-    { text: "Ligas privadas", variant: "destructive" },
-    { text: "Clasificación en vivo", variant: "primary" },
-    { text: "Para empresas", variant: "secondary" },
+  const tags = messages.landing.hero.tags as string[];
+  const tagVariants: Array<"primary" | "secondary" | "destructive"> = [
+    "primary",
+    "secondary",
+    "destructive",
+    "primary",
+    "secondary",
   ];
 
   return (
@@ -50,7 +56,7 @@ export function Hero() {
             >
               <Badge className="w-fit accent-secondary border gap-2">
                 <Zap className="h-3 w-3" />
-                Mundial 2026
+                {t("badge")}
               </Badge>
             </motion.div>
 
@@ -61,11 +67,13 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              Crea tu{" "}
-              <span className="gradient-text-tricolor animate-in">
-                porra del Mundial 2026
-              </span>{" "}
-              con ligas privadas para amigos y empresas
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="gradient-text-tricolor animate-in">
+                    {chunks}
+                  </span>
+                ),
+              })}
             </motion.h1>
 
             <motion.p
@@ -74,20 +82,26 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              Porraza es la plataforma para organizar tu{" "}
-              <strong className="font-semibold text-primary">
-                quiniela del Mundial
-              </strong>{" "}
-              en minutos: crea tu liga, invita a tus compañeros y compite con{" "}
-              <em className="font-medium text-secondary">rankings</em> en tiempo
-              real. Ideal para{" "}
-              <strong className="font-semibold text-destructive">
-                empresas
-              </strong>
-              , equipos y grupos de amigos.{" "}
-              <span className="font-semibold text-foreground">
-                La forma más sencilla de vivir el Mundial con tu comunidad.
-              </span>
+              {t.rich("description", {
+                strongPrimary: (chunks) => (
+                  <strong className="font-semibold text-primary">
+                    {chunks}
+                  </strong>
+                ),
+                emphasis: (chunks) => (
+                  <em className="font-medium text-secondary">{chunks}</em>
+                ),
+                strongDestructive: (chunks) => (
+                  <strong className="font-semibold text-destructive">
+                    {chunks}
+                  </strong>
+                ),
+                strongFinal: (chunks) => (
+                  <span className="font-semibold text-foreground">
+                    {chunks}
+                  </span>
+                ),
+              })}
             </motion.p>
 
             <motion.ul
@@ -98,7 +112,7 @@ export function Hero() {
             >
               {features.map((feature, index) => (
                 <motion.li
-                  key={feature.text}
+                  key={feature}
                   className="flex items-center gap-2 text-sm text-muted-foreground"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -107,12 +121,13 @@ export function Hero() {
                   <CheckCircle2
                     className={cn(
                       "h-4 w-4 shrink-0",
-                      feature.color === "primary" && "text-primary",
-                      feature.color === "secondary" && "text-secondary",
-                      feature.color === "destructive" && "text-destructive"
+                      featureColors[index] === "primary" && "text-primary",
+                      featureColors[index] === "secondary" && "text-secondary",
+                      featureColors[index] === "destructive" &&
+                        "text-destructive"
                     )}
                   />
-                  <span>{feature.text}</span>
+                  <span>{feature}</span>
                 </motion.li>
               ))}
             </motion.ul>
@@ -133,11 +148,8 @@ export function Hero() {
                   className="bg-primary text-base text-primary-foreground hover:bg-primary/90 shadow-primary transition-smooth w-full sm:w-auto"
                   asChild
                 >
-                  <Link
-                    href="/crear-porra"
-                    aria-label="Crear porra del Mundial 2026"
-                  >
-                    Crear porra gratis
+                  <Link href="/signup" aria-label={t("cta.primary.aria")}>
+                    {t("cta.primary.label")}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
@@ -154,9 +166,9 @@ export function Hero() {
                   className="bg-background/50 text-base backdrop-blur-sm hover:bg-secondary/10 hover:text-secondary hover:border-secondary/30 transition-smooth w-full sm:w-auto"
                   asChild
                 >
-                  <Link href="/ligas" aria-label="Unirte a una liga de porra">
+                  <Link href="/login" aria-label={t("cta.secondary.aria")}>
                     <Users className="mr-2 h-5 w-5" />
-                    Unirme a una liga
+                    {t("cta.secondary.label")}
                   </Link>
                 </Button>
               </motion.div>
@@ -170,11 +182,13 @@ export function Hero() {
             >
               <div className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
               <p className="text-sm text-muted-foreground">
-                Ya se organizan porras con Porraza en{" "}
-                <strong className="font-semibold text-foreground">
-                  equipos y empresas
-                </strong>{" "}
-                de todos los tamaños.
+                {t.rich("note", {
+                  strong: (chunks) => (
+                    <strong className="font-semibold text-foreground">
+                      {chunks}
+                    </strong>
+                  ),
+                })}
               </p>
             </motion.div>
           </motion.div>
@@ -196,7 +210,7 @@ export function Hero() {
                 >
                   <img
                     src="/hero-photo.webp"
-                    alt="2010 Spain World Cup"
+                    alt={t("image_alt")}
                     width={960}
                     height={960}
                     className="h-full w-full object-cover"
@@ -253,7 +267,7 @@ export function Hero() {
         >
           {tags.map((tag, index) => (
             <motion.div
-              key={tag.text}
+              key={tag}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.9 + index * 0.05, duration: 0.3 }}
@@ -263,15 +277,15 @@ export function Hero() {
                 variant="outline"
                 className={cn(
                   "px-4 py-1.5 text-xs font-medium backdrop-blur-sm transition-smooth cursor-default",
-                  tag.variant === "primary" &&
+                  tagVariants[index] === "primary" &&
                     "accent-primary hover:shadow-primary/20",
-                  tag.variant === "secondary" &&
+                  tagVariants[index] === "secondary" &&
                     "accent-secondary hover:shadow-secondary/20",
-                  tag.variant === "destructive" &&
+                  tagVariants[index] === "destructive" &&
                     "accent-destructive hover:shadow-soft"
                 )}
               >
-                {tag.text}
+                {tag}
               </Badge>
             </motion.div>
           ))}

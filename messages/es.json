@@ -1,0 +1,270 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "dashboard": "Dashboard",
+    "predictions": "Predicciones",
+    "schedule": "Calendario",
+    "stadiums": "Estadios",
+    "teams": "Selecciones",
+    "leagues": "Ligas",
+    "leaderboard": "Clasificación",
+    "rules": "Reglas",
+    "settings": "Configuración",
+    "dashboardDescription": "Vista general de tus predicciones",
+    "predictionsDescription": "Crea y gestiona tus predicciones",
+    "scheduleDescription": "Próximos partidos y horarios",
+    "stadiumsDescription": "Explora los estadios",
+    "teamsDescription": "Equipos del Mundial 2026",
+    "leaderboardDescription": "Rankings y estadísticas",
+    "rulesDescription": "Reglas del juego y puntuación",
+    "settingsDescription": "Ajustes de tu cuenta",
+    "groups": {
+      "main": "Principal",
+      "community": "Comunidad",
+      "information": "Información"
+    }
+  },
+  "common": {
+    "app_name": "Porraza"
+  },
+  "landing": {
+    "header": {
+      "aria": {
+        "toggle_menu": "Abrir o cerrar el menú",
+        "mobile_navigation": "Navegación móvil",
+        "brand_home": "Ir al inicio de Porraza"
+      },
+      "nav": {
+        "features": "Funcionalidades",
+        "pricing": "Precios",
+        "faq": "Preguntas frecuentes"
+      },
+      "actions": {
+        "login": "Iniciar sesión",
+        "create_league": "Crea tu liga"
+      }
+    },
+    "hero": {
+      "badge": "Modo Mundial: enchufado",
+      "title": "Monta la mejor porra del <highlight>Mundial 2026</highlight> y pícale a tu gente, al curro y al grupo de siempre",
+      "description": "Porraza es la forma más rápida y simple de montar tu <strongPrimary>quiniela del Mundial</strongPrimary>. En minutos creas la liga, invitas al personal y nuestro <emphasis>ranking en vivo</emphasis> mantiene el cachondeo. Pensada para <strongDestructive>empresas, amigos y enfermos fantasy que viven cada despeje a gritos</strongDestructive>. <strongFinal>Dale al botón, acierta el mundial y deja que empiece la función.</strongFinal>",
+      "features": [
+        "Ligas privadas u abiertas, tú mandas",
+        "Calendario y tabla en vivo sin despeinarse",
+        "Gana premios tú, que a mi me da la risa",
+        "Rankings en vivo para saraos internos"
+      ],
+      "tags": [
+        "Porra Mundial 2026",
+        "Quiniela entre colegas",
+        "Ligas privadas",
+        "Clasificación en vivo",
+        "Plan para empresas"
+      ],
+      "cta": {
+        "primary": {
+          "label": "Montar mi porra",
+          "aria": "Montar porra Mundial 2026"
+        },
+        "secondary": {
+          "label": "Unirme a una liga",
+          "aria": "Descubrir ligas de porra disponibles"
+        }
+      },
+      "note": "Porraza ya pone ritmo en <strong>equipos y empresas</strong> de todos los tamaños.",
+      "image_alt": "Jugadores de España celebrando el Mundial 2010"
+    },
+    "features": {
+      "badge": "Superpoderes Porraza",
+      "title": "Cuatro trucos infalibles para que tu <highlight>porra del Mundial 2026</highlight> vaya sobrada",
+      "description": "Aquí tienes el kit para que nadie se aburra: <strongPrimary>ligas con lista VIP</strongPrimary>, <emphasis>marcadores automáticos</emphasis> y un <strongDestructive>pago único sin cuentos</strongDestructive>. Para empresas, RR.HH. y grupos que viven el Mundial con risas y pique del bueno.",
+      "cards": {
+        "create_leagues": {
+          "title": "Ligas privadas con lista VIP",
+          "description": "Invitas solo a quien te cae bien: empresa, equipo o los de los lunes. Tú decides quién entra y quién se queda en la puerta."
+        },
+        "live_scoring": {
+          "title": "Marcadores en vivo sin sudar",
+          "description": "Actualizamos cada partido al instante. Tú solo presumes del ranking mientras Excel se queda de vacaciones."
+        },
+        "one_time_payment": {
+          "title": "Pago único, cero dramas",
+          "description": "1,99 € por cabeza y listo. Sin cuotas raras ni sorpresas escondidas en letra pequeñita."
+        },
+        "remote_play": {
+          "title": "Compite desde donde pilles WiFi",
+          "description": "Que si teletrabajo, que si viaje… da igual. Todos pueden entrar y demostrar quién sabe más del Mundial."
+        }
+      },
+      "highlights": {
+        "no_subscription": "Ni suscripción ni historias",
+        "pricing": "Precio claro por jugón: <strongPrice>{price}</strongPrice>",
+        "fast_start": "En tres clics ya estás vacilando"
+      },
+      "pricing_value": "1,99 €"
+    },
+    "how_it_works": {
+      "badge": "Paso a paso sin bostezos",
+      "title": "Así montas tu <highlight>porra del Mundial 2026</highlight> antes de que ruede el balón",
+      "description": "Cuatro jugadas maestras y listo: <strongPrimary>te registras en un suspiro</strongPrimary>, <emphasis>armas la liga a tu rollo</emphasis> y dejas que el <strongDestructive>ranking automático haga el trabajo sucio</strongDestructive>.",
+      "aria_label": "Pasos para crear tu porra en Porraza",
+      "jsonld": {
+        "name": "Cómo funciona Porraza para tu porra del Mundial 2026",
+        "description": "Sigue estos pasos para crear tu liga, lanzar predicciones y vivir la clasificación en vivo con tu gente.",
+        "total_time": "PT2M",
+        "supply": "Cuenta de Porraza",
+        "tool": "Aplicación web de Porraza"
+      },
+      "steps": [
+        {
+          "title": "Regístrate en un suspiro",
+          "description": "Crea tu cuenta con login seguro. Pago único por cabeza, sin cuotas mensuales ni letra pequeña."
+        },
+        {
+          "title": "Lanza tu liga o únete al vuelo",
+          "description": "Abre tu espacio privado para empresa o colegas, o usa un código para entrar en cuestión de segundos."
+        },
+        {
+          "title": "Suelta tus predicciones",
+          "description": "Pronostica cada partido antes del pitido inicial con un flujo ágil y cero complicaciones."
+        },
+        {
+          "title": "Sigue el ranking y vacila",
+          "description": "Consulta la tabla en vivo, comparte piques y descubre quién manda en el Mundial."
+        }
+      ],
+      "cta": {
+        "eyebrow": "¿Todo listo?",
+        "title": "Entra, monta la liga y presume desde ya",
+      "button_label": "Montar porra ya",
+      "button_aria": "Crear porra del Mundial 2026"
+    }
+    },
+    "pricing": {
+      "badge": "Precio sin rodeos",
+      "title": "Un solo pago y tu <highlight>porra del Mundial 2026</highlight> queda lista",
+      "description": "Olvídate de cuotas eternas: <strongPrimary>pagas una vez</strongPrimary>, <emphasis>lo disfrutas a lo grande</emphasis> y el <strongDestructive>pique dura todo el torneo</strongDestructive>.",
+      "jsonld": {
+        "name": "Porraza - Precio de la porra del Mundial 2026",
+        "description": "Organiza tu porra con ligas privadas, clasificación en vivo y puntuación automática pagando solo una vez por jugador.",
+        "price": "1.99",
+        "currency": "EUR",
+        "unit_text": "jugador",
+        "url": "https://porraza.com/precios"
+      },
+      "price": {
+        "value": "1,99 €",
+        "suffix": "por jugador"
+      },
+      "price_note": "Pago único para todo el torneo",
+      "features_aria": "Ventajas incluidas en el precio",
+      "features": [
+        "Acceso a cada función de la liga",
+        "Marcador automático tras cada partido",
+        "Clasificación en vivo lista para presumir",
+        "Experiencia que brilla en móvil",
+        "Cero cargos escondidos"
+      ],
+      "cta": {
+        "label": "Arrancar mi porra ahora",
+        "aria": "Crear porra del Mundial 2026 con Porraza"
+      },
+      "ideal_for_label": "Ideal para:",
+      "use_cases": [
+        "Círculos que viven el Mundial a carcajadas",
+        "Empresas que quieren encender la oficina"
+      ],
+      "trust": "Facturación simple por cabeza. <strong>Sin letra pequeña</strong>."
+    },
+    "footer": {
+      "badge": "Modo Mundial 2026 prendido",
+      "brand": {
+        "aria_home": "Inicio de Porraza",
+        "description": "Porraza es el cuartel general para montar tu porra del Mundial 2026: <strongPrimary>ligas privadas a tu medida</strongPrimary>, <emphasis>puntuación automática que va por delante del grupo de WhatsApp</emphasis> y clasificación en vivo para que el vacile no pare. <strongFinal>Pagas una vez y te olvidas.</strongFinal>"
+      },
+      "product_nav": {
+        "heading": "Lo que vas a toquetear",
+        "aria": "Navegación de producto",
+        "links": [
+          "Funcionalidades",
+          "Precios",
+          "Preguntas top"
+        ]
+      },
+      "legal_nav": {
+        "heading": "Legal (tranquilito)",
+        "aria": "Información legal",
+        "links": [
+          "Aviso legal",
+          "Política de privacidad",
+          "Política de cookies",
+          "Contacto y soporte"
+        ]
+      },
+      "socials": {
+        "labels": [
+          "Twitter: memes y goles",
+          "Instagram: bastidores de la porra",
+          "LinkedIn: versión pro"
+        ]
+      },
+      "badge_label": "Mundial 2026",
+      "cta": {
+        "label": "Hablar con soporte",
+        "aria": "Contactar con el equipo de soporte de Porraza"
+      },
+      "closing": {
+        "copyright": "© {year} Porraza. Derechos reservados y humor asegurado.",
+        "tagline": "Hecho para <strong>ligas privadas</strong> de empresas y amistades que viven cada gol."
+      },
+      "jsonld": {
+        "organization_name": "Porraza",
+        "organization_url": "https://porraza.com",
+        "logo": "https://porraza.com/logo.svg",
+        "same_as": [
+          "https://twitter.com/porraza",
+          "https://www.instagram.com/porraza",
+          "https://www.linkedin.com/company/porraza"
+        ],
+        "contact_email": "contacto@porraza.com",
+        "website_name": "Porraza",
+        "website_url": "https://porraza.com"
+      }
+    }
+  },
+  "sidebar": {
+    "branding": {
+      "logo_alt": "Logo de Porraza"
+    },
+    "leagues": {
+      "title": "Mis ligas",
+      "manage": "Gestionar ligas",
+      "toast": {
+        "selected": "Liga seleccionada",
+        "updated": "Liga actualizada"
+      }
+    },
+    "payment": {
+      "title": "Desbloquea Premium",
+      "description": "Solo {price} para acceder a todas las funciones",
+      "button": "Completar pago"
+    },
+    "navigation": {
+      "section_title": "Explora",
+      "locked_tooltip": "Completa el pago de {price} para acceder"
+    },
+    "logout": {
+      "tooltip": "Cerrar sesión",
+      "label": "Cerrar sesión",
+      "loading": "Cerrando sesión...",
+      "success": {
+        "title": "Sesión cerrada",
+        "description": "Has cerrado sesión correctamente"
+      },
+      "error": {
+        "title": "Error al cerrar sesión",
+        "description": "No se pudo cerrar la sesión. Inténtalo de nuevo."
+      }
+    }
+  }
+}

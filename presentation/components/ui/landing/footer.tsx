@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations, useMessages } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Separator } from "@/presentation/components/ui/separator";
 import { Linkedin, Mail, ExternalLink, Sparkles } from "lucide-react";
@@ -8,42 +9,110 @@ import { SiX, SiInstagram } from "@icons-pack/react-simple-icons";
 import { motion } from "motion/react";
 import { cn } from "@/presentation/lib/utils";
 
-const productLinks = [
-  { href: "#funcionalidades", label: "Funcionalidades", color: "primary" },
-  { href: "#precios", label: "Precios", color: "secondary" },
-  { href: "#preguntas", label: "Preguntas frecuentes", color: "destructive" },
+const productLinkConfig = [
+  { href: "#funcionalidades", color: "primary" },
+  { href: "#precios", color: "secondary" },
+  { href: "#preguntas", color: "destructive" },
 ];
 
-const legalLinks = [
-  { href: "/legal-advise", label: "Aviso legal" },
-  { href: "/privacy-policy", label: "Política de privacidad" },
-  { href: "/cookies-policy", label: "Política de cookies" },
-  { href: "mailto:contacto@porraza.com", label: "Contacto y soporte" },
+const legalLinkConfig = [
+  { href: "/legal-advise" },
+  { href: "/privacy-policy" },
+  { href: "/cookies-policy" },
+  { href: "mailto:contacto@porraza.com" },
 ];
 
-const socialLinks = [
+const socialLinkConfig = [
   {
     href: "https://twitter.com/porraza",
-    label: "Twitter de Porraza",
     icon: SiX,
     color: "primary",
   },
   {
     href: "https://www.instagram.com/porraza",
-    label: "Instagram de Porraza",
     icon: SiInstagram,
     color: "secondary",
   },
   {
     href: "https://www.linkedin.com/company/porraza",
-    label: "LinkedIn de Porraza",
     icon: Linkedin,
     color: "destructive",
   },
 ];
 
 export function Footer() {
+  const t = useTranslations("landing.footer");
+  const tCommon = useTranslations("common");
+  const messages = useMessages();
   const currentYear = new Date().getFullYear();
+
+  const footerMessages = messages.landing.footer as Record<string, unknown>;
+  const productLinkLabels =
+    (footerMessages.product_nav as Record<string, unknown>)?.links ?? [];
+  const legalLinkLabels =
+    (footerMessages.legal_nav as Record<string, unknown>)?.links ?? [];
+  const socialLabels =
+    (footerMessages.socials as Record<string, unknown>)?.labels ?? [];
+  const jsonLdMessages = (footerMessages.jsonld ?? {}) as {
+    organization_name?: string;
+    organization_url?: string;
+    logo?: string;
+    same_as?: string[];
+    contact_email?: string;
+    website_name?: string;
+    website_url?: string;
+  };
+
+  const contactEmail = jsonLdMessages.contact_email ?? "contacto@porraza.com";
+
+  const productLinks = productLinkConfig
+    .map((config, index) => ({
+      ...config,
+      label: (productLinkLabels as string[])[index] ?? "",
+    }))
+    .filter((link) => link.label);
+
+  const legalLinks = legalLinkConfig
+    .map((config, index) => ({
+      ...config,
+      label: (legalLinkLabels as string[])[index] ?? "",
+    }))
+    .filter((link) => link.label);
+
+  const socialLinks = socialLinkConfig
+    .map((config, index) => ({
+      ...config,
+      label: (socialLabels as string[])[index] ?? "",
+    }))
+    .filter((link) => link.label);
+
+  const organizationJson = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: jsonLdMessages.organization_name ?? tCommon("app_name"),
+    url: jsonLdMessages.organization_url ?? "https://porraza.com",
+    logo: jsonLdMessages.logo ?? "https://porraza.com/logo.svg",
+    sameAs: jsonLdMessages.same_as ?? [
+      "https://twitter.com/porraza",
+      "https://www.instagram.com/porraza",
+      "https://www.linkedin.com/company/porraza",
+    ],
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        email: contactEmail,
+        contactType: "customer support",
+        availableLanguage: ["es", "en"],
+      },
+    ],
+  };
+
+  const websiteJson = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: jsonLdMessages.website_name ?? tCommon("app_name"),
+    url: jsonLdMessages.website_url ?? "https://porraza.com",
+  };
 
   return (
     <footer
@@ -59,43 +128,19 @@ export function Footer() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Porraza",
-            url: "https://porraza.com",
-            logo: "https://porraza.com/logo.svg",
-            sameAs: [
-              "https://twitter.com/porraza",
-              "https://www.instagram.com/porraza",
-              "https://www.linkedin.com/company/porraza",
-            ],
-            contactPoint: [
-              {
-                "@type": "ContactPoint",
-                email: "support@porraza.com",
-                contactType: "customer support",
-                availableLanguage: ["es", "en"],
-              },
-            ],
-          }),
+          __html: JSON.stringify(organizationJson),
         }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: "Porraza",
-            url: "https://porraza.com",
-          }),
+          __html: JSON.stringify(websiteJson),
         }}
       />
 
       <div className="container-responsive py-12 md:py-16">
         <h2 id="footer-title" className="sr-only">
-          Información y enlaces de Porraza
+          {tCommon("app_name")}
         </h2>
 
         <div className="grid gap-12 md:grid-cols-4 lg:gap-16">
@@ -109,7 +154,7 @@ export function Footer() {
             <Link
               href="/"
               className="mb-6 flex items-center gap-2.5 group w-fit"
-              aria-label="Inicio de Porraza"
+              aria-label={t("brand.aria_home")}
             >
               <motion.div
                 className="relative"
@@ -118,25 +163,27 @@ export function Footer() {
               >
                 <img
                   src="/logo/porraza-icon.webp"
-                  alt="Porraza"
+                  alt={tCommon("app_name")}
                   className="h-8 w-8"
                 />
               </motion.div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                Porraza
+                {tCommon("app_name")}
               </span>
             </Link>
 
             <p className="mb-6 leading-relaxed text-muted-foreground max-w-md">
-              Plataforma para organizar tu{" "}
-              <strong className="font-semibold text-primary">
-                porra del Mundial 2026
-              </strong>{" "}
-              con <em className="font-medium text-secondary">ligas privadas</em>
-              , puntuación automática y clasificación en tiempo real.{" "}
-              <span className="font-semibold text-foreground">
-                Pago único, sin suscripción.
-              </span>
+              {t.rich("brand.description", {
+                strongPrimary: (chunks) => (
+                  <strong className="font-semibold text-primary">{chunks}</strong>
+                ),
+                emphasis: (chunks) => (
+                  <em className="font-medium text-secondary">{chunks}</em>
+                ),
+                strongFinal: (chunks) => (
+                  <span className="font-semibold text-foreground">{chunks}</span>
+                ),
+              })}
             </p>
 
             <motion.div
@@ -148,7 +195,7 @@ export function Footer() {
             >
               <Badge className="accent-secondary border gap-2 cursor-default">
                 <Sparkles className="h-3 w-3" />
-                Mundial 2026
+                {t("badge_label")}
               </Badge>
             </motion.div>
 
@@ -186,17 +233,19 @@ export function Footer() {
           </motion.div>
 
           <motion.nav
-            aria-label="Navegación de producto"
+            aria-label={t("product_nav.aria")}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            <h3 className="mb-4 font-semibold text-foreground">Producto</h3>
+            <h3 className="mb-4 font-semibold text-foreground">
+              {t("product_nav.heading")}
+            </h3>
             <ul className="space-y-3">
               {productLinks.map((link, index) => (
                 <motion.li
-                  key={link.href}
+                  key={`${link.href}-${index}`}
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -226,31 +275,42 @@ export function Footer() {
           </motion.nav>
 
           <motion.nav
-            aria-label="Información legal"
+            aria-label={t("legal_nav.aria")}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <h3 className="mb-4 font-semibold text-foreground">Legal</h3>
+            <h3 className="mb-4 font-semibold text-foreground">
+              {t("legal_nav.heading")}
+            </h3>
             <ul className="space-y-3">
               {legalLinks.map((link, index) => (
                 <motion.li
-                  key={link.href}
+                  key={`${link.href}-${index}`}
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.4 + index * 0.1, duration: 0.4 }}
                 >
-                  <Link
-                    href={link.href}
-                    className="inline-flex items-center gap-2 text-sm transition-colors text-muted-foreground hover:text-foreground group"
-                  >
-                    {link.label}
-                    {link.href.startsWith("/") && (
-                      <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    )}
-                  </Link>
+                  {link.href.startsWith("mailto") ? (
+                    <a
+                      href={link.href}
+                      className="inline-flex items-center gap-2 text-sm transition-colors text-muted-foreground hover:text-foreground group"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="inline-flex items-center gap-2 text-sm transition-colors text-muted-foreground hover:text-foreground group"
+                    >
+                      {link.label}
+                      {link.href.startsWith("/") && (
+                        <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      )}
+                    </Link>
+                  )}
                 </motion.li>
               ))}
             </ul>
@@ -269,22 +329,21 @@ export function Footer() {
           <div className="flex flex-col items-center gap-4 text-center md:flex-row md:justify-between md:text-left">
             <div className="text-sm text-muted-foreground">
               <p className="flex items-center justify-center gap-2 md:justify-start">
-                © {currentYear} Porraza.{" "}
-                <span className="hidden sm:inline">
-                  Todos los derechos reservados.
-                </span>
+                {t("closing.copyright", { year: currentYear })}
               </p>
               <p className="mt-2">
-                Hecho para{" "}
-                <strong className="font-semibold text-foreground">
-                  ligas privadas
-                </strong>{" "}
-                de empresas y grupos de amigos.
+                {t.rich("closing.tagline", {
+                  strong: (chunks) => (
+                    <strong className="font-semibold text-foreground">
+                      {chunks}
+                    </strong>
+                  ),
+                })}
               </p>
             </div>
 
             <motion.a
-              href="mailto:support@porraza.com"
+              href={`mailto:${contactEmail}`}
               className={cn(
                 "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
                 "bg-primary/10 text-primary border border-primary/20",
@@ -293,9 +352,10 @@ export function Footer() {
               )}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={t("cta.aria")}
             >
               <Mail className="h-4 w-4" />
-              <span className="font-medium">Contactar soporte</span>
+              <span className="font-medium">{t("cta.label")}</span>
             </motion.a>
           </div>
         </motion.div>

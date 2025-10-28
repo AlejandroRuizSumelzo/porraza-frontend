@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Link } from "@/i18n/routing";
 
 import { LegalShell } from "@/presentation/components/ui/legal/legal-shell";
 
@@ -140,12 +141,12 @@ export default function LegalAdvisePage() {
         <p>
           El tratamiento de los datos personales que recogemos a través del
           Sitio se rige por nuestra{" "}
-          <a
+          <Link
             className="text-primary underline-offset-4 hover:underline"
             href="/privacy-policy"
           >
             política de privacidad
-          </a>
+          </Link>
           , que complementa este aviso legal.
         </p>
       </section>

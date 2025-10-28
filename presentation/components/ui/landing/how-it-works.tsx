@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useMessages, useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
@@ -15,42 +16,63 @@ import {
 import { motion } from "motion/react";
 import { cn } from "@/presentation/lib/utils";
 
-const steps = [
+const stepConfig = [
   {
     icon: UserPlus,
-    title: "Regístrate",
-    description:
-      "Crea tu cuenta en segundos con autenticación segura. Pago único por usuario, sin suscripción.",
     color: "primary",
     gradient: "from-primary/10 to-primary/5",
   },
   {
     icon: Users,
-    title: "Crea o únete a una liga",
-    description:
-      "Lanza tu liga privada para amigos o empresa, o únete con un código en un clic.",
     color: "secondary",
     gradient: "from-secondary/10 to-secondary/5",
   },
   {
     icon: Target,
-    title: "Haz tus predicciones",
-    description:
-      "Pronostica cada partido del Mundial 2026 antes del saque inicial. Fácil y rápido.",
     color: "destructive",
     gradient: "from-destructive/10 to-destructive/5",
   },
   {
     icon: Trophy,
-    title: "Compite y sube en el ranking",
-    description:
-      "Sigue la clasificación en tiempo real y descubre quién sabe más de fútbol.",
     color: "primary",
     gradient: "from-primary/10 to-primary/5",
   },
 ] as const;
 
+type StepTranslation = {
+  title: string;
+  description: string;
+};
+
 export function HowItWorks() {
+  const t = useTranslations("landing.how_it_works");
+  const messages = useMessages();
+
+  const stepTranslations = messages.landing.how_it_works
+    .steps as StepTranslation[];
+
+  const steps = stepConfig.map((config, index) => ({
+    ...config,
+    title: stepTranslations[index]?.title ?? "",
+    description: stepTranslations[index]?.description ?? "",
+  }));
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: t("jsonld.name"),
+    description: t("jsonld.description"),
+    totalTime: t("jsonld.total_time"),
+    step: steps.map((stepItem, position) => ({
+      "@type": "HowToStep",
+      position: position + 1,
+      name: stepItem.title,
+      text: stepItem.description,
+    })),
+    supply: [{ "@type": "HowToSupply", name: t("jsonld.supply") }],
+    tool: [{ "@type": "HowToTool", name: t("jsonld.tool") }],
+  };
+
   return (
     <section
       className="relative bg-background py-20 md:py-32 overflow-hidden"
@@ -64,22 +86,7 @@ export function HowItWorks() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "HowTo",
-            name: "Cómo funciona Porraza para la porra del Mundial 2026",
-            description:
-              "Sigue estos pasos para crear tu liga privada, hacer predicciones y competir con clasificación en vivo.",
-            totalTime: "PT2M",
-            step: steps.map((s, i) => ({
-              "@type": "HowToStep",
-              position: i + 1,
-              name: s.title,
-              text: s.description,
-            })),
-            supply: [{ "@type": "HowToSupply", name: "Cuenta de Porraza" }],
-            tool: [{ "@type": "HowToTool", name: "Aplicación web de Porraza" }],
-          }),
+          __html: JSON.stringify(jsonLd),
         }}
       />
 
@@ -100,7 +107,7 @@ export function HowItWorks() {
           >
             <Badge className="accent-primary border gap-2">
               <Sparkles className="h-3 w-3" />
-              Paso a Paso
+              {t("badge")}
             </Badge>
           </motion.div>
 
@@ -112,7 +119,11 @@ export function HowItWorks() {
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            Cómo funciona
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="gradient-text-tricolor">{chunks}</span>
+              ),
+            })}
           </motion.h2>
 
           <motion.p
@@ -122,18 +133,26 @@ export function HowItWorks() {
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Empieza en cuatro pasos y vive la emoción del{" "}
-            <strong className="font-semibold text-foreground">
-              Mundial 2026
-            </strong>{" "}
-            con tu liga privada.
+            {t.rich("description", {
+              strongPrimary: (chunks) => (
+                <strong className="font-semibold text-primary">{chunks}</strong>
+              ),
+              emphasis: (chunks) => (
+                <em className="font-medium text-secondary">{chunks}</em>
+              ),
+              strongDestructive: (chunks) => (
+                <strong className="font-semibold text-destructive">
+                  {chunks}
+                </strong>
+              ),
+            })}
           </motion.p>
         </motion.div>
 
         <ol
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 relative"
           role="list"
-          aria-label="Pasos para crear tu porra en Porraza"
+          aria-label={t("aria_label")}
         >
           <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 -z-10">
             <motion.div
@@ -147,7 +166,7 @@ export function HowItWorks() {
 
           {steps.map((step, index) => (
             <motion.li
-              key={step.title}
+              key={step.title || index}
               className="relative"
               role="listitem"
               aria-label={step.title}
@@ -298,10 +317,10 @@ export function HowItWorks() {
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <div className="text-left">
                   <p className="text-sm text-muted-foreground mb-1">
-                    ¿Todo listo?
+                    {t("cta.eyebrow")}
                   </p>
                   <p className="font-medium text-foreground">
-                    Comienza tu experiencia ahora
+                    {t("cta.title")}
                   </p>
                 </div>
                 <motion.div
@@ -314,8 +333,8 @@ export function HowItWorks() {
                     className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary transition-smooth"
                     asChild
                   >
-                    <Link href="/crear-porra">
-                      Crea tu porra del Mundial 2026
+                    <Link href="/signup" aria-label={t("cta.button_aria")}>
+                      {t("cta.button_label")}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>

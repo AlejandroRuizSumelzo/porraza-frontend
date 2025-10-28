@@ -11,20 +11,41 @@ import {
 } from "lucide-react";
 
 export interface RouteItem {
-  title: string;
+  /**
+   * Translation key for the route title
+   * Will be resolved using next-intl: t(`navigation.${titleKey}`)
+   */
+  titleKey: string;
+  /**
+   * Route path WITHOUT locale prefix
+   * next-intl will automatically prepend the locale
+   * Example: "/dashboard" becomes "/dashboard" (es) or "/en/dashboard" (en)
+   */
   href: string;
   icon: LucideIcon;
-  description?: string;
+  /**
+   * Translation key for the route description
+   * Will be resolved using next-intl
+   */
+  descriptionKey?: string;
 }
 
 export interface RouteGroup {
-  label: string;
+  /**
+   * Translation key for the group label
+   */
+  labelKey: string;
   items: RouteItem[];
 }
 
 /**
  * App routes configuration
  * Centralized routes for the application
+ *
+ * IMPORTANT: These paths do NOT include locale prefixes
+ * next-intl middleware will automatically add them:
+ * - Spanish (default): /dashboard
+ * - English: /en/dashboard
  */
 export const APP_ROUTES = {
   // Public routes
@@ -59,65 +80,71 @@ export const APP_ROUTES = {
  * Navigation items for the sidebar
  * Note: "Ligas" has been removed from navigation as it's now integrated
  * into the "Mis Ligas" collapsible section in the sidebar
+ *
+ * These use translation keys that will be resolved by next-intl:
+ * - titleKey maps to messages/[locale].json -> navigation.[titleKey]
+ * - descriptionKey maps to messages/[locale].json -> navigation.[descriptionKey]
  */
 export const navigationItems: RouteItem[] = [
   {
-    title: "Dashboard",
+    titleKey: "dashboard",
     href: APP_ROUTES.app.dashboard,
     icon: LayoutDashboard,
-    description: "Vista general de tus predicciones",
+    descriptionKey: "dashboardDescription",
   },
   {
-    title: "Predicciones",
+    titleKey: "predictions",
     href: APP_ROUTES.app.predictions,
     icon: Trophy,
-    description: "Crea y gestiona tus predicciones",
+    descriptionKey: "predictionsDescription",
   },
   {
-    title: "Calendario",
+    titleKey: "schedule",
     href: APP_ROUTES.app.schedule,
     icon: Calendar,
-    description: "Próximos partidos y horarios",
+    descriptionKey: "scheduleDescription",
   },
   {
-    title: "Estadios",
+    titleKey: "stadiums",
     href: APP_ROUTES.app.stadiums,
     icon: Building,
-    description: "Explora los estadios",
+    descriptionKey: "stadiumsDescription",
   },
   {
-    title: "Selecciones",
+    titleKey: "teams",
     href: APP_ROUTES.app.teams,
     icon: Shield,
-    description: "Equipos del Mundial 2026",
+    descriptionKey: "teamsDescription",
   },
   {
-    title: "Clasificación",
+    titleKey: "leaderboard",
     href: APP_ROUTES.app.leaderboard,
     icon: TrendingUp,
-    description: "Rankings y estadísticas",
+    descriptionKey: "leaderboardDescription",
   },
   {
-    title: "Reglas",
+    titleKey: "rules",
     href: APP_ROUTES.app.rules,
     icon: BookOpen,
-    description: "Reglas del juego y puntuación",
+    descriptionKey: "rulesDescription",
   },
   {
-    title: "Configuración",
+    titleKey: "settings",
     href: APP_ROUTES.app.settings,
     icon: Settings,
-    description: "Ajustes de tu cuenta",
+    descriptionKey: "settingsDescription",
   },
 ];
 
 /**
  * Grouped navigation items (for more complex sidebar structures)
  * Note: Indexes updated after removing "Ligas" from navigation
+ *
+ * labelKey maps to messages/[locale].json -> navigation.groups.[labelKey]
  */
 export const navigationGroups: RouteGroup[] = [
   {
-    label: "Principal",
+    labelKey: "main",
     items: [
       navigationItems[0], // Dashboard
       navigationItems[1], // Predicciones
@@ -125,7 +152,7 @@ export const navigationGroups: RouteGroup[] = [
     ],
   },
   {
-    label: "Comunidad",
+    labelKey: "community",
     items: [
       navigationItems[3], // Estadios
       navigationItems[4], // Selecciones
@@ -133,7 +160,7 @@ export const navigationGroups: RouteGroup[] = [
     ],
   },
   {
-    label: "Información",
+    labelKey: "information",
     items: [
       navigationItems[6], // Reglas
       navigationItems[7], // Configuración

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/presentation/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -8,12 +9,14 @@ import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/presentation/lib/utils";
 
 export function Header() {
+  const t = useTranslations("landing.header");
+  const tCommon = useTranslations("common");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: "#funcionalidades", label: "Funcionalidades" },
-    { href: "#precios", label: "Precios" },
-    { href: "#preguntas", label: "Preguntas" },
+    { href: "#funcionalidades", label: t("nav.features") },
+    { href: "#precios", label: t("nav.pricing") },
+    { href: "#preguntas", label: t("nav.faq") },
   ];
 
   return (
@@ -37,10 +40,11 @@ export function Header() {
             <Link
               href="/"
               className="flex items-center gap-2.5 group focus-ring rounded-lg px-1 -ml-1"
+              aria-label={t("aria.brand_home")}
             >
               <motion.img
                 src="/logo/porraza-icon.webp"
-                alt="Porraza"
+                alt={tCommon("app_name")}
                 className="h-8 w-8"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -51,7 +55,7 @@ export function Header() {
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                Porraza
+                {tCommon("app_name")}
               </motion.span>
             </Link>
           </motion.div>
@@ -103,7 +107,7 @@ export function Header() {
                   whileTap={{ scale: 0.95 }}
                   className="inline-block"
                 >
-                  Iniciar sesión
+                  {t("actions.login")}
                 </motion.span>
               </Link>
             </motion.div>
@@ -125,7 +129,7 @@ export function Header() {
                 className="bg-primary text-primary-foreground hover:bg-primary/90 transition-smooth shadow-soft hover:shadow-medium focus-ring"
                 asChild
               >
-                <Link href="/signup">Crea tu Liga</Link>
+                <Link href="/signup">{t("actions.create_league")}</Link>
               </Button>
             </motion.div>
           </motion.div>
@@ -133,7 +137,7 @@ export function Header() {
           <motion.button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 rounded-lg hover:bg-accent/50 transition-smooth focus-ring"
-            aria-label="Toggle menu"
+            aria-label={t("aria.toggle_menu")}
             aria-expanded={mobileMenuOpen}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -177,7 +181,7 @@ export function Header() {
             >
               <nav
                 className="flex flex-col gap-1 py-4"
-                aria-label="Mobile navigation"
+                aria-label={t("aria.mobile_navigation")}
               >
                 {navLinks.map((link, index) => (
                   <motion.div
@@ -230,7 +234,7 @@ export function Header() {
                       whileTap={{ scale: 0.95 }}
                       className="inline-block"
                     >
-                      Iniciar Sesión
+                      {t("actions.login")}
                     </motion.span>
                   </Link>
                 </motion.div>
@@ -257,7 +261,7 @@ export function Header() {
                         href="/signup"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        Crea tu Liga
+                        {t("actions.create_league")}
                       </Link>
                     </Button>
                   </motion.div>

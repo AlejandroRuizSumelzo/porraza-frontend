@@ -39,7 +39,8 @@ function CheckoutContent() {
     };
 
     initCheckout();
-  }, []); // Run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount - createSession is stable from custom hook
 
   if (error) {
     return (

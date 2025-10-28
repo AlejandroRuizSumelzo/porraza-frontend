@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations, useMessages } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/presentation/components/ui/button";
 import {
   Card,
@@ -13,86 +14,105 @@ import { Check, Sparkles, Users, Building2 } from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/presentation/lib/utils";
 
-const features = [
-  {
-    text: "Acceso a todas las funciones de la liga",
-    color: "primary",
-  },
-  {
-    text: "Puntuación automática tras cada partido",
-    color: "secondary",
-  },
-  {
-    text: "Clasificación en tiempo real",
-    color: "destructive",
-  },
-  {
-    text: "Interfaz adaptada a móvil",
-    color: "primary",
-  },
-  {
-    text: "Sin costes ocultos",
-    color: "destructive",
-  },
+const featureConfig = [
+  { color: "primary" },
+  { color: "secondary" },
+  { color: "destructive" },
+  { color: "primary" },
+  { color: "destructive" },
 ] as const;
 
-const useCases = [
-  {
-    icon: Users,
-    text: "Grupos de amigos",
-    color: "secondary",
-  },
-  {
-    icon: Building2,
-    text: "Empresas y equipos",
-    color: "primary",
-  },
-];
+const useCaseConfig = [
+  { icon: Users, color: "secondary" },
+  { icon: Building2, color: "primary" },
+] as const;
+
+type FeatureItem = {
+  color: (typeof featureConfig)[number]["color"];
+  text: string;
+};
+
+type UseCaseItem = {
+  icon: (typeof useCaseConfig)[number]["icon"];
+  color: (typeof useCaseConfig)[number]["color"];
+  text: string;
+};
 
 export function Pricing() {
+  const t = useTranslations("landing.pricing");
+  const messages = useMessages();
+
+  const pricingMessages = messages.landing.pricing as Record<string, unknown>;
+  const featureTexts = (pricingMessages.features ?? []) as string[];
+  const useCaseTexts = (pricingMessages.use_cases ?? []) as string[];
+  const priceMessages = (pricingMessages.price ?? {}) as {
+    value?: string;
+    suffix?: string;
+  };
+  const jsonLdMessages = (pricingMessages.jsonld ?? {}) as {
+    name?: string;
+    description?: string;
+    price?: string;
+    currency?: string;
+    unit_text?: string;
+    url?: string;
+  };
+
+  const featureItems: FeatureItem[] = featureConfig
+    .map((config, index) => ({
+      ...config,
+      text: featureTexts[index] ?? "",
+    }))
+    .filter((feature) => feature.text);
+
+  const useCases: UseCaseItem[] = useCaseConfig
+    .map((config, index) => ({
+      ...config,
+      text: useCaseTexts[index] ?? "",
+    }))
+    .filter((useCase) => useCase.text);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: jsonLdMessages.name ?? "",
+    description: jsonLdMessages.description ?? "",
+    provider: { "@type": "Organization", name: "Porraza" },
+    areaServed: "Worldwide",
+    offers: {
+      "@type": "Offer",
+      price: jsonLdMessages.price ?? "1.99",
+      priceCurrency: jsonLdMessages.currency ?? "EUR",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: jsonLdMessages.price ?? "1.99",
+        priceCurrency: jsonLdMessages.currency ?? "EUR",
+        unitText: jsonLdMessages.unit_text ?? "player",
+      },
+      category: "one-time-purchase",
+      url: jsonLdMessages.url ?? "https://porraza.com/precios",
+    },
+  };
+
   return (
     <section
       id="precios"
       className="relative bg-background py-20 md:py-32 overflow-hidden"
       aria-labelledby="pricing-title"
     >
-      {/* Background decorations */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/3 left-1/4 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 h-96 w-96 rounded-full bg-secondary/5 blur-3xl" />
       </div>
 
-      {/* Datos estructurados: Servicio + Oferta */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Service",
-            name: "Porraza - Porra del Mundial 2026",
-            description:
-              "Organiza tu porra del Mundial 2026 con ligas privadas, clasificación en vivo y puntuación automática. Sin suscripción.",
-            provider: { "@type": "Organization", name: "Porraza" },
-            areaServed: "Worldwide",
-            offers: {
-              "@type": "Offer",
-              price: "1.99",
-              priceCurrency: "EUR",
-              priceSpecification: {
-                "@type": "UnitPriceSpecification",
-                price: "1.99",
-                priceCurrency: "EUR",
-                unitText: "usuario",
-              },
-              category: "one-time-purchase",
-              url: "https://porraza.com/precios",
-            },
-          }),
+          __html: JSON.stringify(jsonLd),
         }}
       />
 
       <div className="container-responsive">
-        {/* Header Section */}
         <motion.div
           className="mb-16 text-center"
           initial={{ opacity: 0, y: 30 }}
@@ -109,7 +129,7 @@ export function Pricing() {
           >
             <Badge className="accent-destructive border gap-2">
               <Sparkles className="h-3 w-3" />
-              Precio Simple
+              {t("badge")}
             </Badge>
           </motion.div>
 
@@ -121,10 +141,11 @@ export function Pricing() {
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            Precio{" "}
-            <span className="gradient-text-tricolor">
-              simple y transparente
-            </span>
+            {t.rich("title", {
+              highlight: (chunks) => (
+                <span className="gradient-text-tricolor">{chunks}</span>
+              ),
+            })}
           </motion.h2>
 
           <motion.p
@@ -134,15 +155,22 @@ export function Pricing() {
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Un único pago, todas las funciones.{" "}
-            <strong className="font-semibold text-foreground">
-              Sin suscripciones
-            </strong>
-            , sin sorpresas.
+            {t.rich("description", {
+              strongPrimary: (chunks) => (
+                <strong className="font-semibold text-primary">{chunks}</strong>
+              ),
+              emphasis: (chunks) => (
+                <em className="font-medium text-secondary">{chunks}</em>
+              ),
+              strongDestructive: (chunks) => (
+                <strong className="font-semibold text-destructive">
+                  {chunks}
+                </strong>
+              ),
+            })}
           </motion.p>
         </motion.div>
 
-        {/* Pricing Card */}
         <div className="mx-auto max-w-lg">
           <motion.div
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -155,10 +183,7 @@ export function Pricing() {
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
               <Card className="relative border-2 border-border/50 bg-card/50 backdrop-blur-sm shadow-medium hover:shadow-primary/20 hover:border-primary/30 transition-all duration-500 overflow-hidden group">
-                {/* Gradient overlay on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-destructive/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                {/* Decorative corner accent */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-bl-full" />
 
                 <CardHeader className="relative pt-8 pb-8 text-center">
@@ -180,18 +205,18 @@ export function Pricing() {
                       }}
                     >
                       <span className="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                        1,99 €
+                        {priceMessages.value ?? ""}
                       </span>
                     </motion.div>
                     <span className="ml-2 text-muted-foreground">
-                      por usuario
+                      {priceMessages.suffix ?? ""}
                     </span>
                   </motion.div>
 
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-secondary animate-pulse" />
                     <p className="text-sm text-muted-foreground">
-                      Pago único para todo el torneo
+                      {t("price_note")}
                     </p>
                   </div>
                 </CardHeader>
@@ -200,11 +225,11 @@ export function Pricing() {
                   <ul
                     className="space-y-3"
                     role="list"
-                    aria-label="Características incluidas en el precio"
+                    aria-label={t("features_aria")}
                   >
-                    {features.map((feature, index) => (
+                    {featureItems.map((feature, index) => (
                       <motion.li
-                        key={feature.text}
+                        key={`${feature.text}-${index}`}
                         className="flex items-center gap-3"
                         role="listitem"
                         initial={{ opacity: 0, x: -20 }}
@@ -259,23 +284,18 @@ export function Pricing() {
                       className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary transition-smooth text-base"
                       asChild
                     >
-                      <Link
-                        href="/crear-porra"
-                        aria-label="Crear porra del Mundial 2026 con Porraza"
-                      >
-                        Crear mi porra ahora
+                      <Link href="/signup" aria-label={t("cta.aria")}>
+                        {t("cta.label")}
                       </Link>
                     </Button>
                   </motion.div>
                 </CardFooter>
 
-                {/* Bottom gradient line */}
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-destructive" />
               </Card>
             </motion.div>
           </motion.div>
 
-          {/* Use cases badges */}
           <motion.div
             className="mt-8 flex flex-wrap items-center justify-center gap-3"
             initial={{ opacity: 0, y: 20 }}
@@ -283,10 +303,12 @@ export function Pricing() {
             viewport={{ once: true }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            <span className="text-sm text-muted-foreground">Ideal para:</span>
+            <span className="text-sm text-muted-foreground">
+              {t("ideal_for_label")}
+            </span>
             {useCases.map((useCase, index) => (
               <motion.div
-                key={useCase.text}
+                key={`${useCase.text}-${index}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -302,14 +324,13 @@ export function Pricing() {
                       "accent-secondary hover:shadow-secondary/20"
                   )}
                 >
-                  <useCase.icon className="h-3.5 w-3.5" />
+                  <useCase.icon className="h-3.5 w-3.5" aria-hidden="true" />
                   {useCase.text}
                 </Badge>
               </motion.div>
             ))}
           </motion.div>
 
-          {/* Trust message */}
           <motion.div
             className="mt-6 text-center"
             initial={{ opacity: 0 }}
@@ -318,11 +339,11 @@ export function Pricing() {
             transition={{ delay: 1, duration: 0.6 }}
           >
             <p className="text-sm text-muted-foreground">
-              Facturación simple por usuario.{" "}
-              <span className="font-medium text-foreground">
-                Sin letra pequeña
-              </span>
-              .
+              {t.rich("trust", {
+                strong: (chunks) => (
+                  <span className="font-medium text-foreground">{chunks}</span>
+                ),
+              })}
             </p>
           </motion.div>
         </div>

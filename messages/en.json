@@ -1,0 +1,270 @@
+{
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "predictions": "Predictions",
+    "schedule": "Schedule",
+    "stadiums": "Stadiums",
+    "teams": "Teams",
+    "leagues": "Leagues",
+    "leaderboard": "Leaderboard",
+    "rules": "Rules",
+    "settings": "Settings",
+    "dashboardDescription": "Overview of your predictions",
+    "predictionsDescription": "Create and manage your predictions",
+    "scheduleDescription": "Upcoming matches and schedules",
+    "stadiumsDescription": "Explore the stadiums",
+    "teamsDescription": "World Cup 2026 teams",
+    "leaderboardDescription": "Rankings and statistics",
+    "rulesDescription": "Game rules and scoring",
+    "settingsDescription": "Your account settings",
+    "groups": {
+      "main": "Main",
+      "community": "Community",
+      "information": "Information"
+    }
+  },
+  "common": {
+    "app_name": "Porraza"
+  },
+  "landing": {
+    "header": {
+      "aria": {
+        "toggle_menu": "Toggle menu",
+        "mobile_navigation": "Mobile navigation",
+        "brand_home": "Go to Porraza home"
+      },
+      "nav": {
+        "features": "Features",
+        "pricing": "Pricing",
+        "faq": "FAQ"
+      },
+      "actions": {
+        "login": "Log in",
+        "create_league": "Create your league"
+      }
+    },
+    "hero": {
+      "badge": "World Cup mode: plugged in",
+      "title": "Build the boldest <highlight>World Cup 2026 pool</highlight> and poke your crew, the office, and the usual suspects",
+      "description": "Porraza is the fast-and-sassy way to launch your <strongPrimary>World Cup pick'em</strongPrimary>. In minutes you spin up the league, drag everyone into the fun, and our <emphasis>live leaderboard</emphasis> keeps the banter loud. Built for <strongDestructive>companies, HR squads, and friends who holler at every goal</strongDestructive>. <strongFinal>Smash start, light up the pool, and let the chaos roll.</strongFinal>",
+      "features": [
+        "Private or open leagues—you run the show",
+        "Live scoring and standings without breaking a sweat",
+        "Turbo templates to share picks in seconds",
+        "Admin cockpit tuned for HR shindigs"
+      ],
+      "tags": [
+        "World Cup 2026 pool",
+        "Sweepstake with friends",
+        "Private leagues",
+        "Live leaderboards",
+        "HR game plan"
+      ],
+      "cta": {
+        "primary": {
+          "label": "Set up my pool free",
+          "aria": "Launch a World Cup 2026 pool for free"
+        },
+        "secondary": {
+          "label": "Join a league",
+          "aria": "Browse available Porraza leagues"
+        }
+      },
+      "note": "<strong>Porraza</strong> already keeps teams and companies of every size buzzing.",
+      "image_alt": "Spain fans celebrating the 2010 World Cup win"
+    },
+    "features": {
+      "badge": "Porraza superpowers",
+      "title": "Four loud tricks to make your <highlight>World Cup 2026 pool</highlight> unstoppable",
+      "description": "Here's the starter pack so no one zones out: <strongPrimary>VIP-style leagues</strongPrimary>, <emphasis>automatic score magic</emphasis>, and a <strongDestructive>one-time payment with zero soap opera twists</strongDestructive>. Built for companies, HR crews, and friends who live the World Cup with jokes and bragging rights.",
+      "cards": {
+        "create_leagues": {
+          "title": "VIP leagues with a velvet rope",
+          "description": "Invite only the people you actually like—office squad, weekly five-a-side, or the family chat. You decide who gets past the bouncer."
+        },
+        "live_scoring": {
+          "title": "Live scoring, Excel stays retired",
+          "description": "We update every match on the fly. You just show off the leaderboard while spreadsheets collect dust."
+        },
+        "one_time_payment": {
+          "title": "One-time payment, zero drama",
+          "description": "€1.99 per head and done. No sneaky subscriptions, no mystery fees hiding in fine print."
+        },
+        "remote_play": {
+          "title": "Play from wherever WiFi you're in",
+          "description": "Remote work, airport layover, sofa mode—everyone can jump in and prove who actually knows football."
+        }
+      },
+      "highlights": {
+        "no_subscription": "No subscriptions, no cliffhangers",
+        "pricing": "Straight-up price per player: <strongPrice>{price}</strongPrice>",
+        "fast_start": "Three clicks and the smack-talk begins"
+      },
+      "pricing_value": "€1.99"
+    },
+    "how_it_works": {
+      "badge": "Step by step, zero snooze",
+      "title": "Here's how to launch your <highlight>World Cup 2026 pool</highlight> before the first whistle",
+      "description": "Four slick moves and you're in: <strongPrimary>sign up in a blink</strongPrimary>, <emphasis>spin up the league your way</emphasis>, and let the <strongDestructive>auto leaderboard do the heavy lifting</strongDestructive>.",
+      "aria_label": "Steps to create your sweepstake on Porraza",
+      "jsonld": {
+        "name": "How Porraza works for your World Cup 2026 pool",
+        "description": "Follow these steps to create your league, drop predictions, and enjoy live standings with your crew.",
+        "total_time": "PT2M",
+        "supply": "Porraza account",
+        "tool": "Porraza web app"
+      },
+      "steps": [
+        {
+          "title": "Sign up in a blink",
+          "description": "Create your account with secure login. One-time fee per player, no subscriptions, no surprises."
+        },
+        {
+          "title": "Launch your league or join instantly",
+          "description": "Open a private space for the office or friends, or hop in with a code in a couple of seconds."
+        },
+        {
+          "title": "Drop your predictions",
+          "description": "Lock every pick before kickoff with a fast, no-fuss workflow that keeps the hype coming."
+        },
+        {
+          "title": "Track the leaderboard and brag",
+          "description": "Watch live standings, fire off banter, and see who actually rules the World Cup."
+        }
+      ],
+      "cta": {
+        "eyebrow": "Ready to roll?",
+        "title": "Jump in, set the league, and start bragging today",
+      "button_label": "Start my pool now",
+      "button_aria": "Create a World Cup 2026 pool"
+    }
+    },
+    "pricing": {
+      "badge": "No-nonsense pricing",
+      "title": "One payment and your <highlight>World Cup 2026 pool</highlight> is ready to roll",
+      "description": "Skip the endless subscriptions: <strongPrimary>pay once</strongPrimary>, <emphasis>unlock everything</emphasis>, and the <strongDestructive>trash talk lasts all tournament</strongDestructive>.",
+      "jsonld": {
+        "name": "Porraza - World Cup 2026 pool pricing",
+        "description": "Run your pool with private leagues, live standings, and automatic scoring by paying once per player.",
+        "price": "1.99",
+        "currency": "EUR",
+        "unit_text": "player",
+        "url": "https://porraza.com/precios"
+      },
+      "price": {
+        "value": "€1.99",
+        "suffix": "per player"
+      },
+      "price_note": "One-time payment covers the whole tournament",
+      "features_aria": "Perks included in the price",
+      "features": [
+        "Full access to every league feature",
+        "Automatic scoring after every match",
+        "Live leaderboard built for bragging",
+        "Mobile-first experience that looks slick",
+        "Absolutely zero hidden fees"
+      ],
+      "cta": {
+        "label": "Kick off my pool now",
+        "aria": "Create a World Cup 2026 pool with Porraza"
+      },
+      "ideal_for_label": "Perfect for:",
+      "use_cases": [
+        "Crews who laugh their way through the World Cup",
+        "Companies that want the office buzzing"
+      ],
+      "trust": "Simple per-player billing. <strong>No fine print</strong>."
+    },
+    "footer": {
+      "badge": "World Cup 2026 mode lit",
+      "brand": {
+        "aria_home": "Porraza home",
+        "description": "Porraza is the HQ for your World Cup pool: <strongPrimary>private leagues on your terms</strongPrimary>, <emphasis>auto scoring faster than the group chat</emphasis>, and live standings to keep the banter alive. <strongFinal>One payment, zero nonsense.</strongFinal>"
+      },
+      "product_nav": {
+        "heading": "What you'll play with",
+        "aria": "Product navigation",
+        "links": [
+          "Features",
+          "Pricing",
+          "FAQ hits"
+        ]
+      },
+      "legal_nav": {
+        "heading": "Legal (friendly-ish)",
+        "aria": "Legal information",
+        "links": [
+          "Legal notice",
+          "Privacy policy",
+          "Cookies policy",
+          "Support & contact"
+        ]
+      },
+      "socials": {
+        "labels": [
+          "Twitter: memes + scores",
+          "Instagram: pool backstage",
+          "LinkedIn: brag-friendly"
+        ]
+      },
+      "badge_label": "World Cup 2026",
+      "cta": {
+        "label": "Ping support",
+        "aria": "Contact the Porraza support team"
+      },
+      "closing": {
+        "copyright": "© {year} Porraza. All rights reserved and the jokes keep coming.",
+        "tagline": "Built for <strong>private leagues</strong> across teams, companies, and diehard friends."
+      },
+      "jsonld": {
+        "organization_name": "Porraza",
+        "organization_url": "https://porraza.com",
+        "logo": "https://porraza.com/logo.svg",
+        "same_as": [
+          "https://twitter.com/porraza",
+          "https://www.instagram.com/porraza",
+          "https://www.linkedin.com/company/porraza"
+        ],
+        "contact_email": "contacto@porraza.com",
+        "website_name": "Porraza",
+        "website_url": "https://porraza.com"
+      }
+    }
+  },
+  "sidebar": {
+    "branding": {
+      "logo_alt": "Porraza logo"
+    },
+    "leagues": {
+      "title": "My leagues",
+      "manage": "Manage leagues",
+      "toast": {
+        "selected": "League selected",
+        "updated": "League updated"
+      }
+    },
+    "payment": {
+      "title": "Unlock Premium",
+      "description": "Only {price} to access all features",
+      "button": "Complete payment"
+    },
+    "navigation": {
+      "section_title": "Explore",
+      "locked_tooltip": "Complete the {price} payment to unlock"
+    },
+    "logout": {
+      "tooltip": "Sign out",
+      "label": "Sign out",
+      "loading": "Signing out...",
+      "success": {
+        "title": "Signed out",
+        "description": "You have signed out successfully"
+      },
+      "error": {
+        "title": "Sign out error",
+        "description": "We couldn't sign you out. Try again."
+      }
+    }
+  }
+}

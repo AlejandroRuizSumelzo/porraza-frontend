@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
 
 const protectedRoutes = [
   "/dashboard",
@@ -44,28 +46,50 @@ function isUserAuthenticated(request: NextRequest): boolean {
   return false;
 }
 
+// Crear middleware de i18n
+const handleI18nRouting = createIntlMiddleware(routing);
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // PASO 1: Aplicar routing de i18n primero
+  const response = handleI18nRouting(request);
+
+  // PASO 2: Extraer locale de la respuesta de i18n
+  // next-intl inyecta el locale en un header
+  const locale =
+    response.headers.get("x-middleware-request-x-next-intl-locale") ||
+    routing.defaultLocale;
+
+  // PASO 3: Normalizar pathname sin el prefijo de locale para comparar rutas
+  // Ejemplo: /en/dashboard -> /dashboard
+  const pathnameWithoutLocale = pathname.replace(/^\/(en|es)/, "") || "/";
+
+  // PASO 4: Aplicar lógica de autenticación
   const isAuthenticated = isUserAuthenticated(request);
 
   const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathnameWithoutLocale.startsWith(route)
   );
 
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some((route) =>
+    pathnameWithoutLocale.startsWith(route)
+  );
 
+  // Redirigir a login si intenta acceder a ruta protegida sin autenticación
   if (isProtectedRoute && !isAuthenticated) {
-    const loginUrl = new URL("/login", request.url);
+    const loginUrl = new URL(`/${locale}/login`, request.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
+  // Redirigir a dashboard si está autenticado e intenta acceder a auth routes
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
 
-  return NextResponse.next();
+  // Retornar la respuesta de i18n (puede incluir redirects de locale)
+  return response;
 }
 
 export const config = {
