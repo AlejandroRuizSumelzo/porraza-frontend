@@ -6,7 +6,7 @@ import { Input } from "@/presentation/components/ui/input";
 import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import { cn } from "@/presentation/lib/utils";
 import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 
 interface MatchPredictionCardProps {
   matchWithPrediction: MatchWithPrediction;
@@ -36,6 +36,27 @@ export function MatchPredictionCard({
 }: MatchPredictionCardProps) {
   const { match } = matchWithPrediction;
   const [imageError, setImageError] = useState(false);
+
+  const handleScoreChange =
+    (team: "homeScore" | "awayScore") =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+
+      if (value === "") {
+        onScoreChange(match.id, team, "");
+        return;
+      }
+
+      const numericValue = Number(value);
+
+      if (Number.isNaN(numericValue)) {
+        return;
+      }
+
+      const sanitizedValue = Math.max(0, numericValue);
+
+      onScoreChange(match.id, team, sanitizedValue.toString());
+    };
 
   // Check if predictions are locked
   const isLocked = new Date() > new Date(match.predictionsLockedAt);
@@ -162,9 +183,7 @@ export function MatchPredictionCard({
                 min="0"
                 max="20"
                 value={prediction?.homeScore ?? "0"}
-                onChange={(e) =>
-                  onScoreChange(match.id, "homeScore", e.target.value)
-                }
+                onChange={handleScoreChange("homeScore")}
                 disabled={isLocked}
                 className={cn(
                   "h-12 w-12 p-0 text-center text-lg font-bold transition-all sm:h-14 sm:w-14 sm:text-xl",
@@ -190,9 +209,7 @@ export function MatchPredictionCard({
                 min="0"
                 max="20"
                 value={prediction?.awayScore ?? "0"}
-                onChange={(e) =>
-                  onScoreChange(match.id, "awayScore", e.target.value)
-                }
+                onChange={handleScoreChange("awayScore")}
                 disabled={isLocked}
                 className={cn(
                   "h-12 w-12 p-0 text-center text-lg font-bold transition-all sm:h-14 sm:w-14 sm:text-xl",
