@@ -3,6 +3,8 @@ import { PredictionStats } from "@/domain/entities/prediction-stats";
 import { PredictionRanking } from "@/domain/entities/prediction-ranking";
 import { MatchPrediction } from "@/domain/entities/match-prediction";
 import { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
+import { GroupStanding } from "@/domain/entities/group-standing";
+import { BestThirdPlace } from "@/domain/entities/best-third-place";
 
 /**
  * Response for GetOrCreatePrediction
@@ -11,6 +13,15 @@ export interface GetOrCreatePredictionResponse {
   prediction: Prediction;
   ranking: PredictionRanking;
   matches: MatchWithPrediction[];
+  bestThirdPlaces?: BestThirdPlace[];
+}
+
+/**
+ * Response for SaveGroupPredictions
+ */
+export interface SaveGroupPredictionsResponse {
+  prediction: Prediction;
+  bestThirdPlaces?: BestThirdPlace[];
 }
 
 /**
@@ -27,17 +38,19 @@ export interface PredictionRepository {
   getOrCreate(leagueId: string): Promise<GetOrCreatePredictionResponse>;
 
   /**
-   * Save group predictions (6 matches)
+   * Save group predictions (6 matches) and group standings (4 teams)
    * @param leagueId - League UUID
    * @param groupId - Group UUID
    * @param matchPredictions - Array of 6 match predictions
-   * @returns Promise with updated prediction
+   * @param groupStandings - Array of 4 team standings for the group
+   * @returns Promise with updated prediction and optionally bestThirdPlaces (when all groups completed)
    */
   saveGroupPredictions(
     leagueId: string,
     groupId: string,
-    matchPredictions: MatchPrediction[]
-  ): Promise<Prediction>;
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
+  ): Promise<SaveGroupPredictionsResponse>;
 
   /**
    * Update individual awards

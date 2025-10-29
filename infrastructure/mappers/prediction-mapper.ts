@@ -10,6 +10,8 @@ import type {
   RawMatch,
   UserMatchPrediction,
 } from "@/domain/entities/match-with-prediction";
+import type { GroupStanding } from "@/domain/entities/group-standing";
+import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import type { PredictionDTO } from "@/infrastructure/http/dtos/prediction-dto";
 import type { MatchPredictionDTO } from "@/infrastructure/http/dtos/match-prediction-dto";
 import type { PredictionStatsDTO } from "@/infrastructure/http/dtos/prediction-stats-dto";
@@ -19,6 +21,8 @@ import type {
   RawMatchDTO,
   UserMatchPredictionDTO,
 } from "@/infrastructure/http/dtos/match-with-prediction-dto";
+import type { GroupStandingDTO } from "@/infrastructure/http/dtos/group-standing-dto";
+import type { BestThirdPlaceDTO } from "@/infrastructure/http/dtos/best-third-place-dto";
 import { TeamMapper } from "@/infrastructure/mappers/team-mapper";
 import { StadiumMapper } from "@/infrastructure/mappers/stadium-mapper";
 import { GroupMapper } from "@/infrastructure/mappers/group-mapper";
@@ -72,6 +76,8 @@ export class PredictionMapper {
   static matchPredictionToDomain(dto: MatchPredictionDTO): MatchPrediction {
     return {
       matchId: dto.matchId,
+      homeTeamId: dto.homeTeamId,
+      awayTeamId: dto.awayTeamId,
       homeScore: dto.homeScore,
       awayScore: dto.awayScore,
       homeScoreET: dto.homeScoreET ?? null,
@@ -88,6 +94,8 @@ export class PredictionMapper {
   static matchPredictionToDTO(domain: MatchPrediction): MatchPredictionDTO {
     const dto: MatchPredictionDTO = {
       matchId: domain.matchId,
+      homeTeamId: domain.homeTeamId,
+      awayTeamId: domain.awayTeamId,
       homeScore: domain.homeScore,
       awayScore: domain.awayScore,
     };
@@ -221,5 +229,113 @@ export class PredictionMapper {
     dtos: MatchWithPredictionDTO[]
   ): MatchWithPrediction[] {
     return dtos.map((dto) => this.matchWithPredictionToDomain(dto));
+  }
+
+  /**
+   * Transform GroupStandingDTO to Domain Entity
+   */
+  static groupStandingToDomain(dto: GroupStandingDTO): GroupStanding {
+    return {
+      teamId: dto.teamId,
+      position: dto.position,
+      points: dto.points,
+      played: dto.played,
+      wins: dto.wins,
+      draws: dto.draws,
+      losses: dto.losses,
+      goalsFor: dto.goalsFor,
+      goalsAgainst: dto.goalsAgainst,
+      goalDifference: dto.goalDifference,
+    };
+  }
+
+  /**
+   * Transform Domain GroupStanding to DTO
+   */
+  static groupStandingToDTO(domain: GroupStanding): GroupStandingDTO {
+    return {
+      teamId: domain.teamId,
+      position: domain.position,
+      points: domain.points,
+      played: domain.played,
+      wins: domain.wins,
+      draws: domain.draws,
+      losses: domain.losses,
+      goalsFor: domain.goalsFor,
+      goalsAgainst: domain.goalsAgainst,
+      goalDifference: domain.goalDifference,
+    };
+  }
+
+  /**
+   * Transform array of GroupStanding DTOs to Domain
+   */
+  static groupStandingsToDomain(dtos: GroupStandingDTO[]): GroupStanding[] {
+    return dtos.map((dto) => this.groupStandingToDomain(dto));
+  }
+
+  /**
+   * Transform array of Domain GroupStandings to DTOs
+   */
+  static groupStandingsToDTOs(domain: GroupStanding[]): GroupStandingDTO[] {
+    return domain.map((standing) => this.groupStandingToDTO(standing));
+  }
+
+  /**
+   * Transform BestThirdPlaceDTO to Domain Entity
+   */
+  static bestThirdPlaceToDomain(dto: BestThirdPlaceDTO): BestThirdPlace {
+    return {
+      id: dto.id,
+      predictionId: dto.predictionId,
+      teamId: dto.teamId,
+      rankingPosition: dto.rankingPosition,
+      points: dto.points,
+      goalDifference: dto.goalDifference,
+      goalsFor: dto.goalsFor,
+      fromGroupId: dto.fromGroupId,
+      hasTiebreakConflict: dto.hasTiebreakConflict,
+      tiebreakGroup: dto.tiebreakGroup,
+      manualTiebreakOrder: dto.manualTiebreakOrder,
+      pointsEarned: dto.pointsEarned,
+      createdAt: new Date(dto.createdAt),
+      updatedAt: new Date(dto.updatedAt),
+    };
+  }
+
+  /**
+   * Transform Domain BestThirdPlace to DTO
+   */
+  static bestThirdPlaceToDTO(domain: BestThirdPlace): BestThirdPlaceDTO {
+    return {
+      id: domain.id,
+      predictionId: domain.predictionId,
+      teamId: domain.teamId,
+      rankingPosition: domain.rankingPosition,
+      points: domain.points,
+      goalDifference: domain.goalDifference,
+      goalsFor: domain.goalsFor,
+      fromGroupId: domain.fromGroupId,
+      hasTiebreakConflict: domain.hasTiebreakConflict,
+      tiebreakGroup: domain.tiebreakGroup,
+      manualTiebreakOrder: domain.manualTiebreakOrder,
+      pointsEarned: domain.pointsEarned,
+      createdAt: domain.createdAt.toISOString(),
+      updatedAt: domain.updatedAt.toISOString(),
+    };
+  }
+
+  /**
+   * Transform array of BestThirdPlace DTOs to Domain
+   */
+  static bestThirdPlacesToDomain(dtos: BestThirdPlaceDTO[]): BestThirdPlace[] {
+    return dtos.map((dto) => this.bestThirdPlaceToDomain(dto));
+  }
+
+  /**
+   * Transform array of Domain BestThirdPlaces to DTOs
+   */
+  static bestThirdPlacesToDTOs(domain: BestThirdPlace[]): BestThirdPlaceDTO[] {
+    return domain.map((place) => this.bestThirdPlaceToDTO(place));
   }
 }

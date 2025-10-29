@@ -150,10 +150,10 @@ export function MatchPredictionCard({
 
       {/* Match Content - Ultra compact */}
       <div className="px-3 py-2.5 sm:px-4 sm:py-3">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 max-[380px]:gap-3 sm:gap-3">
           {/* Home Team */}
           <div className="flex items-center justify-end gap-2 sm:gap-2.5">
-            <div className="min-w-0 text-right">
+            <div className="min-w-0 text-right max-[380px]:hidden">
               <p
                 className="truncate text-xs font-semibold leading-tight text-foreground sm:text-sm"
                 title={match.homeTeam.name}
@@ -244,7 +244,7 @@ export function MatchPredictionCard({
               bordered
               className="shrink-0"
             />
-            <div className="min-w-0 text-left">
+            <div className="min-w-0 text-left max-[380px]:hidden">
               <p
                 className="truncate text-xs font-semibold leading-tight text-foreground sm:text-sm"
                 title={match.awayTeam.name}

@@ -2,20 +2,21 @@
 
 import { useState } from "react";
 import { useSaveGroupPredictions } from "@/di/client/hooks/use-predictions";
-import type { Prediction } from "@/domain/entities/prediction";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
+import type { GroupStanding } from "@/domain/entities/group-standing";
+import type { SaveGroupPredictionsResponse } from "@/domain/repositories/prediction-repository";
 
 /**
  * Custom Hook: useSaveGroupPredictionsClient
  *
- * Saves match predictions for a group (6 matches)
+ * Saves match predictions for a group (6 matches) and group standings (4 teams)
  * This is a mutation hook for Client Components
  *
  * Usage:
  * ```tsx
  * const { saveGroupPredictions, isLoading, error } = useSaveGroupPredictionsClient();
  *
- * await saveGroupPredictions(leagueId, groupId, matchPredictions);
+ * await saveGroupPredictions(leagueId, groupId, matchPredictions, groupStandings);
  * ```
  */
 
@@ -23,8 +24,9 @@ interface UseSaveGroupPredictionsResult {
   saveGroupPredictions: (
     leagueId: string,
     groupId: string,
-    matchPredictions: MatchPrediction[]
-  ) => Promise<Prediction | null>;
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
+  ) => Promise<SaveGroupPredictionsResponse | null>;
   isLoading: boolean;
   error: string | null;
 }
@@ -38,8 +40,9 @@ export function useSaveGroupPredictionsClient(): UseSaveGroupPredictionsResult {
   const saveGroupPredictions = async (
     leagueId: string,
     groupId: string,
-    matchPredictions: MatchPrediction[]
-  ): Promise<Prediction | null> => {
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
+  ): Promise<SaveGroupPredictionsResponse | null> => {
     setIsLoading(true);
     setError(null);
 
@@ -48,16 +51,20 @@ export function useSaveGroupPredictionsClient(): UseSaveGroupPredictionsResult {
         leagueId,
         groupId,
         matchCount: matchPredictions.length,
+        standingsCount: groupStandings.length,
       });
 
       const result = await saveGroupPredictionsUseCase.execute(
         leagueId,
         groupId,
-        matchPredictions
+        matchPredictions,
+        groupStandings
       );
 
       console.log("[useSaveGroupPredictions] Predictions saved successfully:", {
-        predictionId: result.id,
+        predictionId: result.prediction.id,
+        hasBestThirdPlaces: !!result.bestThirdPlaces,
+        bestThirdPlacesCount: result.bestThirdPlaces?.length,
       });
 
       return result;

@@ -10,6 +10,16 @@ export interface MatchPredictionDTO {
   matchId: string;
 
   /**
+   * UUID of the home team (required for backend validation)
+   */
+  homeTeamId: string;
+
+  /**
+   * UUID of the away team (required for backend validation)
+   */
+  awayTeamId: string;
+
+  /**
    * Home team score (90 minutes)
    */
   homeScore: number;

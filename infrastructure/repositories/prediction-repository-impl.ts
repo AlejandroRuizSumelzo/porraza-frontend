@@ -1,15 +1,18 @@
 import type { Prediction } from "@/domain/entities/prediction";
 import type { PredictionStats } from "@/domain/entities/prediction-stats";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
+import type { GroupStanding } from "@/domain/entities/group-standing";
 import type {
   PredictionRepository,
   GetOrCreatePredictionResponse,
+  SaveGroupPredictionsResponse,
 } from "@/domain/repositories/prediction-repository";
 import type { HttpClient } from "@/infrastructure/http/client";
 import type { PredictionDTO } from "@/infrastructure/http/dtos/prediction-dto";
 import type { PredictionStatsDTO } from "@/infrastructure/http/dtos/prediction-stats-dto";
 import type { PredictionRankingDTO } from "@/infrastructure/http/dtos/prediction-ranking-dto";
 import type { MatchWithPredictionDTO } from "@/infrastructure/http/dtos/match-with-prediction-dto";
+import type { BestThirdPlaceDTO } from "@/infrastructure/http/dtos/best-third-place-dto";
 import { PredictionMapper } from "@/infrastructure/mappers/prediction-mapper";
 import { HttpError } from "@/infrastructure/http/client";
 
@@ -20,13 +23,18 @@ interface GetOrCreatePredictionAPIResponse {
   prediction: PredictionDTO;
   ranking: PredictionRankingDTO;
   matches: MatchWithPredictionDTO[];
+  bestThirdPlaces?: BestThirdPlaceDTO[];
 }
 
 /**
  * Response from POST /predictions/league/{leagueId}/groups/{groupId}
  */
 interface SaveGroupPredictionsAPIResponse {
-  prediction: PredictionDTO;
+  success: boolean;
+  message: string;
+  groupsCompleted: boolean;
+  totalGroupsCompleted: number;
+  bestThirdPlaces?: BestThirdPlaceDTO[];
 }
 
 /**
@@ -49,6 +57,11 @@ export class PredictionRepositoryImpl implements PredictionRepository {
           `${this.baseUrl}/league/${leagueId}`
         );
 
+      // Transform bestThirdPlaces if present (only when all 12 groups are completed)
+      const bestThirdPlaces = response.data.bestThirdPlaces
+        ? PredictionMapper.bestThirdPlacesToDomain(response.data.bestThirdPlaces)
+        : undefined;
+
       return {
         prediction: PredictionMapper.predictionToDomain(
           response.data.prediction
@@ -57,6 +70,7 @@ export class PredictionRepositoryImpl implements PredictionRepository {
         matches: PredictionMapper.matchesWithPredictionsToDomain(
           response.data.matches
         ),
+        bestThirdPlaces,
       };
     } catch (error) {
       if (error instanceof HttpError) {
@@ -78,24 +92,51 @@ export class PredictionRepositoryImpl implements PredictionRepository {
   }
 
   /**
-   * Save group predictions (6 matches)
+   * Save group predictions (6 matches) and group standings (4 teams)
    */
   async saveGroupPredictions(
     leagueId: string,
     groupId: string,
-    matchPredictions: MatchPrediction[]
-  ): Promise<Prediction> {
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
+  ): Promise<SaveGroupPredictionsResponse> {
     try {
       const matchPredictionDTOs =
         PredictionMapper.matchPredictionsToDTOs(matchPredictions);
+      const groupStandingDTOs =
+        PredictionMapper.groupStandingsToDTOs(groupStandings);
 
       const response =
         await this.httpClient.post<SaveGroupPredictionsAPIResponse>(
           `${this.baseUrl}/league/${leagueId}/groups/${groupId}`,
-          { matchPredictions: matchPredictionDTOs }
+          {
+            matchPredictions: matchPredictionDTOs,
+            groupStandings: groupStandingDTOs,
+          }
         );
 
-      return PredictionMapper.predictionToDomain(response.data.prediction);
+      console.log(
+        "[PredictionRepository] Group predictions saved successfully:",
+        {
+          groupsCompleted: response.data.groupsCompleted,
+          totalGroupsCompleted: response.data.totalGroupsCompleted,
+          hasBestThirdPlaces: !!response.data.bestThirdPlaces,
+        }
+      );
+
+      // Backend no longer returns prediction object, so we need to refetch
+      // This ensures we get the most up-to-date prediction with new totalPoints
+      const updatedPrediction = await this.getOrCreate(leagueId);
+
+      // Transform bestThirdPlaces if present
+      const bestThirdPlaces = response.data.bestThirdPlaces
+        ? PredictionMapper.bestThirdPlacesToDomain(response.data.bestThirdPlaces)
+        : undefined;
+
+      return {
+        prediction: updatedPrediction.prediction,
+        bestThirdPlaces,
+      };
     } catch (error) {
       if (error instanceof HttpError) {
         console.error(

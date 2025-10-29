@@ -3,9 +3,12 @@
 import { useState, useMemo } from "react";
 import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
+import type { GroupStanding } from "@/domain/entities/group-standing";
+import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import { MatchPredictionCard } from "@/presentation/components/predictions/match-prediction-card";
 import { GroupStandingsTable } from "@/presentation/components/predictions/group-standings-table";
 import { TiebreakerControl } from "@/presentation/components/predictions/tiebreaker-control";
+import { BestThirdPlacesAccordion } from "@/presentation/components/predictions/best-third-places-accordion";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
@@ -32,9 +35,12 @@ interface GroupStagePredictionsProps {
   error: string | null;
   onSave: (
     groupId: string,
-    matchPredictions: MatchPrediction[]
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
   ) => Promise<void>;
   isSaving: boolean;
+  bestThirdPlaces: BestThirdPlace[] | null;
+  onNavigateToKnockout?: () => void;
 }
 
 export function GroupStagePredictions({
@@ -45,6 +51,8 @@ export function GroupStagePredictions({
   error,
   onSave,
   isSaving,
+  bestThirdPlaces,
+  onNavigateToKnockout,
 }: GroupStagePredictionsProps) {
   const [predictions, setPredictions] = useState<
     Record<string, { homeScore: string; awayScore: string }>
@@ -168,6 +176,8 @@ export function GroupStagePredictions({
 
       matchPredictions.push({
         matchId,
+        homeTeamId: matchWithPrediction.match.homeTeam.id,
+        awayTeamId: matchWithPrediction.match.awayTeam.id,
         homeScore,
         awayScore,
         homeScoreET: null,
@@ -184,8 +194,30 @@ export function GroupStagePredictions({
       return;
     }
 
+    // Convert calculated standings to GroupStanding[] format
+    const groupStandings: GroupStanding[] = standings.map((standing) => ({
+      teamId: standing.team.id,
+      position: standing.position,
+      points: standing.points,
+      played: standing.played,
+      wins: standing.won,
+      draws: standing.drawn,
+      losses: standing.lost,
+      goalsFor: standing.goalsFor,
+      goalsAgainst: standing.goalsAgainst,
+      goalDifference: standing.goalDifference,
+    }));
+
+    // Validate we have exactly 4 standings
+    if (groupStandings.length !== 4) {
+      toast.error(
+        `El Grupo ${selectedGroup} debe tener exactamente 4 equipos. Tiene ${groupStandings.length}`
+      );
+      return;
+    }
+
     try {
-      await onSave(groupId, matchPredictions);
+      await onSave(groupId, matchPredictions, groupStandings);
       toast.success(
         `Predicciones del Grupo ${selectedGroup} guardadas correctamente`
       );
@@ -385,6 +417,22 @@ export function GroupStagePredictions({
           );
         })}
       </ButtonGroup>
+
+      {/* 🆕 Best Third Places Accordion */}
+      <BestThirdPlacesAccordion
+        bestThirdPlaces={bestThirdPlaces}
+        matches={matches}
+        completedGroupsCount={
+          availableGroups.filter((group) => {
+            const groupMatches = groupedMatches[group] || [];
+            const groupPredicted =
+              groupMatches.filter(hasValidPrediction).length;
+            return groupPredicted === groupMatches.length;
+          }).length
+        }
+        totalGroupsCount={12}
+        onNavigateToKnockout={onNavigateToKnockout}
+      />
 
       {/* Current Group Stats */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">

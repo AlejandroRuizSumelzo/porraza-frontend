@@ -9,6 +9,8 @@ import type { Prediction } from "@/domain/entities/prediction";
 import type { PredictionRanking } from "@/domain/entities/prediction-ranking";
 import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
+import type { GroupStanding } from "@/domain/entities/group-standing";
+import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 
 /**
  * Custom Hook: usePrediction (Client)
@@ -18,7 +20,7 @@ import type { MatchPrediction } from "@/domain/entities/match-prediction";
  *
  * Usage:
  * ```tsx
- * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving } = usePrediction(leagueId);
+ * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving, bestThirdPlaces } = usePrediction(leagueId);
  * ```
  */
 
@@ -31,9 +33,11 @@ interface UsePredictionResult {
   refetch: () => Promise<void>;
   saveGroupPredictions: (
     groupId: string,
-    matchPredictions: MatchPrediction[]
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
   ) => Promise<void>;
   isSaving: boolean;
+  bestThirdPlaces: BestThirdPlace[] | null;
 }
 
 export function usePrediction(leagueId: string | null): UsePredictionResult {
@@ -46,6 +50,9 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bestThirdPlaces, setBestThirdPlaces] = useState<
+    BestThirdPlace[] | null
+  >(null);
 
   const fetchPrediction = async () => {
     if (!leagueId) {
@@ -67,11 +74,18 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
         predictionId: result.prediction.id,
         totalPoints: result.prediction.totalPoints,
         matchesCount: result.matches.length,
+        hasBestThirdPlaces: !!result.bestThirdPlaces,
+        bestThirdPlacesCount: result.bestThirdPlaces?.length,
       });
 
       setPrediction(result.prediction);
       setRanking(result.ranking);
       setMatches(result.matches);
+
+      // Set bestThirdPlaces if present (only when all 12 groups are completed)
+      if (result.bestThirdPlaces) {
+        setBestThirdPlaces(result.bestThirdPlaces);
+      }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch prediction";
@@ -85,7 +99,8 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
 
   const saveGroupPredictions = async (
     groupId: string,
-    matchPredictions: MatchPrediction[]
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
   ) => {
     if (!leagueId) {
       throw new Error("League ID is required to save predictions");
@@ -98,29 +113,42 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
         leagueId,
         groupId,
         predictionsCount: matchPredictions.length,
+        standingsCount: groupStandings.length,
       });
 
-      const updatedPrediction = await saveGroupPredictionsUseCase.execute(
+      const result = await saveGroupPredictionsUseCase.execute(
         leagueId,
         groupId,
-        matchPredictions
+        matchPredictions,
+        groupStandings
       );
 
       console.log("[usePrediction] Group predictions saved successfully:", {
-        predictionId: updatedPrediction.id,
-        totalPoints: updatedPrediction.totalPoints,
+        predictionId: result.prediction.id,
+        totalPoints: result.prediction.totalPoints,
+        hasBestThirdPlaces: !!result.bestThirdPlaces,
+        bestThirdPlacesCount: result.bestThirdPlaces?.length,
       });
 
       // Update prediction state with new data
-      setPrediction(updatedPrediction);
+      setPrediction(result.prediction);
+
+      // Update bestThirdPlaces if returned (all 12 groups completed)
+      if (result.bestThirdPlaces) {
+        setBestThirdPlaces(result.bestThirdPlaces);
+        console.log(
+          "[usePrediction] All groups completed! Best third places calculated:",
+          {
+            count: result.bestThirdPlaces.length,
+          }
+        );
+      }
 
       // Refetch matches to get updated userPrediction data
       await fetchPrediction();
     } catch (err) {
       const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Failed to save group predictions";
+        err instanceof Error ? err.message : "Failed to save group predictions";
 
       console.error("[usePrediction] Error saving group predictions:", err);
       throw new Error(errorMessage);
@@ -143,5 +171,6 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     refetch: fetchPrediction,
     saveGroupPredictions,
     isSaving,
+    bestThirdPlaces,
   };
 }

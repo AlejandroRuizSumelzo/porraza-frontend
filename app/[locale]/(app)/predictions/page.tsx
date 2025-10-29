@@ -44,6 +44,7 @@ export default function PredictionsPage() {
     error,
     saveGroupPredictions,
     isSaving,
+    bestThirdPlaces,
   } = usePrediction(selectedLeagueId);
 
   return (
@@ -55,6 +56,7 @@ export default function PredictionsPage() {
       selectedLeagueId={selectedLeagueId}
       saveGroupPredictions={saveGroupPredictions}
       isSaving={isSaving}
+      bestThirdPlaces={bestThirdPlaces}
     />
   );
 }

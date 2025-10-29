@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   SidebarTrigger,
   useSidebar,
@@ -16,6 +16,8 @@ import { Trophy, Target, Award, Lock } from "lucide-react";
 import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 import type { Prediction } from "@/domain/entities/prediction";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
+import type { GroupStanding } from "@/domain/entities/group-standing";
+import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import { cn } from "@/presentation/lib/utils";
 
 interface PredictionsPageContentProps {
@@ -26,9 +28,11 @@ interface PredictionsPageContentProps {
   selectedLeagueId: string | null;
   saveGroupPredictions: (
     groupId: string,
-    matchPredictions: MatchPrediction[]
+    matchPredictions: MatchPrediction[],
+    groupStandings: GroupStanding[]
   ) => Promise<void>;
   isSaving: boolean;
+  bestThirdPlaces: BestThirdPlace[] | null;
 }
 
 /**
@@ -55,8 +59,15 @@ export function PredictionsPageContent({
   selectedLeagueId,
   saveGroupPredictions,
   isSaving,
+  bestThirdPlaces,
 }: PredictionsPageContentProps) {
   const { open, isMobile } = useSidebar();
+  const [activeTab, setActiveTab] = useState("groups");
+
+  // Handler to navigate to knockout tab
+  const handleNavigateToKnockout = () => {
+    setActiveTab("knockout");
+  };
 
   // Calculate if all group stage predictions are completed
   const allGroupPredictionsCompleted = matches.every(
@@ -112,7 +123,11 @@ export function PredictionsPageContent({
       {/* Main Content */}
       <main className="flex-1 overflow-auto p-4">
         <div className="mx-auto max-w-5xl">
-          <Tabs defaultValue="groups" className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="mb-6 w-full justify-start">
               <TabsTrigger value="groups" className="gap-2">
                 <Target className="size-4" />
@@ -147,6 +162,8 @@ export function PredictionsPageContent({
                 error={error}
                 onSave={saveGroupPredictions}
                 isSaving={isSaving}
+                bestThirdPlaces={bestThirdPlaces}
+                onNavigateToKnockout={handleNavigateToKnockout}
               />
             </TabsContent>
 

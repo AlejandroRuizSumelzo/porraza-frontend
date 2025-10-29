@@ -122,9 +122,9 @@ export function MatchCard({ match }: MatchCardProps) {
 
       <div className="p-4">
         {/* Teams & Score */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-[380px]:gap-2">
           {/* Home Team */}
-          <div className="flex flex-1 items-center gap-3">
+          <div className="flex flex-1 items-center gap-3 max-[380px]:justify-end">
             <TeamFlag
               fifaCode={match.homeTeam.fifaCode}
               teamName={match.homeTeam.name}
@@ -137,7 +137,7 @@ export function MatchCard({ match }: MatchCardProps) {
                   "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg shadow-primary/30"
               )}
             />
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 max-[380px]:hidden">
               <p
                 className={cn(
                   "font-semibold line-clamp-1 transition-colors",
@@ -153,7 +153,7 @@ export function MatchCard({ match }: MatchCardProps) {
           </div>
 
           {/* Score or VS */}
-          <div className="flex flex-col items-center justify-center px-3">
+          <div className="flex flex-col items-center justify-center px-3 max-[380px]:px-2">
             {match.score ? (
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2.5 text-2xl font-bold">
@@ -198,8 +198,8 @@ export function MatchCard({ match }: MatchCardProps) {
           </div>
 
           {/* Away Team */}
-          <div className="flex flex-1 items-center gap-3">
-            <div className="flex-1 min-w-0 text-right">
+          <div className="flex flex-1 items-center gap-3 max-[380px]:justify-start">
+            <div className="flex-1 min-w-0 text-right max-[380px]:hidden">
               <p
                 className={cn(
                   "font-semibold line-clamp-1 transition-colors",
