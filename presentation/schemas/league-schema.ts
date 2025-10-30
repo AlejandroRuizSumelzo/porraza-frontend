@@ -43,10 +43,7 @@ export const joinLeagueCodeSchema = z.object({
     .string()
     .min(6, "El código debe tener al menos 6 caracteres")
     .max(20, "El código no puede exceder 20 caracteres")
-    .regex(
-      /^[A-Z0-9]+$/i,
-      "El código debe contener solo letras y números"
-    )
+    .regex(/^[A-Z0-9]+$/i, "El código debe contener solo letras y números")
     .trim()
     .transform((val) => val.toUpperCase()),
 });

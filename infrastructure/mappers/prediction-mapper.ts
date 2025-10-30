@@ -12,6 +12,9 @@ import type {
 } from "@/domain/entities/match-with-prediction";
 import type { GroupStanding } from "@/domain/entities/group-standing";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
+import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
+import type { MatchPhase } from "@/domain/entities/match";
+import type { SaveKnockoutPredictionsResponse } from "@/domain/repositories/prediction-repository";
 import type { PredictionDTO } from "@/infrastructure/http/dtos/prediction-dto";
 import type { MatchPredictionDTO } from "@/infrastructure/http/dtos/match-prediction-dto";
 import type { PredictionStatsDTO } from "@/infrastructure/http/dtos/prediction-stats-dto";
@@ -23,6 +26,9 @@ import type {
 } from "@/infrastructure/http/dtos/match-with-prediction-dto";
 import type { GroupStandingDTO } from "@/infrastructure/http/dtos/group-standing-dto";
 import type { BestThirdPlaceDTO } from "@/infrastructure/http/dtos/best-third-place-dto";
+import type { RoundOf32MatchDTO } from "@/infrastructure/http/dtos/round-of-32-match-dto";
+import type { SaveKnockoutPredictionsRequestDTO } from "@/infrastructure/http/dtos/knockout-predictions-request-dto";
+import type { SaveKnockoutPredictionsResponseDTO } from "@/infrastructure/http/dtos/knockout-predictions-response-dto";
 import { TeamMapper } from "@/infrastructure/mappers/team-mapper";
 import { StadiumMapper } from "@/infrastructure/mappers/stadium-mapper";
 import { GroupMapper } from "@/infrastructure/mappers/group-mapper";
@@ -337,5 +343,90 @@ export class PredictionMapper {
    */
   static bestThirdPlacesToDTOs(domain: BestThirdPlace[]): BestThirdPlaceDTO[] {
     return domain.map((place) => this.bestThirdPlaceToDTO(place));
+  }
+
+  /**
+   * Transform RoundOf32MatchDTO to Domain Entity
+   */
+  static roundOf32MatchToDomain(dto: RoundOf32MatchDTO): RoundOf32Match {
+    return {
+      id: dto.id,
+      matchNumber: dto.matchNumber,
+      homeTeam: TeamMapper.toDomain(dto.homeTeam),
+      awayTeam: TeamMapper.toDomain(dto.awayTeam),
+      stadium: StadiumMapper.toDomain(dto.stadium),
+      matchDate: new Date(dto.matchDate),
+      matchTime: dto.matchTime,
+      phase: dto.phase,
+      predictionsLockedAt: new Date(dto.predictionsLockedAt),
+    };
+  }
+
+  /**
+   * Transform Domain RoundOf32Match to DTO
+   */
+  static roundOf32MatchToDTO(domain: RoundOf32Match): RoundOf32MatchDTO {
+    return {
+      id: domain.id,
+      matchNumber: domain.matchNumber,
+      homeTeam: TeamMapper.toDTO(domain.homeTeam),
+      awayTeam: TeamMapper.toDTO(domain.awayTeam),
+      stadium: StadiumMapper.toDTO(domain.stadium),
+      matchDate: domain.matchDate.toISOString(),
+      matchTime: domain.matchTime,
+      phase: domain.phase,
+      predictionsLockedAt: domain.predictionsLockedAt.toISOString(),
+    };
+  }
+
+  /**
+   * Transform array of RoundOf32Match DTOs to Domain
+   */
+  static roundOf32MatchesToDomain(
+    dtos: RoundOf32MatchDTO[]
+  ): RoundOf32Match[] {
+    return dtos.map((dto) => this.roundOf32MatchToDomain(dto));
+  }
+
+  /**
+   * Transform array of Domain RoundOf32Matches to DTOs
+   */
+  static roundOf32MatchesToDTOs(
+    domain: RoundOf32Match[]
+  ): RoundOf32MatchDTO[] {
+    return domain.map((match) => this.roundOf32MatchToDTO(match));
+  }
+
+  /**
+   * Prepare SaveKnockoutPredictions request from Domain to DTO
+   * @param phase - Knockout phase (ROUND_OF_32, etc)
+   * @param predictions - Array of match predictions
+   * @returns SaveKnockoutPredictionsRequestDTO ready for API
+   */
+  static saveKnockoutRequestToDTO(
+    phase: MatchPhase,
+    predictions: MatchPrediction[]
+  ): SaveKnockoutPredictionsRequestDTO {
+    return {
+      phase: phase,
+      predictions: this.matchPredictionsToDTOs(predictions),
+    };
+  }
+
+  /**
+   * Transform SaveKnockoutPredictionsResponseDTO to Domain Entity
+   * @param dto - Response DTO from API
+   * @returns SaveKnockoutPredictionsResponse domain entity
+   */
+  static knockoutResponseToDomain(
+    dto: SaveKnockoutPredictionsResponseDTO
+  ): SaveKnockoutPredictionsResponse {
+    return {
+      success: dto.success,
+      message: dto.message,
+      phase: dto.phase as MatchPhase,
+      matchesSaved: dto.matchesSaved,
+      knockoutsCompleted: dto.knockoutsCompleted,
+    };
   }
 }

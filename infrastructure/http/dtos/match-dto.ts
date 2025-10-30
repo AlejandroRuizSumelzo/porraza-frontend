@@ -7,6 +7,7 @@ import type { StadiumDTO } from "@/infrastructure/http/dtos/stadium-dto";
  */
 export type MatchPhaseDTO =
   | "GROUP_STAGE"
+  | "ROUND_OF_32"
   | "ROUND_OF_16"
   | "QUARTER_FINALS"
   | "SEMI_FINALS"

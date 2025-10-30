@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Mail, CheckCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  forgotPasswordSchema,
+  createForgotPasswordSchema,
   type ForgotPasswordFormData,
 } from "@/presentation/schemas/forgot-password-schema";
 import { useForgotPasswordForm } from "@/presentation/hooks/auth/use-forgot-password";
@@ -57,6 +58,10 @@ export function ForgotPasswordDialog({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
 }: ForgotPasswordDialogProps = {}) {
+  const t = useTranslations("auth.forgot");
+  const validationT = useTranslations("forms.validation");
+  const placeholders = useTranslations("forms.placeholders");
+
   const [internalOpen, setInternalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { forgotPassword, isLoading, error, clearError } =
@@ -68,6 +73,15 @@ export function ForgotPasswordDialog({
     controlledOnOpenChange !== undefined
       ? controlledOnOpenChange
       : setInternalOpen;
+
+  const forgotPasswordSchema = useMemo(
+    () =>
+      createForgotPasswordSchema({
+        emailRequired: validationT("forgot_email_required"),
+        emailInvalid: validationT("email_invalid"),
+      }),
+    [validationT]
+  );
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -84,9 +98,10 @@ export function ForgotPasswordDialog({
 
     if (response) {
       // Success: Show message and schedule auto-close
-      setSuccessMessage(response.message);
-      toast.success("Email enviado", {
-        description: response.message,
+      const successText = response.message ?? t("success_state.message");
+      setSuccessMessage(successText);
+      toast.success(t("toasts.success.title"), {
+        description: successText,
       });
 
       // Reset form and close dialog after 2.5 seconds
@@ -97,8 +112,8 @@ export function ForgotPasswordDialog({
       }, 2500);
     } else {
       // Error: Toast already shows the error, FieldError will display it inline
-      toast.error("Error", {
-        description: error || "No se pudo enviar el email de recuperación",
+      toast.error(t("auth.toasts.error.title"), {
+        description: error ?? t("auth.toasts.error.description"),
       });
     }
   };
@@ -119,12 +134,9 @@ export function ForgotPasswordDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="w-5 h-5 text-primary" />
-            Recuperar Contraseña
+            {t("title")}
           </DialogTitle>
-          <DialogDescription>
-            Ingresa tu email y te enviaremos un enlace para restablecer tu
-            contraseña.
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <AnimatePresence mode="wait">
@@ -164,19 +176,19 @@ export function ForgotPasswordDialog({
               className="space-y-5"
             >
               <Field data-invalid={!!form.formState.errors.email}>
-                <FieldLabel htmlFor="forgot-email">Email</FieldLabel>
+                <FieldLabel htmlFor="forgot-email">
+                  {t("field_label")}
+                </FieldLabel>
                 <Input
                   id="forgot-email"
                   type="email"
-                  placeholder="tu@email.com"
+                  placeholder={placeholders("email")}
                   autoComplete="email"
                   aria-invalid={!!form.formState.errors.email}
                   disabled={isLoading}
                   {...form.register("email")}
                 />
-                <FieldDescription>
-                  Te enviaremos un enlace de recuperación a este email.
-                </FieldDescription>
+                <FieldDescription>{t("field_description")}</FieldDescription>
                 <FieldError errors={[form.formState.errors.email]} />
               </Field>
 
@@ -197,16 +209,16 @@ export function ForgotPasswordDialog({
                   onClick={() => setOpen(false)}
                   disabled={isLoading}
                 >
-                  Cancelar
+                  {t("cancel")}
                 </Button>
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Enviando...
+                      {t("submit_loading")}
                     </>
                   ) : (
-                    "Enviar enlace"
+                    t("submit")
                   )}
                 </Button>
               </div>

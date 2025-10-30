@@ -246,6 +246,107 @@
     /* Add breathing room around the iframe */
     padding: 0;
   }
+
+  /* ========================================
+   * @g-loot/react-tournament-brackets styles
+   * Enhanced with Porraza palette:
+   * Primary: #2a398d, Secondary: #3cac3b, Destructive: #e61d25
+   * ======================================== */
+
+  /* SVG Connector Lines - Primary blue with smooth transitions */
+  svg path[stroke] {
+    @apply transition-all duration-300;
+    stroke-width: 2.5 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+  }
+
+  /* Highlight connectors on parent hover */
+  svg g:hover path[stroke] {
+    stroke: #3cac3b !important; /* Secondary green on hover */
+    stroke-width: 3 !important;
+    filter: drop-shadow(0 0 4px rgba(60, 172, 59, 0.4));
+  }
+
+  /* Round Headers - Enhanced with primary color */
+  svg rect[fill="#2F3648"],
+  svg rect[fill="#2a398d"] {
+    @apply transition-all duration-300;
+    filter: drop-shadow(0 2px 8px rgba(42, 57, 141, 0.3));
+  }
+
+  svg rect[fill="#2F3648"]:hover,
+  svg rect[fill="#2a398d"]:hover {
+    filter: drop-shadow(0 4px 12px rgba(42, 57, 141, 0.5));
+  }
+
+  /* Round Header Text - Better typography */
+  svg text[fill="currentColor"],
+  svg text[fill="white"],
+  svg text[fill="#ffffff"] {
+    @apply font-semibold tracking-wide;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Match cards within SVG */
+  svg foreignObject {
+    @apply transition-transform duration-200;
+  }
+
+  svg foreignObject:hover {
+    filter: drop-shadow(0 4px 12px rgba(60, 172, 59, 0.2));
+  }
+
+  /* Bracket container improvements */
+  .bracket svg {
+    @apply overflow-visible;
+  }
+
+  /* Round separator lines with gradient */
+  svg line[stroke] {
+    @apply transition-all duration-300;
+  }
+
+  /* Pulsing animation for active matches */
+  @keyframes pulse-bracket {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    .bracket-wrapper {
+      @apply gap-8 px-4 py-6;
+      min-height: 1000px;
+    }
+
+    .bracket-wrapper .react-bracket-seed {
+      min-width: 180px;
+      max-width: 180px;
+      height: 80px;
+    }
+
+    .bracket-wrapper .react-bracket-seed-team {
+      height: 40px;
+    }
+
+    .bracket-round {
+      min-width: 180px;
+      min-height: 1000px;
+    }
+
+    .bracket-wrapper > div {
+      min-height: 1000px;
+    }
+
+    .bracket-wrapper .react-bracket-round-title {
+      @apply text-xs;
+    }
+  }
 }
 
 .dark {

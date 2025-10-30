@@ -1,8 +1,24 @@
 import { z } from "zod";
 
-export const loginSchema = z.object({
-  email: z.email("Dirección de email inválida"),
-  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
-});
+export type LoginFormData = {
+  email: string;
+  password: string;
+};
 
-export type LoginFormData = z.infer<typeof loginSchema>;
+export type LoginValidationMessages = {
+  emailRequired: string;
+  emailInvalid: string;
+  passwordRequired: string;
+  passwordMin: string;
+};
+
+export const createLoginSchema = ({
+  emailRequired,
+  emailInvalid,
+  passwordRequired,
+  passwordMin,
+}: LoginValidationMessages) =>
+  z.object({
+    email: z.email(emailInvalid).min(1, emailRequired),
+    password: z.string().min(1, passwordRequired).min(8, passwordMin),
+  });

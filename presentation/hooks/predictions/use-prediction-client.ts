@@ -11,6 +11,7 @@ import type { MatchWithPrediction } from "@/domain/entities/match-with-predictio
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import type { GroupStanding } from "@/domain/entities/group-standing";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
+import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
 
 /**
  * Custom Hook: usePrediction (Client)
@@ -20,7 +21,7 @@ import type { BestThirdPlace } from "@/domain/entities/best-third-place";
  *
  * Usage:
  * ```tsx
- * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving, bestThirdPlaces } = usePrediction(leagueId);
+ * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving, bestThirdPlaces, roundOf32Matches } = usePrediction(leagueId);
  * ```
  */
 
@@ -38,6 +39,7 @@ interface UsePredictionResult {
   ) => Promise<void>;
   isSaving: boolean;
   bestThirdPlaces: BestThirdPlace[] | null;
+  roundOf32Matches: RoundOf32Match[] | null;
 }
 
 export function usePrediction(leagueId: string | null): UsePredictionResult {
@@ -52,6 +54,9 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
   const [error, setError] = useState<string | null>(null);
   const [bestThirdPlaces, setBestThirdPlaces] = useState<
     BestThirdPlace[] | null
+  >(null);
+  const [roundOf32Matches, setRoundOf32Matches] = useState<
+    RoundOf32Match[] | null
   >(null);
 
   const fetchPrediction = async () => {
@@ -76,6 +81,8 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
         matchesCount: result.matches.length,
         hasBestThirdPlaces: !!result.bestThirdPlaces,
         bestThirdPlacesCount: result.bestThirdPlaces?.length,
+        hasRoundOf32Matches: !!result.roundOf32Matches,
+        roundOf32MatchesCount: result.roundOf32Matches?.length,
       });
 
       setPrediction(result.prediction);
@@ -85,6 +92,11 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
       // Set bestThirdPlaces if present (only when all 12 groups are completed)
       if (result.bestThirdPlaces) {
         setBestThirdPlaces(result.bestThirdPlaces);
+      }
+
+      // Set roundOf32Matches if present (only when all 12 groups are completed)
+      if (result.roundOf32Matches) {
+        setRoundOf32Matches(result.roundOf32Matches);
       }
     } catch (err) {
       const errorMessage =
@@ -172,5 +184,6 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     saveGroupPredictions,
     isSaving,
     bestThirdPlaces,
+    roundOf32Matches,
   };
 }

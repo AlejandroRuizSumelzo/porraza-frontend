@@ -136,9 +136,9 @@
       "cta": {
         "eyebrow": "¿Todo listo?",
         "title": "Entra, monta la liga y presume desde ya",
-      "button_label": "Montar porra ya",
-      "button_aria": "Crear porra del Mundial 2026"
-    }
+        "button_label": "Montar porra ya",
+        "button_aria": "Crear porra del Mundial 2026"
+      }
     },
     "pricing": {
       "badge": "Precio sin rodeos",
@@ -185,11 +185,7 @@
       "product_nav": {
         "heading": "Lo que vas a toquetear",
         "aria": "Navegación de producto",
-        "links": [
-          "Funcionalidades",
-          "Precios",
-          "Preguntas top"
-        ]
+        "links": ["Funcionalidades", "Precios", "Preguntas top"]
       },
       "legal_nav": {
         "heading": "Legal (tranquilito)",
@@ -229,6 +225,108 @@
         "contact_email": "contacto@porraza.com",
         "website_name": "Porraza",
         "website_url": "https://porraza.com"
+      }
+    }
+  },
+  "forms": {
+    "fields": {
+      "name": "Nombre completo",
+      "email": "Email",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar contraseña"
+    },
+    "placeholders": {
+      "name": "Tu nombre para la tabla",
+      "email": "tu@email.com",
+      "password": "••••••••",
+      "confirm_password": "Repite la clave"
+    },
+    "validation": {
+      "name_min": "Pon al menos 2 caracteres para que tu nombre salga en el ranking.",
+      "email_required": "Necesitamos tu email para invitarte a la fiesta.",
+      "email_invalid": "Ese email no está listo para el Mundial.",
+      "password_required": "La contraseña no puede quedarse en el banquillo.",
+      "password_min": "Usa mínimo 8 caracteres para aguantar la prórroga.",
+      "confirm_password_required": "Repite la contraseña para confirmar la jugada.",
+      "passwords_mismatch": "Las contraseñas no hacen piña. Revísalas.",
+      "forgot_email_required": "Dinos tu email y te mandamos un salvavidas."
+    },
+    "social": {
+      "google": "Google",
+      "github": "GitHub"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Vuelve al vestuario",
+      "subtitle": "Entra con tus credenciales y sigue la porra en vivo.",
+      "remember_me": "Recuérdame (para no perderme la alineación)",
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "submit": "Entrar a mi porra",
+      "submit_loading": "Abriendo el vestuario...",
+      "divider": "O conecta con",
+      "signup_prompt": "¿Aún no tienes cuenta?",
+      "signup_link": "Súmate ya",
+      "back_home": "Volver al inicio",
+      "toasts": {
+        "prefill": {
+          "title": "Email listo",
+          "description": "Solo falta tu contraseña para entrar."
+        },
+        "success": {
+          "title": "¡Bienvenido de vuelta!",
+          "description": "Has iniciado sesión como {email}."
+        },
+        "error": {
+          "title": "Credenciales en fuera de juego",
+          "description": "Revisa tus datos o usa el recordatorio de contraseña."
+        }
+      }
+    },
+    "signup": {
+      "title": "Crea tu cuenta y arma la porra",
+      "subtitle": "Regístrate en menos tiempo del que dura el himno.",
+      "submit": "Crear mi cuenta",
+      "submit_loading": "Preparando tu asiento...",
+      "divider": "O regístrate con",
+      "login_prompt": "¿Ya tienes cuenta?",
+      "login_link": "Inicia sesión",
+      "back_home": "Volver al inicio",
+      "banner": {
+        "title": "Pago único de €1.99",
+        "description": "Verifica tu email y luego completa el pago para desbloquear todas las funcionalidades."
+      },
+      "toasts": {
+        "success": {
+          "title": "¡Registro exitoso!",
+          "description": "Verifica tu email y luego vuelve para completar el pago."
+        },
+        "error": {
+          "title": "No pudimos registrar tu cuenta",
+          "description": "Revisa los datos e inténtalo otra vez."
+        }
+      }
+    },
+    "forgot": {
+      "title": "Recuperar contraseña",
+      "description": "Ingresa tu email y te enviaremos un enlace de rescate.",
+      "field_label": "Email",
+      "field_description": "Te mandaremos un enlace de recuperación a este correo.",
+      "cancel": "Cancelar",
+      "submit": "Enviar enlace",
+      "submit_loading": "Enviando enlace...",
+      "toasts": {
+        "success": {
+          "title": "Email enviado",
+          "description": "Revisa tu bandeja y sigue las instrucciones."
+        },
+        "error": {
+          "title": "No pudimos enviar el email",
+          "description": "Inténtalo de nuevo en un momento."
+        }
+      },
+      "success_state": {
+        "message": "Correo enviado. Revisa tu bandeja y sigue el enlace."
       }
     }
   },

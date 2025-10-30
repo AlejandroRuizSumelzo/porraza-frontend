@@ -110,6 +110,9 @@ function TeamFlag({
   const [imageLoaded, setImageLoaded] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
 
+  // Check if this is a TBD placeholder
+  const isTBD = fifaCode === "TBD" || fifaCode?.toUpperCase() === "TBD";
+
   // Generate default image path
   const flagImagePath = imagePath || `/teams/${fifaCode}.png`;
 
@@ -178,11 +181,14 @@ function TeamFlag({
         src={flagImagePath}
         alt={`${teamName} flag`}
         className={cn(
-          "absolute inset-0 block h-full w-full object-cover select-none pointer-events-none",
+          "absolute inset-0 block h-full w-full select-none pointer-events-none",
+          // TBD: use object-contain with padding, others: object-cover with bleed
+          isTBD ? "object-contain p-1" : "object-cover",
           "transition-opacity duration-300 will-change-transform translate-z-0"
         )}
         style={{
-          transform: `scale(${bleedScale})`,
+          // Only apply bleed scale to non-TBD images
+          transform: isTBD ? "scale(1)" : `scale(${bleedScale})`,
           opacity: imageLoaded ? 1 : 0,
         }}
         loading="lazy"

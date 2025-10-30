@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useForgotPassword as useForgotPasswordUseCase } from "@/di/client/hooks/use-auth";
 
 /**
@@ -18,6 +19,7 @@ import { useForgotPassword as useForgotPasswordUseCase } from "@/di/client/hooks
  * @returns Object with forgotPassword function, loading state, error state, and clearError function
  */
 export function useForgotPasswordForm() {
+  const t = useTranslations("auth.forgot.toasts.error");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const forgotPasswordUseCase = useForgotPasswordUseCase();
@@ -35,7 +37,7 @@ export function useForgotPasswordForm() {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Error al solicitar recuperación de contraseña";
+          : t("description");
       setError(errorMessage);
       return null;
     } finally {

@@ -1,17 +1,39 @@
 import { z } from "zod";
 
-export const signupSchema = z
-  .object({
-    name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-    email: z.email("Dirección de email inválida"),
-    password: z
-      .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden",
-    path: ["confirmPassword"],
-  });
+export type SignupFormData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
-export type SignupFormData = z.infer<typeof signupSchema>;
+export type SignupValidationMessages = {
+  nameMin: string;
+  emailRequired: string;
+  emailInvalid: string;
+  passwordRequired: string;
+  passwordMin: string;
+  confirmPasswordRequired: string;
+  passwordsMismatch: string;
+};
+
+export const createSignupSchema = ({
+  nameMin,
+  emailRequired,
+  emailInvalid,
+  passwordRequired,
+  passwordMin,
+  confirmPasswordRequired,
+  passwordsMismatch,
+}: SignupValidationMessages) =>
+  z
+    .object({
+      name: z.string().min(2, nameMin),
+      email: z.email(emailInvalid).min(1, emailRequired),
+      password: z.string().min(1, passwordRequired).min(8, passwordMin),
+      confirmPassword: z.string().min(1, confirmPasswordRequired),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: passwordsMismatch,
+      path: ["confirmPassword"],
+    });

@@ -136,9 +136,9 @@
       "cta": {
         "eyebrow": "Ready to roll?",
         "title": "Jump in, set the league, and start bragging today",
-      "button_label": "Start my pool now",
-      "button_aria": "Create a World Cup 2026 pool"
-    }
+        "button_label": "Start my pool now",
+        "button_aria": "Create a World Cup 2026 pool"
+      }
     },
     "pricing": {
       "badge": "No-nonsense pricing",
@@ -185,11 +185,7 @@
       "product_nav": {
         "heading": "What you'll play with",
         "aria": "Product navigation",
-        "links": [
-          "Features",
-          "Pricing",
-          "FAQ hits"
-        ]
+        "links": ["Features", "Pricing", "FAQ hits"]
       },
       "legal_nav": {
         "heading": "Legal (friendly-ish)",
@@ -229,6 +225,108 @@
         "contact_email": "contacto@porraza.com",
         "website_name": "Porraza",
         "website_url": "https://porraza.com"
+      }
+    }
+  },
+  "forms": {
+    "fields": {
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "confirm_password": "Confirm password"
+    },
+    "placeholders": {
+      "name": "Your name for the leaderboard",
+      "email": "you@email.com",
+      "password": "••••••••",
+      "confirm_password": "Repeat the password"
+    },
+    "validation": {
+      "name_min": "Give us at least 2 characters so we can slap your name on the leaderboard.",
+      "email_required": "We need your email to send the invite.",
+      "email_invalid": "That email doesn’t look World Cup ready.",
+      "password_required": "Don’t leave the password warming the bench.",
+      "password_min": "Use at least 8 characters so it survives overtime.",
+      "confirm_password_required": "Please repeat the password to seal the play.",
+      "passwords_mismatch": "Those passwords aren’t playing on the same team.",
+      "forgot_email_required": "Drop your email and we’ll send the rescue link."
+    },
+    "social": {
+      "google": "Google",
+      "github": "GitHub"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Back to the locker room",
+      "subtitle": "Log in with your creds and keep the pool rolling.",
+      "remember_me": "Remember me (so I don’t miss kickoff)",
+      "forgot_password": "Forgot your password?",
+      "submit": "Log me in",
+      "submit_loading": "Opening the locker room...",
+      "divider": "Or jump in with",
+      "signup_prompt": "Don’t have an account yet?",
+      "signup_link": "Join for free",
+      "back_home": "Back to home",
+      "toasts": {
+        "prefill": {
+          "title": "Email ready",
+          "description": "Just drop your password and you’re in."
+        },
+        "success": {
+          "title": "Welcome back!",
+          "description": "You’re logged in as {email}."
+        },
+        "error": {
+          "title": "Credentials offside",
+          "description": "Check your details or tap the password reminder."
+        }
+      }
+    },
+    "signup": {
+      "title": "Create your account and spark the pool",
+      "subtitle": "Sign up faster than the anthem finishes.",
+      "submit": "Create my account",
+      "submit_loading": "Warming up your seat...",
+      "divider": "Or sign up with",
+      "login_prompt": "Already have an account?",
+      "login_link": "Log in",
+      "back_home": "Back to home",
+      "banner": {
+        "title": "One-time payment of €1.99",
+        "description": "Verify your email and then complete the payment to unlock every feature."
+      },
+      "toasts": {
+        "success": {
+          "title": "Signup complete!",
+          "description": "Check your email, then come back to finish the payment."
+        },
+        "error": {
+          "title": "We couldn’t create your account",
+          "description": "Review the info and try again."
+        }
+      }
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "description": "Drop your email and we’ll send a rescue link.",
+      "field_label": "Email",
+      "field_description": "We’ll email the recovery link to this address.",
+      "cancel": "Cancel",
+      "submit": "Send link",
+      "submit_loading": "Sending link...",
+      "toasts": {
+        "success": {
+          "title": "Email sent",
+          "description": "Check your inbox and follow the instructions."
+        },
+        "error": {
+          "title": "We couldn’t send the email",
+          "description": "Try again in a moment."
+        }
+      },
+      "success_state": {
+        "message": "Link sent! Check your inbox and follow the play-by-play."
       }
     }
   },

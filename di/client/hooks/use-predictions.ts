@@ -33,6 +33,21 @@ export function useSaveGroupPredictions() {
 }
 
 /**
+ * Use Save Knockout Predictions Hook
+ * Access the SaveKnockoutPredictionsUseCase from the DI container
+ *
+ * @example
+ * ```tsx
+ * const saveKnockoutPredictionsUseCase = useSaveKnockoutPredictions();
+ * const result = await saveKnockoutPredictionsUseCase.execute(predictionId, phase, predictions);
+ * ```
+ */
+export function useSaveKnockoutPredictions() {
+  const { saveKnockoutPredictionsUseCase } = useDependencies();
+  return saveKnockoutPredictionsUseCase;
+}
+
+/**
  * Use Update Awards Hook
  * Access the UpdateAwardsUseCase from the DI container
  *

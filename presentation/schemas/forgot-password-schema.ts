@@ -1,14 +1,18 @@
 import { z } from "zod";
 
-/**
- * Forgot Password Form Schema
- * Validation schema for the forgot password form using Zod
- */
-export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, "El email es requerido")
-    .email("Dirección de email inválida"),
-});
+export type ForgotPasswordFormData = {
+  email: string;
+};
 
-export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ForgotPasswordValidationMessages = {
+  emailRequired: string;
+  emailInvalid: string;
+};
+
+export const createForgotPasswordSchema = ({
+  emailRequired,
+  emailInvalid,
+}: ForgotPasswordValidationMessages) =>
+  z.object({
+    email: z.email(emailInvalid).min(1, emailRequired),
+  });

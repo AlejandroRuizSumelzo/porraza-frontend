@@ -2,10 +2,12 @@ import type { Prediction } from "@/domain/entities/prediction";
 import type { PredictionStats } from "@/domain/entities/prediction-stats";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import type { GroupStanding } from "@/domain/entities/group-standing";
+import type { MatchPhase } from "@/domain/entities/match";
 import type {
   PredictionRepository,
   GetOrCreatePredictionResponse,
   SaveGroupPredictionsResponse,
+  SaveKnockoutPredictionsResponse,
 } from "@/domain/repositories/prediction-repository";
 import type { HttpClient } from "@/infrastructure/http/client";
 import type { PredictionDTO } from "@/infrastructure/http/dtos/prediction-dto";
@@ -13,6 +15,8 @@ import type { PredictionStatsDTO } from "@/infrastructure/http/dtos/prediction-s
 import type { PredictionRankingDTO } from "@/infrastructure/http/dtos/prediction-ranking-dto";
 import type { MatchWithPredictionDTO } from "@/infrastructure/http/dtos/match-with-prediction-dto";
 import type { BestThirdPlaceDTO } from "@/infrastructure/http/dtos/best-third-place-dto";
+import type { RoundOf32MatchDTO } from "@/infrastructure/http/dtos/round-of-32-match-dto";
+import type { SaveKnockoutPredictionsResponseDTO } from "@/infrastructure/http/dtos/knockout-predictions-response-dto";
 import { PredictionMapper } from "@/infrastructure/mappers/prediction-mapper";
 import { HttpError } from "@/infrastructure/http/client";
 
@@ -24,6 +28,7 @@ interface GetOrCreatePredictionAPIResponse {
   ranking: PredictionRankingDTO;
   matches: MatchWithPredictionDTO[];
   bestThirdPlaces?: BestThirdPlaceDTO[];
+  roundOf32Matches?: RoundOf32MatchDTO[];
 }
 
 /**
@@ -62,6 +67,13 @@ export class PredictionRepositoryImpl implements PredictionRepository {
         ? PredictionMapper.bestThirdPlacesToDomain(response.data.bestThirdPlaces)
         : undefined;
 
+      // Transform roundOf32Matches if present (only when all 12 groups are completed)
+      const roundOf32Matches = response.data.roundOf32Matches
+        ? PredictionMapper.roundOf32MatchesToDomain(
+            response.data.roundOf32Matches
+          )
+        : undefined;
+
       return {
         prediction: PredictionMapper.predictionToDomain(
           response.data.prediction
@@ -71,6 +83,7 @@ export class PredictionRepositoryImpl implements PredictionRepository {
           response.data.matches
         ),
         bestThirdPlaces,
+        roundOf32Matches,
       };
     } catch (error) {
       if (error instanceof HttpError) {
@@ -245,6 +258,84 @@ export class PredictionRepositoryImpl implements PredictionRepository {
           response: error.response,
         });
         throw new Error(`Failed to get prediction stats: ${error.message}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Save knockout phase predictions
+   */
+  async saveKnockoutPredictions(
+    predictionId: string,
+    phase: MatchPhase,
+    predictions: MatchPrediction[]
+  ): Promise<SaveKnockoutPredictionsResponse> {
+    try {
+      // Prepare request body using mapper
+      const requestBody = PredictionMapper.saveKnockoutRequestToDTO(
+        phase,
+        predictions
+      );
+
+      console.log(
+        "[PredictionRepository] Saving knockout predictions:",
+        {
+          predictionId,
+          phase,
+          matchCount: predictions.length,
+        }
+      );
+
+      // POST /predictions/{id}/knockouts/{phase}
+      const response =
+        await this.httpClient.post<SaveKnockoutPredictionsResponseDTO>(
+          `${this.baseUrl}/${predictionId}/knockouts/${phase}`,
+          requestBody
+        );
+
+      console.log(
+        "[PredictionRepository] Knockout predictions saved successfully:",
+        {
+          phase: response.data.phase,
+          matchesSaved: response.data.matchesSaved,
+          knockoutsCompleted: response.data.knockoutsCompleted,
+        }
+      );
+
+      // Transform response to domain entity
+      return PredictionMapper.knockoutResponseToDomain(response.data);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        console.error(
+          "[PredictionRepository] Error saving knockout predictions:",
+          {
+            predictionId,
+            phase,
+            status: error.status,
+            message: error.message,
+            response: error.response,
+          }
+        );
+
+        // Provide specific error messages based on status
+        if (error.status === 400) {
+          throw new Error(
+            `Invalid knockout predictions: ${error.message}. Check that previous phase is complete and teams match expected winners.`
+          );
+        } else if (error.status === 403) {
+          throw new Error(
+            "Predictions are locked. The deadline has passed for this phase."
+          );
+        } else if (error.status === 404) {
+          throw new Error(
+            `Prediction or matches not found for phase ${phase}`
+          );
+        }
+
+        throw new Error(
+          `Failed to save knockout predictions: ${error.message}`
+        );
       }
       throw error;
     }

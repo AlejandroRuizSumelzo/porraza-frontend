@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations, useMessages } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -8,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import {
-  signupSchema,
+  createSignupSchema,
   type SignupFormData,
 } from "@/presentation/schemas/signup-schema";
 import { Button } from "@/presentation/components/ui/button";
@@ -44,8 +45,25 @@ import { UserPlus, Mail, Lock, User, ArrowLeft } from "lucide-react";
  * - No direct API calls or business logic here
  */
 export function SignupForm() {
+  const t = useTranslations("auth.signup");
+  const formsFields = useTranslations("forms.fields");
+  const placeholders = useTranslations("forms.placeholders");
+  const socialT = useTranslations("forms.social");
+  const validationT = useTranslations("forms.validation");
+  const messages = useMessages();
+
   const router = useRouter();
   const { signup, isLoading, error, clearError } = useSignup();
+
+  const signupSchema = createSignupSchema({
+    nameMin: validationT("name_min"),
+    emailRequired: validationT("email_required"),
+    emailInvalid: validationT("email_invalid"),
+    passwordRequired: validationT("password_required"),
+    passwordMin: validationT("password_min"),
+    confirmPasswordRequired: validationT("confirm_password_required"),
+    passwordsMismatch: validationT("passwords_mismatch"),
+  });
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -60,16 +78,13 @@ export function SignupForm() {
   const onSubmit = async (data: SignupFormData) => {
     clearError();
 
-    console.log("[SignupForm] Signup started:", data);
-
     // Execute signup use case
     const registerResponse = await signup(data.email, data.password, data.name);
 
     if (registerResponse) {
       // Registration successful
-      toast.success("¡Registro exitoso!", {
-        description:
-          "Verifica tu email y luego inicia sesión para completar el pago de €1.99",
+      toast.success(t("toasts.success.title"), {
+        description: t("toasts.success.description"),
         duration: 7000,
       });
 
@@ -77,9 +92,8 @@ export function SignupForm() {
       router.push(APP_ROUTES.auth.login);
     } else {
       // Show error toast
-      toast.error("Error al registrarse", {
-        description:
-          error || "Por favor, verifica tus datos e inténtalo de nuevo.",
+      toast.error(t("toasts.error.title"), {
+        description: error ?? t("toasts.error.description"),
       });
     }
   };
@@ -106,7 +120,7 @@ export function SignupForm() {
               <div className="relative w-20 h-20 group-hover:scale-105 transition-transform">
                 <Image
                   src="/logo/porraza-icon.webp"
-                  alt="Porraza Logo"
+                  alt={messages.common?.app_name ?? "Porraza"}
                   width={80}
                   height={80}
                   className="object-contain drop-shadow-lg"
@@ -114,13 +128,11 @@ export function SignupForm() {
                 />
               </div>
               <h1 className="text-5xl font-display font-bold gradient-text-tricolor">
-                Porraza
+                {messages.common?.app_name ?? "Porraza"}
               </h1>
             </div>
           </Link>
-          <p className="text-muted-foreground text-lg mt-3">
-            Crea tu cuenta y únete a la comunidad
-          </p>
+          <p className="text-muted-foreground text-lg mt-3">{t("subtitle")}</p>
         </motion.div>
 
         {/* Signup Card */}
@@ -135,10 +147,10 @@ export function SignupForm() {
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <UserPlus className="w-5 h-5 text-primary" />
                 </div>
-                Crear Cuenta
+                {t("title")}
               </CardTitle>
               <CardDescription className="text-base">
-                Completa el formulario para registrarte
+                {t("subtitle")}
               </CardDescription>
             </CardHeader>
 
@@ -153,11 +165,10 @@ export function SignupForm() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-blue-700 dark:text-blue-400">
-                      Pago único de €1.99
+                      {t("banner.title")}
                     </p>
                     <p className="text-xs text-blue-600 dark:text-blue-500 mt-1">
-                      Después de verificar tu email, se te pedirá completar el
-                      pago para acceder a todas las funcionalidades.
+                      {t("banner.description")}
                     </p>
                   </div>
                 </div>
@@ -174,12 +185,12 @@ export function SignupForm() {
                     className="flex items-center gap-2"
                   >
                     <User className="w-4 h-4 text-muted-foreground" />
-                    Nombre Completo
+                    {formsFields("name")}
                   </FieldLabel>
                   <Input
                     id="name"
                     type="text"
-                    placeholder="Juan Pérez"
+                    placeholder={placeholders("name")}
                     aria-invalid={!!form.formState.errors.name}
                     className="h-11 transition-all focus:shadow-primary"
                     {...form.register("name")}
@@ -194,12 +205,12 @@ export function SignupForm() {
                     className="flex items-center gap-2"
                   >
                     <Mail className="w-4 h-4 text-muted-foreground" />
-                    Email
+                    {formsFields("email")}
                   </FieldLabel>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder={placeholders("email")}
                     aria-invalid={!!form.formState.errors.email}
                     className="h-11 transition-all focus:shadow-primary"
                     {...form.register("email")}
@@ -214,11 +225,11 @@ export function SignupForm() {
                     className="flex items-center gap-2"
                   >
                     <Lock className="w-4 h-4 text-muted-foreground" />
-                    Contraseña
+                    {formsFields("password")}
                   </FieldLabel>
                   <PasswordInput
                     id="password"
-                    placeholder="••••••••"
+                    placeholder={placeholders("password")}
                     aria-invalid={!!form.formState.errors.password}
                     className="h-11 transition-all focus:shadow-primary"
                     {...form.register("password")}
@@ -233,11 +244,11 @@ export function SignupForm() {
                     className="flex items-center gap-2"
                   >
                     <Lock className="w-4 h-4 text-muted-foreground" />
-                    Confirmar Contraseña
+                    {formsFields("confirm_password")}
                   </FieldLabel>
                   <PasswordInput
                     id="confirmPassword"
-                    placeholder="••••••••"
+                    placeholder={placeholders("confirm_password")}
                     aria-invalid={!!form.formState.errors.confirmPassword}
                     className="h-11 transition-all focus:shadow-primary"
                     {...form.register("confirmPassword")}
@@ -256,12 +267,12 @@ export function SignupForm() {
                   {isLoading ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Creando cuenta...
+                      {t("submit_loading")}
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
                       <UserPlus className="w-4 h-4" />
-                      Crear Cuenta
+                      {t("submit")}
                     </span>
                   )}
                 </Button>
@@ -271,7 +282,7 @@ export function SignupForm() {
               <div className="relative flex items-center py-4">
                 <Separator className="flex-1" />
                 <span className="px-4 text-xs uppercase text-muted-foreground font-medium">
-                  O regístrate con
+                  {t("divider")}
                 </span>
                 <Separator className="flex-1" />
               </div>
@@ -304,7 +315,7 @@ export function SignupForm() {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  Google
+                  {socialT("google")}
                 </Button>
                 <Button
                   variant="outline"
@@ -318,19 +329,19 @@ export function SignupForm() {
                   >
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                   </svg>
-                  GitHub
+                  {socialT("github")}
                 </Button>
               </div>
 
               {/* Login link */}
               <div className="text-center pt-4 border-t border-border">
                 <p className="text-sm text-muted-foreground">
-                  ¿Ya tienes una cuenta?{" "}
+                  {t("login_prompt")}{" "}
                   <Link
                     href="/login"
                     className="text-primary hover:text-primary/80 font-semibold transition-colors"
                   >
-                    Inicia sesión
+                    {t("login_link")}
                   </Link>
                 </p>
               </div>
@@ -350,7 +361,7 @@ export function SignupForm() {
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Volver al inicio
+            {t("back_home")}
           </Link>
         </motion.div>
       </div>
