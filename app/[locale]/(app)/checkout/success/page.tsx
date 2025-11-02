@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import {
   CheckCircle2,
   AlertTriangle,
@@ -17,8 +18,10 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/presentation/components/ui/sidebar";
+import { formatFullDateTime } from "@/presentation/utils/formatters";
 
 function SuccessContent() {
+  const locale = useLocale();
   const { open, isMobile } = useSidebar();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -120,13 +123,7 @@ function SuccessContent() {
                         <span>📅</span>
                         <span>
                           Fecha:{" "}
-                          {new Date(status.paymentDate).toLocaleString(
-                            "es-ES",
-                            {
-                              dateStyle: "long",
-                              timeStyle: "short",
-                            }
-                          )}
+                          {formatFullDateTime(status.paymentDate, locale)}
                         </span>
                       </p>
                     )}

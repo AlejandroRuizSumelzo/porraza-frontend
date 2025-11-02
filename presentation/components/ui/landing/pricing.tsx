@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/presentation/components/ui/badge";
 import { Check, Sparkles, Users, Building2 } from "lucide-react";
 import { motion } from "motion/react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 const featureConfig = [
   { color: "primary" },

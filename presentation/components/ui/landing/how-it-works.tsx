@@ -14,7 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 const stepConfig = [
   {

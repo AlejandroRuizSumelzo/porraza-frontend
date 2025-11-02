@@ -22,6 +22,12 @@ export function PhaseSection({ phaseData }: PhaseSectionProps) {
         color: "text-primary",
         bgColor: "bg-primary/10",
       },
+      ROUND_OF_32: {
+        icon: Trophy,
+        label: "Dieciseisavos de Final",
+        color: "text-secondary",
+        bgColor: "bg-secondary/10",
+      },
       ROUND_OF_16: {
         icon: Trophy,
         label: "Octavos de Final",

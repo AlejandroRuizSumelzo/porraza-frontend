@@ -13,6 +13,8 @@ import type {
 import type { GroupStanding } from "@/domain/entities/group-standing";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
+import type { KnockoutMatch } from "@/domain/entities/knockout-match";
+import type { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
 import type { MatchPhase } from "@/domain/entities/match";
 import type { SaveKnockoutPredictionsResponse } from "@/domain/repositories/prediction-repository";
 import type { PredictionDTO } from "@/infrastructure/http/dtos/prediction-dto";
@@ -27,6 +29,8 @@ import type {
 import type { GroupStandingDTO } from "@/infrastructure/http/dtos/group-standing-dto";
 import type { BestThirdPlaceDTO } from "@/infrastructure/http/dtos/best-third-place-dto";
 import type { RoundOf32MatchDTO } from "@/infrastructure/http/dtos/round-of-32-match-dto";
+import type { KnockoutMatchDTO } from "@/infrastructure/http/dtos/knockout-match-dto";
+import type { KnockoutMatchWithPredictionDTO } from "@/infrastructure/http/dtos/knockout-match-with-prediction-dto";
 import type { SaveKnockoutPredictionsRequestDTO } from "@/infrastructure/http/dtos/knockout-predictions-request-dto";
 import type { SaveKnockoutPredictionsResponseDTO } from "@/infrastructure/http/dtos/knockout-predictions-response-dto";
 import { TeamMapper } from "@/infrastructure/mappers/team-mapper";
@@ -428,5 +432,51 @@ export class PredictionMapper {
       matchesSaved: dto.matchesSaved,
       knockoutsCompleted: dto.knockoutsCompleted,
     };
+  }
+
+  /**
+   * Transform KnockoutMatchDTO to Domain Entity
+   * @param dto - Knockout match DTO from API
+   * @returns KnockoutMatch domain entity
+   */
+  static knockoutMatchToDomain(dto: KnockoutMatchDTO): KnockoutMatch {
+    return {
+      id: dto.id,
+      matchNumber: dto.matchNumber,
+      homeTeam: dto.homeTeam ? TeamMapper.toDomain(dto.homeTeam) : null,
+      awayTeam: dto.awayTeam ? TeamMapper.toDomain(dto.awayTeam) : null,
+      homeTeamPlaceholder: dto.homeTeamPlaceholder,
+      awayTeamPlaceholder: dto.awayTeamPlaceholder,
+      stadium: StadiumMapper.toDomain(dto.stadium),
+      matchDate: new Date(dto.matchDate),
+      matchTime: dto.matchTime,
+      phase: dto.phase,
+      predictionsLockedAt: new Date(dto.predictionsLockedAt),
+    };
+  }
+
+  /**
+   * Transform KnockoutMatchWithPredictionDTO to Domain Entity
+   * @param dto - Knockout match with prediction DTO from API
+   * @returns KnockoutMatchWithPrediction domain entity
+   */
+  static knockoutMatchWithPredictionToDomain(
+    dto: KnockoutMatchWithPredictionDTO
+  ): KnockoutMatchWithPrediction {
+    return {
+      match: this.knockoutMatchToDomain(dto.match),
+      userPrediction: this.userMatchPredictionToDomain(dto.userPrediction),
+    };
+  }
+
+  /**
+   * Transform array of KnockoutMatchWithPrediction DTOs to Domain
+   * @param dtos - Array of knockout match with prediction DTOs
+   * @returns Array of KnockoutMatchWithPrediction domain entities
+   */
+  static knockoutMatchesWithPredictionsToDomain(
+    dtos: KnockoutMatchWithPredictionDTO[]
+  ): KnockoutMatchWithPrediction[] {
+    return dtos.map((dto) => this.knockoutMatchWithPredictionToDomain(dto));
   }
 }

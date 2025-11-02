@@ -5,7 +5,7 @@ import { Search, X } from "lucide-react";
 import type { Team } from "@/domain/entities/team";
 import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import { Input } from "@/presentation/components/ui/input";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 import { Badge } from "@/presentation/components/ui/badge";
 
 interface TeamGridSelectorProps {

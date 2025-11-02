@@ -6,7 +6,7 @@ import { Button } from "@/presentation/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 export function Header() {
   const t = useTranslations("landing.header");

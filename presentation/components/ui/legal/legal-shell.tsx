@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { useLocale } from "next-intl";
 
 import {
   Card,
@@ -12,7 +13,8 @@ import {
 import { Footer } from "@/presentation/components/ui/landing/footer";
 import { Header } from "@/presentation/components/ui/landing/header";
 import { Separator } from "@/presentation/components/ui/separator";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
+import { formatFullDate } from "@/presentation/utils/formatters";
 
 type LegalShellProps = {
   title: string;
@@ -29,6 +31,8 @@ export function LegalShell({
   children,
   className,
 }: LegalShellProps) {
+  const locale = useLocale();
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <Header />
@@ -50,7 +54,7 @@ export function LegalShell({
                   {description && <p>{description}</p>}
                   <p className="text-sm text-muted-foreground/90">
                     Última actualización:{" "}
-                    <time dateTime={updatedAt}>{formatDate(updatedAt)}</time>
+                    <time dateTime={updatedAt}>{formatFullDate(updatedAt, locale)}</time>
                   </p>
                 </CardDescription>
               )}
@@ -66,16 +70,4 @@ export function LegalShell({
       <Footer />
     </div>
   );
-}
-
-function formatDate(isoDate: string) {
-  try {
-    return new Intl.DateTimeFormat("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(new Date(isoDate));
-  } catch {
-    return isoDate;
-  }
 }

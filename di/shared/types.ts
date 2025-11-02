@@ -25,6 +25,7 @@ import type { GetPlayersByTeamUseCase } from "@/domain/use-cases/players/get-pla
 import type { GetAllGoalkeepersUseCase } from "@/domain/use-cases/players/get-all-goalkeepers-use-case";
 import type { GetOrCreatePredictionUseCase } from "@/domain/use-cases/predictions/get-or-create-prediction-use-case";
 import type { SaveGroupPredictionsUseCase } from "@/domain/use-cases/predictions/save-group-predictions-use-case";
+import type { SaveKnockoutPredictionsUseCase } from "@/domain/use-cases/predictions/save-knockout-predictions-use-case";
 import type { UpdateAwardsUseCase } from "@/domain/use-cases/predictions/update-awards-use-case";
 import type { UpdateChampionUseCase } from "@/domain/use-cases/predictions/update-champion-use-case";
 import type { GetPredictionStatsUseCase } from "@/domain/use-cases/predictions/get-prediction-stats-use-case";
@@ -96,6 +97,7 @@ export interface Dependencies {
   // Prediction Use Cases
   getOrCreatePredictionUseCase: GetOrCreatePredictionUseCase;
   saveGroupPredictionsUseCase: SaveGroupPredictionsUseCase;
+  saveKnockoutPredictionsUseCase: SaveKnockoutPredictionsUseCase;
   updateAwardsUseCase: UpdateAwardsUseCase;
   updateChampionUseCase: UpdateChampionUseCase;
   getPredictionStatsUseCase: GetPredictionStatsUseCase;

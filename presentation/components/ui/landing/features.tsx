@@ -5,7 +5,7 @@ import { Users, Trophy, CreditCard, Globe } from "lucide-react";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { Badge } from "@/presentation/components/ui/badge";
 import { motion } from "motion/react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 const featureItems = [
   {

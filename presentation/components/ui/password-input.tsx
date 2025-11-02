@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 import { Input } from "@/presentation/components/ui/input";
 
 type PasswordInputProps = Omit<

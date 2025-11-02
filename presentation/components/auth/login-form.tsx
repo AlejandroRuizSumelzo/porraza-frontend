@@ -30,7 +30,7 @@ import {
   CardTitle,
 } from "@/presentation/components/ui/card";
 import { useLogin } from "@/presentation/hooks/auth/use-login";
-import { APP_ROUTES } from "@/presentation/lib/routes";
+import { APP_ROUTES } from "@/presentation/utils/routes";
 import { LogIn, Mail, Lock, ArrowLeft } from "lucide-react";
 import { ForgotPasswordDialog } from "@/presentation/components/auth/forgot-password-dialog";
 
@@ -50,11 +50,7 @@ import { ForgotPasswordDialog } from "@/presentation/components/auth/forgot-pass
  * - Pre-fills email from URL query param (e.g., from email verification redirect)
  */
 export function LoginForm() {
-  const t = useTranslations("auth.login");
-  const formsFields = useTranslations("forms.fields");
-  const placeholders = useTranslations("forms.placeholders");
-  const socialT = useTranslations("forms.social");
-  const validationT = useTranslations("forms.validation");
+  const t = useTranslations();
   const messages = useMessages();
 
   const router = useRouter();
@@ -63,10 +59,10 @@ export function LoginForm() {
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
 
   const loginSchema = createLoginSchema({
-    emailRequired: validationT("email_required"),
-    emailInvalid: validationT("email_invalid"),
-    passwordRequired: validationT("password_required"),
-    passwordMin: validationT("password_min"),
+    emailRequired: t("forms.validation.email_required"),
+    emailInvalid: t("forms.validation.email_invalid"),
+    passwordRequired: t("forms.validation.password_required"),
+    passwordMin: t("forms.validation.password_min"),
   });
 
   const form = useForm<LoginFormData>({
@@ -84,8 +80,8 @@ export function LoginForm() {
     if (emailFromUrl) {
       form.setValue("email", emailFromUrl);
       // Show a toast to inform the user
-      toast.success(t("toasts.prefill.title"), {
-        description: t("toasts.prefill.description"),
+      toast.success(t("auth.login.toasts.prefill.title"), {
+        description: t("auth.login.toasts.prefill.description"),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,8 +95,8 @@ export function LoginForm() {
 
     if (authResponse) {
       // Login successful
-      toast.success(t("toasts.success.title"), {
-        description: t("toasts.success.description", {
+      toast.success(t("auth.login.toasts.success.title"), {
+        description: t("auth.login.toasts.success.description", {
           email: authResponse.user.email,
         }),
       });
@@ -117,8 +113,8 @@ export function LoginForm() {
       }
     } else {
       // Show error toast
-      toast.error(t("toasts.error.title"), {
-        description: error ?? t("toasts.error.description"),
+      toast.error(t("auth.login.toasts.error.title"), {
+        description: error ?? t("auth.login.toasts.error.description"),
       });
     }
   };
@@ -157,7 +153,9 @@ export function LoginForm() {
               </h1>
             </div>
           </Link>
-          <p className="text-muted-foreground text-lg mt-3">{t("subtitle")}</p>
+          <p className="text-muted-foreground text-lg mt-3">
+            {t("auth.login.subtitle")}
+          </p>
         </motion.div>
 
         {/* Login Card */}
@@ -172,10 +170,10 @@ export function LoginForm() {
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <LogIn className="w-5 h-5 text-primary" />
                 </div>
-                {t("title")}
+                {t("auth.login.title")}
               </CardTitle>
               <CardDescription className="text-base">
-                {t("subtitle")}
+                {t("auth.login.subtitle")}
               </CardDescription>
             </CardHeader>
 
@@ -191,12 +189,12 @@ export function LoginForm() {
                     className="flex items-center gap-2"
                   >
                     <Mail className="w-4 h-4 text-muted-foreground" />
-                    {formsFields("email")}
+                    {t("forms.fields.email")}
                   </FieldLabel>
                   <Input
                     id="email"
                     type="email"
-                    placeholder={placeholders("email")}
+                    placeholder={t("forms.placeholders.email")}
                     aria-invalid={!!form.formState.errors.email}
                     className="h-11 transition-all focus:shadow-primary"
                     {...form.register("email")}
@@ -211,11 +209,11 @@ export function LoginForm() {
                     className="flex items-center gap-2"
                   >
                     <Lock className="w-4 h-4 text-muted-foreground" />
-                    {formsFields("password")}
+                    {t("forms.fields.password")}
                   </FieldLabel>
                   <PasswordInput
                     id="password"
-                    placeholder={placeholders("password")}
+                    placeholder={t("forms.placeholders.password")}
                     aria-invalid={!!form.formState.errors.password}
                     className="h-11 transition-all focus:shadow-primary"
                     {...form.register("password")}
@@ -231,7 +229,7 @@ export function LoginForm() {
                       className="w-4 h-4 rounded border-border text-primary focus:ring-primary focus:ring-2 focus:ring-offset-2 transition-all cursor-pointer"
                     />
                     <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                      {t("remember_me")}
+                      {t("auth.login.remember_me")}
                     </span>
                   </label>
                   <button
@@ -243,7 +241,7 @@ export function LoginForm() {
                     }}
                     className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                   >
-                    {t("forgot_password")}
+                    {t("auth.login.forgot_password")}
                   </button>
                 </div>
 
@@ -256,12 +254,12 @@ export function LoginForm() {
                   {isLoading ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      {t("submit_loading")}
+                      {t("auth.login.submit_loading")}
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
                       <LogIn className="w-4 h-4" />
-                      {t("submit")}
+                      {t("auth.login.submit")}
                     </span>
                   )}
                 </Button>
@@ -271,7 +269,7 @@ export function LoginForm() {
               <div className="relative flex items-center py-4">
                 <Separator className="flex-1" />
                 <span className="px-4 text-xs uppercase text-muted-foreground font-medium">
-                  {t("divider")}
+                  {t("auth.login.divider")}
                 </span>
                 <Separator className="flex-1" />
               </div>
@@ -304,7 +302,7 @@ export function LoginForm() {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  {socialT("google")}
+                  {t("forms.social.google")}
                 </Button>
                 <Button
                   variant="outline"
@@ -318,19 +316,19 @@ export function LoginForm() {
                   >
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                   </svg>
-                  {socialT("github")}
+                  {t("forms.social.github")}
                 </Button>
               </div>
 
               {/* Sign up link */}
               <div className="text-center pt-4 border-t border-border">
                 <p className="text-sm text-muted-foreground">
-                  {t("signup_prompt")}{" "}
+                  {t("auth.login.signup_prompt")}{" "}
                   <Link
                     href="/signup"
                     className="text-primary hover:text-primary/80 font-semibold transition-colors"
                   >
-                    {t("signup_link")}
+                    {t("auth.login.signup_link")}
                   </Link>
                 </p>
               </div>
@@ -350,7 +348,7 @@ export function LoginForm() {
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            {t("back_home")}
+            {t("auth.login.back_home")}
           </Link>
         </motion.div>
       </div>

@@ -7,7 +7,7 @@ import {
   selectClearAuth,
   selectClearLeagues,
 } from "@/infrastructure/store/selectors";
-import { APP_ROUTES } from "@/presentation/lib/routes";
+import { APP_ROUTES } from "@/presentation/utils/routes";
 
 /**
  * Custom Hook: useLogout

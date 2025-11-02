@@ -14,7 +14,7 @@ import { Trophy, ChevronDown, Lock, Sparkles, ArrowRight } from "lucide-react";
 import { BestThirdPlacesTable } from "@/presentation/components/predictions/best-third-places-table";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 interface BestThirdPlacesAccordionProps {
   /**

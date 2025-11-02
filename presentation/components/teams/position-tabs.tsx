@@ -7,7 +7,7 @@ import { Users, Shield, Zap, Target } from "lucide-react";
 import {
   getPositionLabel,
   getPositionsInOrder,
-} from "@/presentation/lib/player-utils";
+} from "@/presentation/utils/player-utils";
 
 interface PositionTabsProps {
   selectedPosition: PlayerPosition | "all";

@@ -1,12 +1,14 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { Card } from "@/presentation/components/ui/card";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Separator } from "@/presentation/components/ui/separator";
 import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import { MapPin, Clock, Trophy, Circle } from "lucide-react";
 import type { Match } from "@/domain/entities/match";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
+import { formatAbbreviatedDate, formatTime } from "@/presentation/utils/formatters";
 
 interface MatchCardProps {
   match: Match;
@@ -24,6 +26,8 @@ interface MatchCardProps {
  * - Gradient overlays on stadium image
  */
 export function MatchCard({ match }: MatchCardProps) {
+  const locale = useLocale();
+
   // Generate stadium image path
   const stadiumImagePath = `/stadiums/${match.stadium.code}.webp`;
 
@@ -75,21 +79,6 @@ export function MatchCard({ match }: MatchCardProps) {
         {config.label}
       </Badge>
     );
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("es-ES", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    }).format(date);
-  };
-
-  // Format time
-  const formatTime = (timeString: string) => {
-    return timeString.slice(0, 5); // "20:00:00" -> "20:00"
   };
 
   // Determine winner for color coding
@@ -256,7 +245,7 @@ export function MatchCard({ match }: MatchCardProps) {
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-3.5 w-3.5 text-secondary" />
               <span className="text-xs">
-                {formatDate(match.date)} • {formatTime(match.time)}
+                {formatAbbreviatedDate(match.date, locale)} • {formatTime(match.time)}
               </span>
             </div>
           </div>

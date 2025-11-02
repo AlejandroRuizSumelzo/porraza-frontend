@@ -6,7 +6,9 @@
       "Read(//Users/alejandroruizsumelzo/Documents/alex_proyects/dbaile-app/di/providers/**)",
       "Bash(npm run dev:*)",
       "Bash(mkdir:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npx tsc:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

@@ -24,8 +24,8 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
-import type { TeamStanding } from "@/presentation/lib/calculate-standings";
-import { cn } from "@/presentation/lib/utils";
+import type { TeamStanding } from "@/presentation/utils/calculate-standings";
+import { cn } from "@/presentation/utils/cn";
 
 interface GroupStandingsTableProps {
   standings: TeamStanding[];

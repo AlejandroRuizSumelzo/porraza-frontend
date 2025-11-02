@@ -7,7 +7,7 @@ import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { ArrowRight, CheckCircle2, Zap, Users } from "lucide-react";
 import { motion } from "motion/react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 export function Hero() {
   const t = useTranslations("landing.hero");

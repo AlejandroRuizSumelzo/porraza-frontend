@@ -1,5 +1,9 @@
+"use client";
+
+import { useLocale } from "next-intl";
 import { Building2, Globe, MapPin } from "lucide-react";
 import type { Stadium } from "@/domain/entities/stadium";
+import { formatNumber } from "@/presentation/utils/formatters";
 
 interface StadiumHeaderProps {
   stadiums: Stadium[];
@@ -10,6 +14,8 @@ interface StadiumHeaderProps {
  * Shows summary statistics and page title
  */
 export function StadiumHeader({ stadiums }: StadiumHeaderProps) {
+  const locale = useLocale();
+
   // Calculate stats
   const totalStadiums = stadiums.length;
   const countries = new Set(stadiums.map((s) => s.country)).size;
@@ -32,7 +38,7 @@ export function StadiumHeader({ stadiums }: StadiumHeaderProps) {
     {
       icon: MapPin,
       label: "Capacidad Total",
-      value: totalCapacity > 0 ? totalCapacity.toLocaleString('es-ES') : "N/A",
+      value: formatNumber(totalCapacity > 0 ? totalCapacity : null, locale),
     },
   ];
 

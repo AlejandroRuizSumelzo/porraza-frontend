@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
   useGetOrCreatePrediction,
   useSaveGroupPredictions,
+  useSaveKnockoutPredictions as useSaveKnockoutPredictionsUseCase,
 } from "@/di/client/hooks/use-predictions";
 import type { Prediction } from "@/domain/entities/prediction";
 import type { PredictionRanking } from "@/domain/entities/prediction-ranking";
@@ -12,6 +13,8 @@ import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import type { GroupStanding } from "@/domain/entities/group-standing";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
+import type { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
+import type { MatchPhase } from "@/domain/entities/match";
 
 /**
  * Custom Hook: usePrediction (Client)
@@ -21,7 +24,7 @@ import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
  *
  * Usage:
  * ```tsx
- * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving, bestThirdPlaces, roundOf32Matches } = usePrediction(leagueId);
+ * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving, bestThirdPlaces, roundOf32Matches, knockoutPredictions } = usePrediction(leagueId);
  * ```
  */
 
@@ -37,14 +40,21 @@ interface UsePredictionResult {
     matchPredictions: MatchPrediction[],
     groupStandings: GroupStanding[]
   ) => Promise<void>;
+  saveKnockoutPredictions: (
+    phase: MatchPhase,
+    matchPredictions: MatchPrediction[]
+  ) => Promise<void>;
   isSaving: boolean;
   bestThirdPlaces: BestThirdPlace[] | null;
   roundOf32Matches: RoundOf32Match[] | null;
+  knockoutPredictions: KnockoutMatchWithPrediction[] | null;
 }
 
 export function usePrediction(leagueId: string | null): UsePredictionResult {
   const getOrCreatePredictionUseCase = useGetOrCreatePrediction();
   const saveGroupPredictionsUseCase = useSaveGroupPredictions();
+  const saveKnockoutPredictionsUseCaseInstance =
+    useSaveKnockoutPredictionsUseCase();
 
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [ranking, setRanking] = useState<PredictionRanking | null>(null);
@@ -57,6 +67,9 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
   >(null);
   const [roundOf32Matches, setRoundOf32Matches] = useState<
     RoundOf32Match[] | null
+  >(null);
+  const [knockoutPredictions, setKnockoutPredictions] = useState<
+    KnockoutMatchWithPrediction[] | null
   >(null);
 
   const fetchPrediction = async () => {
@@ -83,6 +96,8 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
         bestThirdPlacesCount: result.bestThirdPlaces?.length,
         hasRoundOf32Matches: !!result.roundOf32Matches,
         roundOf32MatchesCount: result.roundOf32Matches?.length,
+        hasKnockoutPredictions: !!result.knockoutPredictions,
+        knockoutPredictionsCount: result.knockoutPredictions?.length,
       });
 
       setPrediction(result.prediction);
@@ -97,6 +112,11 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
       // Set roundOf32Matches if present (only when all 12 groups are completed)
       if (result.roundOf32Matches) {
         setRoundOf32Matches(result.roundOf32Matches);
+      }
+
+      // Set knockoutPredictions if present (knockout stage matches with user predictions)
+      if (result.knockoutPredictions) {
+        setKnockoutPredictions(result.knockoutPredictions);
       }
     } catch (err) {
       const errorMessage =
@@ -169,6 +189,51 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     }
   };
 
+  const saveKnockoutPredictions = async (
+    phase: MatchPhase,
+    matchPredictions: MatchPrediction[]
+  ) => {
+    if (!prediction?.id) {
+      throw new Error("Prediction ID is required to save knockout predictions");
+    }
+
+    setIsSaving(true);
+
+    try {
+      console.log("[usePrediction] Saving knockout predictions...", {
+        predictionId: prediction.id,
+        phase,
+        predictionsCount: matchPredictions.length,
+      });
+
+      const result = await saveKnockoutPredictionsUseCaseInstance.execute(
+        prediction.id,
+        phase,
+        matchPredictions
+      );
+
+      console.log("[usePrediction] Knockout predictions saved successfully:", {
+        phase: result.phase,
+        matchesSaved: result.matchesSaved,
+        knockoutsCompleted: result.knockoutsCompleted,
+        message: result.message,
+      });
+
+      // Refetch to get updated knockout matches data
+      await fetchPrediction();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to save knockout predictions";
+
+      console.error("[usePrediction] Error saving knockout predictions:", err);
+      throw new Error(errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   useEffect(() => {
     fetchPrediction();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,8 +247,10 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     error,
     refetch: fetchPrediction,
     saveGroupPredictions,
+    saveKnockoutPredictions,
     isSaving,
     bestThirdPlaces,
     roundOf32Matches,
+    knockoutPredictions,
   };
 }

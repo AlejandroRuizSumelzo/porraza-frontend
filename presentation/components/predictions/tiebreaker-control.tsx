@@ -9,8 +9,8 @@ import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import { AlertTriangle, ArrowUp, ArrowDown } from "lucide-react";
-import type { TeamStanding } from "@/presentation/lib/calculate-standings";
-import { cn } from "@/presentation/lib/utils";
+import type { TeamStanding } from "@/presentation/utils/calculate-standings";
+import { cn } from "@/presentation/utils/cn";
 
 interface TiebreakerControlProps {
   tiedTeams: TeamStanding[];

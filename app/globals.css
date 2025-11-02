@@ -317,34 +317,76 @@
     }
   }
 
-  /* Mobile responsive adjustments */
+  /* Mobile responsive adjustments - Enhanced for touch devices */
   @media (max-width: 768px) {
-    .bracket-wrapper {
-      @apply gap-8 px-4 py-6;
-      min-height: 1000px;
+    /* Reduce animation complexity on mobile for performance */
+    svg path[stroke],
+    svg rect,
+    svg foreignObject {
+      transition-duration: 150ms !important;
     }
 
-    .bracket-wrapper .react-bracket-seed {
-      min-width: 180px;
-      max-width: 180px;
-      height: 80px;
+    /* Simplify gradients on mobile */
+    svg rect[fill="#2a398d"] {
+      filter: drop-shadow(0 1px 4px rgba(42, 57, 141, 0.2)) !important;
     }
 
-    .bracket-wrapper .react-bracket-seed-team {
-      height: 40px;
+    /* Increase touch target size for SVG connectors */
+    svg path[stroke] {
+      stroke-width: 3 !important;
     }
 
-    .bracket-round {
-      min-width: 180px;
-      min-height: 1000px;
+    /* Round headers - more compact on mobile */
+    svg rect[fill="#2F3648"],
+    svg rect[fill="#2a398d"] {
+      height: 32px !important;
     }
 
-    .bracket-wrapper > div {
-      min-height: 1000px;
+    svg text[fill="currentColor"],
+    svg text[fill="white"],
+    svg text[fill="#ffffff"] {
+      font-size: 12px !important;
     }
 
-    .bracket-wrapper .react-bracket-round-title {
-      @apply text-xs;
+    /* Improve scroll performance */
+    .bracket svg {
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    /* Remove hover effects on mobile - use touch feedback instead */
+    svg g:hover path[stroke] {
+      stroke-width: 3 !important;
+      filter: none !important;
+    }
+
+    /* Optimize foreignObject rendering */
+    svg foreignObject {
+      transform: translateZ(0);
+    }
+  }
+
+  /* Touch device optimizations - any touch-enabled device */
+  @media (hover: none) and (pointer: coarse) {
+    /* Replace hover with active states for touch */
+    svg g:active path[stroke] {
+      stroke: #3cac3b !important;
+      stroke-width: 3.5 !important;
+    }
+
+    /* Improve tap highlight */
+    svg foreignObject * {
+      -webkit-tap-highlight-color: rgba(60, 172, 59, 0.1);
+      tap-highlight-color: rgba(60, 172, 59, 0.1);
+    }
+
+    /* Reduce motion for better mobile performance */
+    @media (prefers-reduced-motion: reduce) {
+      svg path,
+      svg rect,
+      svg foreignObject {
+        transition: none !important;
+      }
     }
   }
 }

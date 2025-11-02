@@ -27,39 +27,42 @@ export const knockoutMatchPredictionSchema = z
     /**
      * Match UUID
      */
-    matchId: z.string().uuid("Match ID must be a valid UUID"),
+    matchId: z.string().uuid({ message: "Match ID must be a valid UUID" }),
 
     /**
      * Home team UUID
      */
-    homeTeamId: z.string().uuid("Home team ID must be a valid UUID"),
+    homeTeamId: z
+      .string()
+      .uuid({ message: "Home team ID must be a valid UUID" }),
 
     /**
      * Away team UUID
      */
-    awayTeamId: z.string().uuid("Away team ID must be a valid UUID"),
+    awayTeamId: z
+      .string()
+      .uuid({ message: "Away team ID must be a valid UUID" }),
 
     /**
      * Home team score (90 minutes)
      */
     homeScore: z
       .number({
-        required_error: "Home score is required",
-        invalid_type_error: "Home score must be a number",
+        message: "El marcador local es requerido y debe ser un número válido",
       })
-      .int("Home score must be an integer")
-      .min(0, "Home score cannot be negative"),
+      .int("El marcador local debe ser un número entero")
+      .min(0, "El marcador local no puede ser negativo"),
 
     /**
      * Away team score (90 minutes)
      */
     awayScore: z
       .number({
-        required_error: "Away score is required",
-        invalid_type_error: "Away score must be a number",
+        message:
+          "El marcador visitante es requerido y debe ser un número válido",
       })
-      .int("Away score must be an integer")
-      .min(0, "Away score cannot be negative"),
+      .int("El marcador visitante debe ser un número entero")
+      .min(0, "El marcador visitante no puede ser negativo"),
 
     /**
      * Home team score in extra time (optional, only for knockouts)
@@ -98,7 +101,8 @@ export const knockoutMatchPredictionSchema = z
   )
   .refine(
     (data) => {
-      // Rule 2: If tied in 90 min, must have ET or penalties
+      // Rule 2: If tied in 90 min, MUST have extra time scores defined
+      // Users cannot skip ET and go directly to penalties
       const isTied = data.homeScore === data.awayScore;
 
       if (isTied) {
@@ -108,17 +112,14 @@ export const knockoutMatchPredictionSchema = z
           data.awayScoreET !== null &&
           data.awayScoreET !== undefined;
 
-        const hasPenalties =
-          data.penaltiesWinner !== null && data.penaltiesWinner !== undefined;
-
-        return hasExtraTime || hasPenalties;
+        return hasExtraTime;
       }
 
       return true;
     },
     {
       message:
-        "Tied matches in knockout phase must have extra time or penalties winner",
+        "Si hay empate en tiempo regular, debes completar la prórroga antes de elegir ganador por penaltis",
       path: ["homeScoreET"],
     }
   )
@@ -193,7 +194,9 @@ export const saveKnockoutPredictionsSchema = z.object({
   /**
    * Prediction UUID
    */
-  predictionId: z.string().uuid("Prediction ID must be a valid UUID"),
+  predictionId: z
+    .string()
+    .uuid({ message: "Prediction ID must be a valid UUID" }),
 
   /**
    * Knockout phase

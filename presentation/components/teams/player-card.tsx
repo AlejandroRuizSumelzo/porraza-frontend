@@ -8,8 +8,8 @@ import {
   getPlayerInitials,
   getPositionColor,
   getPositionShortLabel,
-} from "@/presentation/lib/player-utils";
-import { cn } from "@/presentation/lib/utils";
+} from "@/presentation/utils/player-utils";
+import { cn } from "@/presentation/utils/cn";
 
 interface PlayerCardProps {
   player: Player;

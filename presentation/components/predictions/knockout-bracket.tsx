@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   SingleEliminationBracket,
   Match,
   createTheme,
 } from "@g-loot/react-tournament-brackets";
-// @ts-expect-error: Module '@g-loot/react-tournament-brackets/dist/types' does not provide type definitions.
 import type { MatchComponentProps } from "@g-loot/react-tournament-brackets/dist/types";
-import { Info, Trophy } from "lucide-react";
+import { Info, Trophy, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/presentation/components/ui/badge";
 import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import {
@@ -16,16 +15,57 @@ import {
   ScrollBar,
 } from "@/presentation/components/ui/scroll-area";
 import { KnockoutMatchDialog } from "@/presentation/components/predictions/knockout-match-dialog";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
+import type { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
+import type { UserMatchPrediction } from "@/domain/entities/match-with-prediction";
+import type { MatchPhase } from "@/domain/entities/match";
+import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import {
   convertToTournamentBracket,
   isTBDParticipant,
-  type TournamentMatch,
 } from "@/presentation/utils/tournament-bracket-utils";
 
 interface KnockoutBracketProps {
   matches: RoundOf32Match[];
+  knockoutPredictions: KnockoutMatchWithPrediction[] | null;
+  predictionId: string | null;
+  onSave: (phase: MatchPhase, matchPredictions: MatchPrediction[]) => Promise<void>;
+  isSaving: boolean;
+}
+
+/**
+ * Helper: Determinar ganador basado en predicción del usuario
+ * @param prediction - UserMatchPrediction
+ * @returns 'home' | 'away' | 'draw' | null
+ */
+function getMatchWinner(
+  prediction: UserMatchPrediction | null
+): "home" | "away" | "draw" | null {
+  if (!prediction) return null;
+
+  // 1. Si hay ganador por penalties, ese es el ganador final
+  if (prediction.penaltiesWinner) {
+    return prediction.penaltiesWinner as "home" | "away";
+  }
+
+  // 2. Si hay scores de extra time, comparar ET
+  if (
+    prediction.homeScoreET !== null &&
+    prediction.awayScoreET !== null
+  ) {
+    if (prediction.homeScoreET > prediction.awayScoreET) return "home";
+    if (prediction.awayScoreET > prediction.homeScoreET) return "away";
+    // Si ET está empatado y no hay penaltiesWinner, es draw (no debería pasar)
+    return "draw";
+  }
+
+  // 3. Comparar resultado regular (90 minutos)
+  if (prediction.homeScore > prediction.awayScore) return "home";
+  if (prediction.awayScore > prediction.homeScore) return "away";
+
+  // Empate en 90' sin ET definido
+  return "draw";
 }
 
 /**
@@ -71,7 +111,12 @@ const PorrazaTheme = createTheme({
 /**
  * Custom Match Component with TeamFlag integration
  * Displays teams with their flags in a compact format
+ * Now with support for user predictions and visual winner/loser styles
  */
+interface CustomMatchProps extends MatchComponentProps {
+  userPrediction?: UserMatchPrediction | null;
+}
+
 function CustomMatch({
   match,
   onMatchClick,
@@ -90,10 +135,16 @@ function CustomMatch({
   computedStyles,
   teamNameFallback,
   resultFallback,
-}: MatchComponentProps) {
+  userPrediction,
+}: CustomMatchProps) {
   const isTBD =
     isTBDParticipant(topParty.fifaCode) ||
     isTBDParticipant(bottomParty.fifaCode);
+
+  // Determine winner based on user prediction
+  const winner = userPrediction ? getMatchWinner(userPrediction) : null;
+  const homeWon = winner === "home";
+  const awayWon = winner === "away";
 
   return (
     <div
@@ -104,31 +155,41 @@ function CustomMatch({
         alignItems: "stretch",
         width: "100%",
         height: "100%",
-        minHeight: "72px",
+        // Mobile: 88px for better touch target, Desktop: 72px
+        minHeight: "88px",
       }}
       onClick={() => onMatchClick?.({ match })}
       className={cn(
-        // Base styles with gradient background
-        "group relative cursor-pointer rounded-lg bg-gradient-to-br from-card via-card to-primary/5",
-        // Border with primary color - thicker and more prominent
-        "border-2 border-primary/30",
-        // Shadow and transitions
-        "shadow-sm shadow-primary/5 transition-all duration-300",
-        // Hover effects with secondary color (green)
-        "hover:scale-[1.02] hover:border-secondary hover:shadow-lg hover:shadow-secondary/20",
-        // TBD states - dashed border and muted
+        // Base styles - simplified gradient for mobile performance
+        "group relative cursor-pointer rounded-lg",
+        "bg-gradient-to-br from-card to-primary/5 md:via-card",
+        // Border - conditional based on prediction
+        !userPrediction && "border-2 border-dashed border-primary/30",
+        userPrediction && "border-2 border-primary/30",
+        // Shadow - lighter on mobile for performance
+        "shadow-sm shadow-primary/5 transition-all duration-200 md:duration-300",
+        // Touch feedback (active) + Desktop hover
+        "active:scale-[0.98] active:border-secondary md:hover:scale-[1.02]",
+        "md:hover:border-secondary md:hover:shadow-lg md:hover:shadow-secondary/20",
+        // TBD states
         isTBD &&
-          "border-dashed border-destructive/30 opacity-60 hover:opacity-80"
+          "border-dashed border-destructive/30 opacity-60 active:opacity-80 md:hover:opacity-80"
       )}
     >
-      {/* Subtle gradient overlay on hover */}
-      <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-secondary/0 to-secondary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      {/* Gradient overlay - only on desktop hover for performance */}
+      <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-secondary/0 to-secondary/5 opacity-0 transition-opacity duration-300 md:group-hover:opacity-100" />
 
-      {/* Top Team */}
+      {/* Top Team (Home) */}
       <div
         className={cn(
-          "relative z-10 flex items-center gap-2 px-3 py-2.5 transition-colors duration-200",
+          "relative z-10 flex items-center transition-colors duration-200",
+          // Mobile: more padding (py-3), Desktop: compact (py-2.5)
+          "gap-2 px-3 py-3 md:gap-2 md:py-2.5",
           "border-b border-primary/10",
+          // Winner styles
+          homeWon && "bg-secondary/10",
+          // Loser styles
+          awayWon && "bg-muted/50 opacity-50",
           topHovered && "bg-secondary/10"
         )}
         onMouseEnter={() => onMouseEnter?.(topParty.id)}
@@ -137,31 +198,52 @@ function CustomMatch({
         <TeamFlag
           fifaCode={topParty.fifaCode || "TBD"}
           teamName={topParty.name || "TBD"}
-          size="sm"
+          // Mobile: md (48px), Desktop: sm (40px)
+          size="md"
           rounded="sm"
           bordered
-          className="shrink-0 transition-transform duration-200 group-hover:scale-110"
+          className={cn(
+            "shrink-0 transition-transform duration-200 md:size-sm md:group-hover:scale-110",
+            awayWon && "grayscale"
+          )}
         />
         <span
           className={cn(
-            "flex-1 truncate text-xs font-semibold transition-colors duration-200",
-            topHovered ? "text-secondary" : "text-foreground"
+            // Mobile: sm text (14px), Desktop: xs (12px)
+            "flex-1 truncate text-sm font-semibold transition-colors duration-200 md:text-xs",
+            topHovered && "text-secondary",
+            homeWon && "text-secondary",
+            awayWon && "text-muted-foreground",
+            !homeWon && !awayWon && "text-foreground"
           )}
           title={topParty.name || teamNameFallback}
         >
           {topText || topParty.name || teamNameFallback}
         </span>
-        {topParty.resultText && (
-          <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-bold text-white shadow-sm">
-            {topParty.resultText}
+        {/* Winner icon */}
+        {homeWon && (
+          <CheckCircle2 className="size-4 shrink-0 text-secondary" />
+        )}
+        {/* Score badge */}
+        {userPrediction && (
+          <span className={cn(
+            "rounded-md px-2 py-1 text-xs font-bold shadow-sm md:py-0.5",
+            homeWon ? "bg-secondary text-white" : "bg-muted text-muted-foreground"
+          )}>
+            {userPrediction.homeScore}
           </span>
         )}
       </div>
 
-      {/* Bottom Team */}
+      {/* Bottom Team (Away) */}
       <div
         className={cn(
-          "relative z-10 flex items-center gap-2 px-3 py-2.5 transition-colors duration-200",
+          "relative z-10 flex items-center transition-colors duration-200",
+          "gap-2 px-3 py-3 md:gap-2 md:py-2.5",
+          // Winner styles
+          awayWon && "bg-secondary/10",
+          // Loser styles
+          homeWon && "bg-muted/50 opacity-50",
           bottomHovered && "bg-secondary/10"
         )}
         onMouseEnter={() => onMouseEnter?.(bottomParty.id)}
@@ -170,23 +252,37 @@ function CustomMatch({
         <TeamFlag
           fifaCode={bottomParty.fifaCode || "TBD"}
           teamName={bottomParty.name || "TBD"}
-          size="sm"
+          size="md"
           rounded="sm"
           bordered
-          className="shrink-0 transition-transform duration-200 group-hover:scale-110"
+          className={cn(
+            "shrink-0 transition-transform duration-200 md:size-sm md:group-hover:scale-110",
+            homeWon && "grayscale"
+          )}
         />
         <span
           className={cn(
-            "flex-1 truncate text-xs font-semibold transition-colors duration-200",
-            bottomHovered ? "text-secondary" : "text-foreground"
+            "flex-1 truncate text-sm font-semibold transition-colors duration-200 md:text-xs",
+            bottomHovered && "text-secondary",
+            awayWon && "text-secondary",
+            homeWon && "text-muted-foreground",
+            !homeWon && !awayWon && "text-foreground"
           )}
           title={bottomParty.name || teamNameFallback}
         >
           {bottomText || bottomParty.name || teamNameFallback}
         </span>
-        {bottomParty.resultText && (
-          <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-bold text-white shadow-sm">
-            {bottomParty.resultText}
+        {/* Winner icon */}
+        {awayWon && (
+          <CheckCircle2 className="size-4 shrink-0 text-secondary" />
+        )}
+        {/* Score badge */}
+        {userPrediction && (
+          <span className={cn(
+            "rounded-md px-2 py-1 text-xs font-bold shadow-sm md:py-0.5",
+            awayWon ? "bg-secondary text-white" : "bg-muted text-muted-foreground"
+          )}>
+            {userPrediction.awayScore}
           </span>
         )}
       </div>
@@ -206,24 +302,45 @@ function CustomMatch({
  * - Click to open detailed match information
  * - Automatic removal of "Round" prefix from round headers
  */
-export function KnockoutBracket({ matches }: KnockoutBracketProps) {
-  const [selectedMatch, setSelectedMatch] = useState<TournamentMatch | null>(
+export function KnockoutBracket({
+  matches,
+  knockoutPredictions,
+  predictionId,
+  onSave,
+  isSaving,
+}: KnockoutBracketProps) {
+  const [selectedMatch, setSelectedMatch] = useState<RoundOf32Match | null>(
     null
   );
+  const [selectedPrediction, setSelectedPrediction] =
+    useState<UserMatchPrediction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Create a map of predictions by matchId for quick lookup
+  const predictionsMap = useMemo(() => {
+    if (!knockoutPredictions) return new Map<string, UserMatchPrediction>();
+
+    const map = new Map<string, UserMatchPrediction>();
+    knockoutPredictions.forEach((knockout) => {
+      map.set(knockout.match.id, knockout.userPrediction);
+    });
+    return map;
+  }, [knockoutPredictions]);
 
   if (!matches || matches.length === 0) {
     return (
-      <div className="rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-card via-primary/5 to-secondary/5 p-12 text-center shadow-lg shadow-primary/5">
-        <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-xl shadow-primary/30">
-          <Info className="size-10 text-white" />
+      <div className="rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-card via-primary/5 to-secondary/5 p-8 text-center shadow-lg shadow-primary/5 md:p-12">
+        <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-xl shadow-primary/30 md:size-20">
+          <Info className="size-8 text-white md:size-10" />
         </div>
-        <h3 className="mb-2 text-xl font-bold text-primary">16avos de Final</h3>
+        <h3 className="mb-2 text-lg font-bold text-primary md:text-xl">
+          16avos de Final
+        </h3>
         <p className="mx-auto max-w-md text-sm font-medium leading-relaxed text-muted-foreground">
           Los emparejamientos de 16avos de final se mostrarán cuando se
           completen todos los grupos.
         </p>
-        <div className="mx-auto mt-6 h-1 w-24 rounded-full bg-gradient-to-r from-primary via-secondary to-primary" />
+        <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-gradient-to-r from-primary via-secondary to-primary md:mt-6 md:w-24" />
       </div>
     );
   }
@@ -231,13 +348,33 @@ export function KnockoutBracket({ matches }: KnockoutBracketProps) {
   // Convert matches to @g-loot/react-tournament-brackets format
   const tournamentMatches = convertToTournamentBracket(matches);
 
+  // Create CustomMatch wrapper with access to predictionsMap
+  const CustomMatchWithPredictions = (props: MatchComponentProps) => {
+    // Find prediction for this match
+    const matchIndex = Number(props.match.id) - 1;
+    const originalMatch = matches[matchIndex];
+    const userPrediction = originalMatch
+      ? predictionsMap.get(originalMatch.id)
+      : null;
+
+    return <CustomMatch {...props} userPrediction={userPrediction} />;
+  };
+
   // Handle match click to open dialog
   const handleMatchClick = (args: { match: Match }) => {
-    // Find the original TournamentMatch data
-    const clickedMatch = tournamentMatches.find((m) => m.id === args.match.id);
-    if (clickedMatch) {
-      setSelectedMatch(clickedMatch);
-      setIsDialogOpen(true);
+    // Only handle Round of 32 matches (IDs 1-16), ignore TBD matches
+    const matchId = Number(args.match.id);
+    if (matchId >= 1 && matchId <= 16) {
+      // Find the original RoundOf32Match data (index is matchId - 1)
+      const originalMatch = matches[matchId - 1];
+      if (originalMatch) {
+        // Find user's prediction for this match (if exists)
+        const userPrediction = predictionsMap.get(originalMatch.id) || null;
+
+        setSelectedMatch(originalMatch);
+        setSelectedPrediction(userPrediction);
+        setIsDialogOpen(true);
+      }
     }
   };
 
@@ -273,93 +410,98 @@ export function KnockoutBracket({ matches }: KnockoutBracketProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-3 rounded-lg border-2 border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="flex items-center gap-2 text-2xl font-bold text-primary">
-            <div className="rounded-lg bg-primary p-2 shadow-md shadow-primary/30">
-              <Trophy className="size-6 text-white" />
+      {/* Header - Optimized for Mobile */}
+      <div className="flex flex-col gap-3 rounded-lg border-2 border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 p-3 shadow-sm sm:p-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex-1">
+          <h2 className="flex items-center gap-2 text-xl font-bold text-primary md:text-2xl">
+            <div className="rounded-lg bg-primary p-1.5 shadow-md shadow-primary/30 md:p-2">
+              <Trophy className="size-5 text-white md:size-6" />
             </div>
             Eliminatorias
           </h2>
-          <p className="mt-1 ml-14 text-sm font-medium text-muted-foreground">
+          <p className="mt-1 ml-9 text-xs font-medium text-muted-foreground md:ml-14 md:text-sm">
             Fase final del Mundial 2026
           </p>
         </div>
         <Badge
           variant="secondary"
-          className="w-fit bg-secondary text-white shadow-md shadow-secondary/30 hover:bg-secondary/90"
+          className="w-fit self-start bg-secondary text-xs text-white shadow-md shadow-secondary/30 hover:bg-secondary/90 md:self-center md:text-sm"
         >
-          {matches.length} partidos confirmados
+          {matches.length} partidos
         </Badge>
       </div>
 
-      {/* Bracket Container with ScrollArea */}
-      <ScrollArea className="h-[800px] w-full max-w-full rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card via-background to-primary/5 shadow-lg shadow-primary/10">
-        <div className="min-w-fit p-8">
-          <SingleEliminationBracket
-            matches={tournamentMatches}
-            matchComponent={CustomMatch}
-            theme={PorrazaTheme}
-            options={{
-              style: {
-                roundHeader: {
-                  backgroundColor: PorrazaTheme.roundHeader.backgroundColor,
-                  fontColor: PorrazaTheme.roundHeader.fontColor,
-                  fontFamily: "Poppins, sans-serif",
-                  fontSize: 14,
-                  fontWeight: 600,
-                },
-                connectorColor: PorrazaTheme.connectorColor,
-                connectorColorHighlight: PorrazaTheme.connectorColorHighlight,
-              },
-            }}
-            onMatchClick={handleMatchClick}
-          />
+      {/* Bracket Container with ScrollArea - Mobile Optimized */}
+      <div className="relative">
+        {/* Scroll indicator for mobile */}
+        <div className="pointer-events-none absolute right-4 top-4 z-20 rounded-full bg-secondary/90 px-3 py-1.5 text-xs font-semibold text-white shadow-lg md:hidden">
+          ← Desliza →
         </div>
-        <ScrollBar orientation="horizontal" className="bg-primary/5" />
-        <ScrollBar orientation="vertical" className="bg-primary/5" />
-      </ScrollArea>
 
-      {/* Info Footer */}
-      <div className="group rounded-lg border-2 border-secondary/30 bg-gradient-to-r from-secondary/5 via-primary/5 to-secondary/5 p-4 shadow-sm transition-all hover:border-secondary/50 hover:shadow-md hover:shadow-secondary/10">
-        <div className="flex gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-secondary to-secondary/80 shadow-md shadow-secondary/30">
-            <Info className="size-5 text-white" />
+        <ScrollArea className="h-[500px] w-full max-w-full rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 shadow-lg shadow-primary/10 sm:h-[600px] md:h-[800px] md:via-background">
+          <div className="min-w-fit p-4 sm:p-6 md:p-8">
+            <SingleEliminationBracket
+              matches={tournamentMatches}
+              matchComponent={CustomMatchWithPredictions}
+              theme={PorrazaTheme}
+              options={{
+                style: {
+                  roundHeader: {
+                    backgroundColor: PorrazaTheme.roundHeader.backgroundColor,
+                    fontColor: PorrazaTheme.roundHeader.fontColor,
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: 14,
+                    fontWeight: 600,
+                  },
+                  connectorColor: PorrazaTheme.connectorColor,
+                  connectorColorHighlight: PorrazaTheme.connectorColorHighlight,
+                },
+              }}
+              onMatchClick={handleMatchClick}
+            />
+          </div>
+          {/* Enhanced scroll bars */}
+          <ScrollBar
+            orientation="horizontal"
+            className="h-2.5 bg-primary/10 md:h-2 md:bg-primary/5"
+          />
+          <ScrollBar
+            orientation="vertical"
+            className="w-2.5 bg-primary/10 md:w-2 md:bg-primary/5"
+          />
+        </ScrollArea>
+      </div>
+
+      {/* Info Footer - Mobile Optimized */}
+      <div className="group rounded-lg border-2 border-secondary/30 bg-gradient-to-r from-secondary/5 via-primary/5 to-secondary/5 p-3 shadow-sm transition-all active:border-secondary/50 md:p-4 md:hover:border-secondary/50 md:hover:shadow-md md:hover:shadow-secondary/10">
+        <div className="flex gap-2.5 md:gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-secondary to-secondary/80 shadow-md shadow-secondary/30 md:size-10">
+            <Info className="size-4 text-white md:size-5" />
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-foreground">
+            <p className="text-xs font-semibold text-foreground md:text-sm">
               Bracket de eliminatorias directas
             </p>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              <span className="font-medium text-secondary">Haz click</span> en
-              cualquier partido para ver más detalles. Los equipos marcados como{" "}
+              <span className="font-medium text-secondary">Toca</span> cualquier
+              partido para ver detalles. Los equipos{" "}
               <span className="font-medium text-destructive">"TBD"</span> se
-              determinarán cuando se completen las rondas anteriores.
+              definirán en rondas previas.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Match Details Dialog - Reusing existing dialog */}
+      {/* Match Details Dialog with complete match data */}
       {selectedMatch && (
         <KnockoutMatchDialog
-          seed={{
-            id: String(selectedMatch.id),
-            date: selectedMatch.startTime,
-            teams: selectedMatch.participants.map((p) => ({
-              name: p.name,
-              fifaCode: p.fifaCode,
-              confederation: p.confederation,
-            })),
-            matchId: String(selectedMatch.id),
-            matchNumber: undefined,
-            stadium: undefined,
-            matchTime: undefined,
-            phase: selectedMatch.tournamentRoundText,
-          }}
+          match={selectedMatch}
+          userPrediction={selectedPrediction}
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
+          predictionId={predictionId}
+          onSave={onSave}
+          isSaving={isSaving}
         />
       )}
     </div>

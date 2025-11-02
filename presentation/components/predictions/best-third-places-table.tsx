@@ -13,7 +13,7 @@ import { Badge } from "@/presentation/components/ui/badge";
 import { TeamFlag } from "@/presentation/components/ui/team-flag";
 import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 interface BestThirdPlacesTableProps {
   bestThirdPlaces: BestThirdPlace[];

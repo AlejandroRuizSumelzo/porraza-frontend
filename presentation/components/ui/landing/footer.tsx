@@ -7,7 +7,7 @@ import { Separator } from "@/presentation/components/ui/separator";
 import { Linkedin, Mail, ExternalLink, Sparkles } from "lucide-react";
 import { SiX, SiInstagram } from "@icons-pack/react-simple-icons";
 import { motion } from "motion/react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 const productLinkConfig = [
   { href: "#funcionalidades", color: "primary" },

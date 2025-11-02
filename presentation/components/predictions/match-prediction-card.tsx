@@ -1,12 +1,14 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { Lock, MapPin, Calendar, Clock } from "lucide-react";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Input } from "@/presentation/components/ui/input";
 import { TeamFlag } from "@/presentation/components/ui/team-flag";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 import type { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 import { useState, type ChangeEvent } from "react";
+import { formatShortDate, formatTime } from "@/presentation/utils/formatters";
 
 interface MatchPredictionCardProps {
   matchWithPrediction: MatchWithPrediction;
@@ -34,6 +36,7 @@ export function MatchPredictionCard({
   prediction,
   onScoreChange,
 }: MatchPredictionCardProps) {
+  const locale = useLocale();
   const { match } = matchWithPrediction;
   const [imageError, setImageError] = useState(false);
 
@@ -65,20 +68,6 @@ export function MatchPredictionCard({
 
   // Stadium image path
   const stadiumImagePath = `/stadiums/${match.stadium.code}.webp`;
-
-  // Format date
-  const formatDate = (dateString: Date) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("es-ES", {
-      day: "numeric",
-      month: "short",
-    }).format(date);
-  };
-
-  // Format time
-  const formatTime = (timeString: string) => {
-    return timeString.slice(0, 5); // "20:00:00" -> "20:00"
-  };
 
   return (
     <div
@@ -112,7 +101,7 @@ export function MatchPredictionCard({
               <div className="flex items-center gap-1 text-muted-foreground sm:gap-1.5">
                 <Calendar className="size-3 text-primary/70 sm:size-3.5" />
                 <span className="font-medium">
-                  {formatDate(match.matchDate)}
+                  {formatShortDate(match.matchDate, locale)}
                 </span>
               </div>
               <div className="flex items-center gap-1 text-muted-foreground sm:gap-1.5">

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "motion/react";
 import { useEmailVerification } from "@/presentation/hooks/auth/use-email-verification";
-import { APP_ROUTES } from "@/presentation/lib/routes";
+import { APP_ROUTES } from "@/presentation/utils/routes";
 import {
   Card,
   CardContent,

@@ -4,7 +4,7 @@ import { Card } from "@/presentation/components/ui/card";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Separator } from "@/presentation/components/ui/separator";
 import { X, Filter } from "lucide-react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 interface GroupFilterProps {
   availableGroups: string[];

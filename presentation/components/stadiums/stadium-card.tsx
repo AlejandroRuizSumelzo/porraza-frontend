@@ -1,8 +1,10 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { Card } from "@/presentation/components/ui/card";
 import { MapPin, Users, Globe } from "lucide-react";
 import type { Stadium } from "@/domain/entities/stadium";
+import { formatNumber } from "@/presentation/utils/formatters";
 
 interface StadiumCardProps {
   stadium: Stadium;
@@ -16,6 +18,8 @@ interface StadiumCardProps {
  * Note: Client Component required for onError handler on img tag
  */
 export function StadiumCard({ stadium }: StadiumCardProps) {
+  const locale = useLocale();
+
   // Generate image path from stadium code
   const imagePath = `/stadiums/${stadium.code}.webp`;
 
@@ -59,7 +63,7 @@ export function StadiumCard({ stadium }: StadiumCardProps) {
               <span className="text-sm">Capacidad</span>
             </div>
             <span className="text-sm font-semibold">
-              {stadium.capacity.toLocaleString("es-ES")}
+              {formatNumber(stadium.capacity, locale)}
             </span>
           </div>
         )}

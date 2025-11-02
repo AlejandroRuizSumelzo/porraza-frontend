@@ -6,9 +6,10 @@ import {
 } from "@/domain/repositories/prediction-repository";
 
 /**
- * Expected number of matches per knockout phase
+ * Maximum number of matches per knockout phase
+ * Used for validation only (allows 1 to N predictions)
  */
-const MATCHES_PER_PHASE: Record<string, number> = {
+const MAX_MATCHES_PER_PHASE: Record<string, number> = {
   ROUND_OF_32: 16,
   ROUND_OF_16: 8,
   QUARTER_FINALS: 4,
@@ -29,7 +30,8 @@ const VALID_KNOCKOUT_PHASES: MatchPhase[] = [
 
 /**
  * SaveKnockoutPredictionsUseCase
- * Use case for saving predictions for a complete knockout phase
+ * Use case for saving predictions for a knockout phase
+ * Supports partial saves (1 to N matches) or complete phase saves
  * Includes business logic validation for knockout match rules
  */
 export class SaveKnockoutPredictionsUseCase {
@@ -37,9 +39,10 @@ export class SaveKnockoutPredictionsUseCase {
 
   /**
    * Execute the use case
+   * Supports saving 1 to N match predictions for a knockout phase
    * @param predictionId - Prediction UUID
    * @param phase - Knockout phase (ROUND_OF_32, ROUND_OF_16, QUARTER_FINALS, SEMI_FINALS, FINAL)
-   * @param predictions - Array of match predictions for the phase
+   * @param predictions - Array of 1 to N match predictions (allows partial phase saves)
    * @returns Promise with save confirmation
    */
   async execute(
@@ -75,11 +78,11 @@ export class SaveKnockoutPredictionsUseCase {
       throw new Error("Predictions array cannot be empty");
     }
 
-    // Validate expected number of matches for phase
-    const expectedMatches = MATCHES_PER_PHASE[phase];
-    if (predictions.length !== expectedMatches) {
+    // Validate maximum number of matches for phase (allows 1 to MAX)
+    const maxMatches = MAX_MATCHES_PER_PHASE[phase];
+    if (predictions.length > maxMatches) {
       throw new Error(
-        `Expected ${expectedMatches} match predictions for ${phase}, but got ${predictions.length}`
+        `Too many predictions for ${phase}. Maximum is ${maxMatches}, but got ${predictions.length}`
       );
     }
 

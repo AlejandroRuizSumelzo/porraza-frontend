@@ -7,9 +7,9 @@ import {
   getPositionLabel,
   getPositionsInOrder,
   getPositionColor,
-} from "@/presentation/lib/player-utils";
+} from "@/presentation/utils/player-utils";
 import { Shield, Zap, Target } from "lucide-react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 interface PlayersGridProps {
   players: Player[];

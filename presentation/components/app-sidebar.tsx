@@ -32,7 +32,7 @@ import {
 } from "@/presentation/components/ui/collapsible";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
-import { navigationItems } from "@/presentation/lib/routes";
+import { navigationItems } from "@/presentation/utils/routes";
 import { useLogout } from "@/presentation/hooks/auth/use-logout";
 import { usePaymentStatus } from "@/presentation/hooks/payments/use-payment-status";
 import { useSyncLeagues } from "@/presentation/hooks/leagues/use-sync-leagues";

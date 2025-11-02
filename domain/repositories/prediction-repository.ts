@@ -6,6 +6,7 @@ import { MatchWithPrediction } from "@/domain/entities/match-with-prediction";
 import { GroupStanding } from "@/domain/entities/group-standing";
 import { BestThirdPlace } from "@/domain/entities/best-third-place";
 import { RoundOf32Match } from "@/domain/entities/round-of-32-match";
+import { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
 import { MatchPhase } from "@/domain/entities/match";
 
 /**
@@ -17,6 +18,7 @@ export interface GetOrCreatePredictionResponse {
   matches: MatchWithPrediction[];
   bestThirdPlaces?: BestThirdPlace[];
   roundOf32Matches?: RoundOf32Match[];
+  knockoutPredictions?: KnockoutMatchWithPrediction[];
 }
 
 /**

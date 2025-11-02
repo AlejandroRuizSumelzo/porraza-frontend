@@ -20,7 +20,9 @@ import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import type { GroupStanding } from "@/domain/entities/group-standing";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
-import { cn } from "@/presentation/lib/utils";
+import type { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
+import type { MatchPhase } from "@/domain/entities/match";
+import { cn } from "@/presentation/utils/cn";
 
 interface PredictionsPageContentProps {
   prediction: Prediction | null;
@@ -33,9 +35,14 @@ interface PredictionsPageContentProps {
     matchPredictions: MatchPrediction[],
     groupStandings: GroupStanding[]
   ) => Promise<void>;
+  saveKnockoutPredictions: (
+    phase: MatchPhase,
+    matchPredictions: MatchPrediction[]
+  ) => Promise<void>;
   isSaving: boolean;
   bestThirdPlaces: BestThirdPlace[] | null;
   roundOf32Matches: RoundOf32Match[] | null;
+  knockoutPredictions: KnockoutMatchWithPrediction[] | null;
 }
 
 /**
@@ -61,9 +68,11 @@ export function PredictionsPageContent({
   error,
   selectedLeagueId,
   saveGroupPredictions,
+  saveKnockoutPredictions,
   isSaving,
   bestThirdPlaces,
   roundOf32Matches,
+  knockoutPredictions,
 }: PredictionsPageContentProps) {
   const { open, isMobile } = useSidebar();
   const [activeTab, setActiveTab] = useState("groups");
@@ -185,7 +194,13 @@ export function PredictionsPageContent({
                   </p>
                 </div>
               ) : roundOf32Matches && roundOf32Matches.length > 0 ? (
-                <KnockoutBracket matches={roundOf32Matches} />
+                <KnockoutBracket
+                  matches={roundOf32Matches}
+                  knockoutPredictions={knockoutPredictions}
+                  predictionId={prediction?.id || null}
+                  onSave={saveKnockoutPredictions}
+                  isSaving={isSaving}
+                />
               ) : (
                 <div className="rounded-xl border bg-card p-12 text-center">
                   <Lock className="mx-auto mb-4 size-12 text-secondary" />

@@ -21,7 +21,7 @@ import {
   getPositionLabel,
   getPositionColor,
   getPositionsInOrder,
-} from "@/presentation/lib/player-utils";
+} from "@/presentation/utils/player-utils";
 import { Trophy, Users, Shield, MapPin, Zap, Target } from "lucide-react";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 

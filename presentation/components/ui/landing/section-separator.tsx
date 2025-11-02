@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 
 interface SectionSeparatorProps {
   variant?: "gradient" | "dots" | "wave" | "simple";

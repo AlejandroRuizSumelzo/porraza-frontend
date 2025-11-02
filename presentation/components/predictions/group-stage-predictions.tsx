@@ -21,11 +21,11 @@ import {
 } from "@/presentation/components/ui/field";
 import { Save, Info, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/presentation/lib/utils";
+import { cn } from "@/presentation/utils/cn";
 import {
   calculateGroupStandings,
   getTiedTeamGroups,
-} from "@/presentation/lib/calculate-standings";
+} from "@/presentation/utils/calculate-standings";
 
 interface GroupStagePredictionsProps {
   matches: MatchWithPrediction[];
