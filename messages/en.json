@@ -442,6 +442,46 @@
         "website_name": "Porraza",
         "website_url": "https://porraza.com"
       }
+    },
+    "faq": {
+      "badge": "Frequently Asked Questions",
+      "title": "Everything you need to know about <highlight>Porraza</highlight>",
+      "description": "We answer the most common questions to help you set up your World Cup 2026 pool hassle-free.",
+      "items": [
+        {
+          "question": "How to create a World Cup 2026 pool with friends?",
+          "answer": "It's super simple: sign up on Porraza, create your private league from the dashboard, invite your friends with the unique code we generate, and you're set. Everyone makes their predictions before each match and the system updates the rankings automatically. You only pay €1.99 per person, no monthly fees."
+        },
+        {
+          "question": "How to set up a football pool for my office?",
+          "answer": "Porraza is perfect for companies and work teams. Create a private corporate league, share the invitation code with your employees or coworkers, and organize the perfect activity for World Cup 2026. It's a team-building dynamic that boosts workplace morale. The payment is one-time (€1.99 per employee) and hassle-free."
+        },
+        {
+          "question": "How much does a World Cup 2026 pool cost?",
+          "answer": "Porraza costs only €1.99 per person, one-time payment. No monthly subscriptions, hidden charges, or surprises. You pay once and enjoy all features throughout World Cup 2026: unlimited leagues, predictions, live rankings, match calendar, and more."
+        },
+        {
+          "question": "What is a World Cup 2026 prediction pool?",
+          "answer": "A World Cup pool is a prediction game where you compete with friends or coworkers by guessing match results. You predict scores, winners, and qualifiers, accumulate points based on accuracy, and compete in a live ranking. Porraza automates the entire process so you can just enjoy and show off."
+        },
+        {
+          "question": "Can I create a free World Cup 2026 pool?",
+          "answer": "Porraza requires a one-time payment of €1.99 per person to cover development costs, servers, and real-time updates. This allows us to offer you a professional, fast platform without ads and with technical support. It's cheaper than any single bet and the most competitive price on the market for World Cup pools."
+        },
+        {
+          "question": "How to invite friends to my World Cup pool?",
+          "answer": "When you create your league on Porraza, you receive a unique invitation code. Just share it via WhatsApp, email, or social media. Your friends enter Porraza, paste the code, and automatically join your league. You can also make the league public so anyone can find and join it."
+        },
+        {
+          "question": "Is Porraza a real money betting platform?",
+          "answer": "No. Porraza is NOT a betting platform. It's a sports prediction game to have fun with friends, family, or coworkers, with no real money at stake. You only pay €1.99 for platform access, there are no monetary prizes. It's pure fun and friendly competition within your group."
+        },
+        {
+          "question": "What advantages does Porraza have over other pool platforms?",
+          "answer": "Porraza stands out for its extreme simplicity, modern design, automatic live rankings, no spreadsheets needed, and an unbeatable price (€1.99 one-time payment). Plus, it supports multiple simultaneous leagues, is mobile-first, and is designed specifically for World Cup 2026. We focus on letting you set up your pool in 3 clicks and everything else runs automatically."
+        }
+      ],
+      "footer": "More questions? Write to us at <contact>contacto@porraza.com</contact> and we'll help you out."
     }
   },
   "forms": {

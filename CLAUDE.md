@@ -769,8 +769,170 @@ Antes de commit:
 
 ---
 
+## 🔍 SEO y Keywords Strategy
+
+### Archivos de SEO
+
+| Archivo                       | Descripción                                     |
+| ----------------------------- | ----------------------------------------------- |
+| [app/robots.ts](./app/robots.ts) | Configuración de robots.txt (Next.js 15 API) |
+| [app/sitemap.ts](./app/sitemap.ts) | Sitemap dinámico (Next.js 15 API)           |
+| [app/[locale]/layout.tsx](./app/[locale]/layout.tsx) | Metadata dinámica por locale (ES/EN) |
+
+### 1. Keywords Core (Marca + Concepto)
+
+**Marca + Genérico:**
+```
+porraza
+porraza app
+porraza mundial 2026
+porraza porras entre amigos
+porraza porras de fútbol
+porraza quinielas entre amigos
+porraza porras para empresas
+```
+
+**Concepto Principal:**
+```
+porra mundial 2026
+porra fútbol mundial 2026
+porra entre amigos mundial 2026
+porras de fútbol entre amigos
+porras online entre amigos
+porra de fútbol para empresas
+porra mundial 2026 para empresas
+quiniela mundial 2026 entre amigos
+quiniela mundial 2026 para empresas
+```
+
+### 2. Keywords por Intención
+
+#### a) "Quiero jugar con colegas"
+```
+porra entre amigos
+porra mundial con amigos
+porras para grupos de amigos
+app para porras de fútbol
+hacer porra de fútbol online
+crear porra mundial 2026 gratis / barata
+porra privada mundial 2026
+liga de porras entre amigos
+```
+
+#### b) Empresas / RR.HH. / Equipo
+```
+porra para empresas mundial 2026
+porra de fútbol para empleados
+juego de predicción de fútbol para empresas
+dinámica para mundial 2026 en la oficina
+actividades para empleados mundial 2026
+quiniela mundial 2026 para empresas
+software de porras para empresas
+```
+
+#### c) Long-tail (muy SEO-friendly)
+```
+cómo organizar una porra del mundial 2026 con amigos
+cómo hacer una porra de fútbol para mi empresa
+herramienta para hacer porras del mundial 2026
+app para crear ligas de porras privadas
+plataforma de porras de fútbol sin dinero real
+porra online barata para mundial 2026
+```
+
+### 3. Inglés y Latam (Futura Expansión)
+
+**EN (Inglés):**
+```
+world cup 2026 prediction game
+world cup 2026 office pool
+football pool with friends
+world cup 2026 bracket with friends
+```
+
+**LATAM (Español variante):**
+```
+quiniela mundial 2026 online
+prode mundial 2026 con amigos
+```
+
+### 4. Reglas de Uso de Keywords
+
+**En Metadata (layout.tsx):**
+- ✅ Incluir keywords core en `title` y `description`
+- ✅ Separar por intención (amigos vs empresas)
+- ✅ Usar long-tail en descriptions alternativas
+- ❌ No keyword stuffing (máximo 20-25 keywords)
+
+**En Contenido de Landing:**
+- ✅ H1: Keyword principal natural ("Crea tu Porra del Mundial 2026")
+- ✅ H2/H3: Long-tail natural ("Cómo funciona la porra entre amigos")
+- ✅ Copys: Integrar keywords secundarias de forma conversacional
+- ✅ Alt texts: Keywords descriptivas en imágenes
+- ❌ No repetir exacta keyword más de 3-4 veces por página
+
+**En FAQ (futuro):**
+- ✅ Preguntas = Long-tail exactas
+  - Ejemplo: "¿Cómo organizar una porra del mundial 2026 con amigos?"
+- ✅ Respuestas = Keywords core + semánticas
+- ✅ Structured data FAQPage para rich snippets
+
+### 5. Competitive Keywords (Para Superar)
+
+| Competidor         | Keyword objetivo                                  |
+| ------------------ | ------------------------------------------------- |
+| Kicktipp           | `porra mundial 2026` (genérico)                   |
+| BuroDelasPorras    | `porra para empresas mundial 2026`                |
+| TorneoDefutbol.es  | `quiniela mundial 2026 entre amigos`              |
+| Genéricos          | `crear porra fútbol online`                       |
+| Long-tail          | `cómo hacer una porra del mundial 2026 con amigos`|
+
+### 6. Structured Data Implementado
+
+**Actual:**
+- ✅ Organization (Footer)
+- ✅ ItemList (Features)
+- ✅ HowTo (How It Works)
+- ✅ Offer (Pricing)
+
+**Pendiente (alta prioridad):**
+- ⏳ FAQPage (para long-tail keywords)
+- ⏳ WebSite (SearchAction)
+- ⏳ BreadcrumbList (navegación)
+
+### 7. SEO Checklist
+
+Antes de lanzar nueva página/sección:
+
+- [ ] Title optimizado con keyword core (50-60 caracteres)
+- [ ] Description con CTA + keywords (150-160 caracteres)
+- [ ] H1 único con keyword principal
+- [ ] Alt texts en todas las imágenes
+- [ ] Internal linking a páginas relacionadas
+- [ ] Canonical URL configurada
+- [ ] Open Graph + Twitter Cards
+- [ ] Structured data apropiado (si aplica)
+- [ ] Mobile-friendly verificado
+- [ ] Core Web Vitals optimizados
+
+### 8. Herramientas de Monitoreo
+
+**Configurar en producción:**
+- Google Search Console (verificar propiedad)
+- Google Analytics 4 (conversiones)
+- Vercel Analytics (ya integrado ✅)
+- Ahrefs / SEMrush (keywords ranking)
+
+**Métricas clave a trackear:**
+- Posición en SERPs para keywords core (top 10 objetivo)
+- CTR de resultados orgánicos (>3% objetivo)
+- Conversión signup desde SEO (>2% objetivo)
+- Bounce rate en landing (<50% objetivo)
+
+---
+
 **Última actualización:** 2025-01-25
 
-**Versión:** 1.0.0
+**Versión:** 1.1.0
 
-**Estado:** ✅ Producción (funcional con autenticación, pagos y ligas)
+**Estado:** ✅ Producción (funcional con autenticación, pagos, ligas y SEO optimizado)

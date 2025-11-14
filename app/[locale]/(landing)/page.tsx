@@ -3,6 +3,7 @@ import { Hero } from "@/presentation/components/ui/landing/hero";
 import { Features } from "@/presentation/components/ui/landing/features";
 import { HowItWorks } from "@/presentation/components/ui/landing/how-it-works";
 import { Pricing } from "@/presentation/components/ui/landing/pricing";
+import { FAQ } from "@/presentation/components/ui/landing/faq";
 import { Footer } from "@/presentation/components/ui/landing/footer";
 import { SectionSeparator } from "@/presentation/components/ui/landing/section-separator";
 
@@ -25,6 +26,10 @@ export default function LandingPage() {
         <SectionSeparator variant="simple" />
 
         <Pricing />
+
+        <SectionSeparator variant="gradient" />
+
+        <FAQ />
       </main>
 
       <SectionSeparator variant="wave" />

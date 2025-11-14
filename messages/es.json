@@ -490,6 +490,46 @@
         "website_name": "Porraza",
         "website_url": "https://porraza.com"
       }
+    },
+    "faq": {
+      "badge": "Preguntas frecuentes",
+      "title": "Todo lo que necesitas saber sobre <highlight>Porraza</highlight>",
+      "description": "Resolvemos las dudas más comunes para que montes tu porra del Mundial 2026 sin complicaciones.",
+      "items": [
+        {
+          "question": "¿Cómo organizar una porra del Mundial 2026 con amigos?",
+          "answer": "Es muy sencillo: regístrate en Porraza, crea tu liga privada desde el dashboard, invita a tus amigos con el código único que generamos, y listo. Cada uno hace sus predicciones antes de cada partido y el sistema actualiza el ranking automáticamente. Solo pagas €1.99 por persona, sin cuotas mensuales."
+        },
+        {
+          "question": "¿Cómo hacer una porra de fútbol para mi empresa?",
+          "answer": "Porraza es ideal para empresas y equipos de trabajo. Crea una liga privada corporativa, comparte el código de invitación con tus empleados o compañeros, y organiza la actividad perfecta para el Mundial 2026. Es una dinámica de team building que mejora el ambiente laboral. El pago es único (€1.99 por empleado) y sin complicaciones."
+        },
+        {
+          "question": "¿Cuánto cuesta crear una porra del Mundial 2026?",
+          "answer": "Porraza cuesta solo €1.99 por persona, pago único. No hay suscripciones mensuales, cargos ocultos ni sorpresas. Pagas una vez y disfrutas de todas las funciones durante todo el Mundial 2026: ligas ilimitadas, predicciones, ranking en vivo, calendario de partidos y más."
+        },
+        {
+          "question": "¿Qué es una porra del Mundial 2026?",
+          "answer": "Una porra del Mundial es un juego de predicción donde compites con amigos o compañeros de trabajo adivinando los resultados de los partidos. Aciertas marcadores, ganadores y clasificados, acumulas puntos según tu precisión, y compites en un ranking en vivo. Porraza automatiza todo el proceso para que solo te preocupes de disfrutar y presumir."
+        },
+        {
+          "question": "¿Puedo crear una porra gratis para el Mundial 2026?",
+          "answer": "Porraza requiere un pago único de €1.99 por persona para cubrir costes de desarrollo, servidores y actualizaciones en tiempo real. Esto nos permite ofrecerte una plataforma profesional, rápida, sin anuncios y con soporte técnico. Es más barato que cualquier apuesta individual y el precio más competitivo del mercado para porras del Mundial."
+        },
+        {
+          "question": "¿Cómo invitar amigos a mi porra del Mundial?",
+          "answer": "Cuando creas tu liga en Porraza, recibes un código único de invitación. Solo tienes que compartirlo por WhatsApp, email o redes sociales. Tus amigos entran en Porraza, pegan el código, y automáticamente se unen a tu liga. También puedes hacer la liga pública para que cualquiera pueda encontrarla y unirse."
+        },
+        {
+          "question": "¿Porraza es una plataforma de apuestas con dinero real?",
+          "answer": "No. Porraza NO es una plataforma de apuestas. Es un juego de predicción deportiva para divertirte con amigos, familia o compañeros de trabajo, sin dinero real en juego. Solo pagas €1.99 por el acceso a la plataforma, no hay premios monetarios. Es pura diversión y pique sano entre tu grupo."
+        },
+        {
+          "question": "¿Qué ventajas tiene Porraza frente a otras plataformas de porras?",
+          "answer": "Porraza destaca por su simplicidad extrema, diseño moderno, ranking en vivo automático, sin necesidad de hojas de cálculo, y un precio imbatible (€1.99 pago único). Además, soporta múltiples ligas simultáneas, es mobile-first, y está diseñada específicamente para el Mundial 2026. Nos enfocamos en que montes tu porra en 3 clics y el resto vaya solo."
+        }
+      ],
+      "footer": "¿Más dudas? Escríbenos a <contact>contacto@porraza.com</contact> y te echamos un cable."
     }
   },
   "forms": {
