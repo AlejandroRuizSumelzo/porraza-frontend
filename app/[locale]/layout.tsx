@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Poppins, Teko } from "next/font/google";
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import { routing, type Locale } from '@/i18n/routing';
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { routing, type Locale } from "@/i18n/routing";
 import { Toaster } from "sonner";
 import { DependencyProvider } from "@/di/client/providers/dependency-provider";
 import "../globals.css";
@@ -62,6 +63,7 @@ export default async function LocaleLayout({
           <NextIntlClientProvider messages={messages}>
             {children}
             <Toaster richColors position="top-center" />
+            <SpeedInsights />
           </NextIntlClientProvider>
         </DependencyProvider>
       </body>
