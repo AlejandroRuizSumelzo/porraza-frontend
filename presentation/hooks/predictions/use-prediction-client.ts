@@ -13,7 +13,7 @@ import type { MatchPrediction } from "@/domain/entities/match-prediction";
 import type { GroupStanding } from "@/domain/entities/group-standing";
 import type { BestThirdPlace } from "@/domain/entities/best-third-place";
 import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
-import type { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
+import type { Knockouts } from "@/domain/entities/knockouts";
 import type { MatchPhase } from "@/domain/entities/match";
 
 /**
@@ -24,7 +24,7 @@ import type { MatchPhase } from "@/domain/entities/match";
  *
  * Usage:
  * ```tsx
- * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving, bestThirdPlaces, roundOf32Matches, knockoutPredictions } = usePrediction(leagueId);
+ * const { prediction, ranking, matches, isLoading, error, refetch, saveGroupPredictions, isSaving, bestThirdPlaces, roundOf32Matches, knockouts } = usePrediction(leagueId);
  * ```
  */
 
@@ -47,7 +47,7 @@ interface UsePredictionResult {
   isSaving: boolean;
   bestThirdPlaces: BestThirdPlace[] | null;
   roundOf32Matches: RoundOf32Match[] | null;
-  knockoutPredictions: KnockoutMatchWithPrediction[] | null;
+  knockouts: Knockouts | null;
 }
 
 export function usePrediction(leagueId: string | null): UsePredictionResult {
@@ -68,9 +68,7 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
   const [roundOf32Matches, setRoundOf32Matches] = useState<
     RoundOf32Match[] | null
   >(null);
-  const [knockoutPredictions, setKnockoutPredictions] = useState<
-    KnockoutMatchWithPrediction[] | null
-  >(null);
+  const [knockouts, setKnockouts] = useState<Knockouts | null>(null);
 
   const fetchPrediction = async () => {
     if (!leagueId) {
@@ -82,41 +80,22 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     setError(null);
 
     try {
-      console.log("[usePrediction] Fetching prediction from browser...", {
-        leagueId,
-      });
-
       const result = await getOrCreatePredictionUseCase.execute(leagueId);
-
-      console.log("[usePrediction] Prediction fetched successfully:", {
-        predictionId: result.prediction.id,
-        totalPoints: result.prediction.totalPoints,
-        matchesCount: result.matches.length,
-        hasBestThirdPlaces: !!result.bestThirdPlaces,
-        bestThirdPlacesCount: result.bestThirdPlaces?.length,
-        hasRoundOf32Matches: !!result.roundOf32Matches,
-        roundOf32MatchesCount: result.roundOf32Matches?.length,
-        hasKnockoutPredictions: !!result.knockoutPredictions,
-        knockoutPredictionsCount: result.knockoutPredictions?.length,
-      });
 
       setPrediction(result.prediction);
       setRanking(result.ranking);
       setMatches(result.matches);
 
-      // Set bestThirdPlaces if present (only when all 12 groups are completed)
       if (result.bestThirdPlaces) {
         setBestThirdPlaces(result.bestThirdPlaces);
       }
 
-      // Set roundOf32Matches if present (only when all 12 groups are completed)
       if (result.roundOf32Matches) {
         setRoundOf32Matches(result.roundOf32Matches);
       }
 
-      // Set knockoutPredictions if present (knockout stage matches with user predictions)
-      if (result.knockoutPredictions) {
-        setKnockoutPredictions(result.knockoutPredictions);
+      if (result.knockouts) {
+        setKnockouts(result.knockouts);
       }
     } catch (err) {
       const errorMessage =
@@ -141,13 +120,6 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     setIsSaving(true);
 
     try {
-      console.log("[usePrediction] Saving group predictions...", {
-        leagueId,
-        groupId,
-        predictionsCount: matchPredictions.length,
-        standingsCount: groupStandings.length,
-      });
-
       const result = await saveGroupPredictionsUseCase.execute(
         leagueId,
         groupId,
@@ -155,28 +127,12 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
         groupStandings
       );
 
-      console.log("[usePrediction] Group predictions saved successfully:", {
-        predictionId: result.prediction.id,
-        totalPoints: result.prediction.totalPoints,
-        hasBestThirdPlaces: !!result.bestThirdPlaces,
-        bestThirdPlacesCount: result.bestThirdPlaces?.length,
-      });
-
-      // Update prediction state with new data
       setPrediction(result.prediction);
 
-      // Update bestThirdPlaces if returned (all 12 groups completed)
       if (result.bestThirdPlaces) {
         setBestThirdPlaces(result.bestThirdPlaces);
-        console.log(
-          "[usePrediction] All groups completed! Best third places calculated:",
-          {
-            count: result.bestThirdPlaces.length,
-          }
-        );
       }
 
-      // Refetch matches to get updated userPrediction data
       await fetchPrediction();
     } catch (err) {
       const errorMessage =
@@ -200,26 +156,12 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     setIsSaving(true);
 
     try {
-      console.log("[usePrediction] Saving knockout predictions...", {
-        predictionId: prediction.id,
-        phase,
-        predictionsCount: matchPredictions.length,
-      });
-
-      const result = await saveKnockoutPredictionsUseCaseInstance.execute(
+      await saveKnockoutPredictionsUseCaseInstance.execute(
         prediction.id,
         phase,
         matchPredictions
       );
 
-      console.log("[usePrediction] Knockout predictions saved successfully:", {
-        phase: result.phase,
-        matchesSaved: result.matchesSaved,
-        knockoutsCompleted: result.knockoutsCompleted,
-        message: result.message,
-      });
-
-      // Refetch to get updated knockout matches data
       await fetchPrediction();
     } catch (err) {
       const errorMessage =
@@ -251,6 +193,6 @@ export function usePrediction(leagueId: string | null): UsePredictionResult {
     isSaving,
     bestThirdPlaces,
     roundOf32Matches,
-    knockoutPredictions,
+    knockouts,
   };
 }

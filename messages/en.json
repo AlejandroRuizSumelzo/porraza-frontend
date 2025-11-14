@@ -25,8 +25,224 @@
     }
   },
   "common": {
-    "app_name": "Porraza"
+    "app_name": "Porraza",
+    "loading": "Loading..."
   },
+  "rules": {
+    "header": { "title": "Game Rules" },
+    "intro": {
+      "title": "Welcome to Porraza World Cup 2026",
+      "description": "Compete with your friends by predicting World Cup results. Learn the rules to maximize your points and climb the leaderboard."
+    },
+    "tabs": {
+      "scoring": "Scoring",
+      "groups": "Group Stage",
+      "knockout": "Knockouts",
+      "fifa": "FIFA Rules"
+    },
+    "scoring": {
+      "group": {
+        "title": "Group Stage",
+        "description": "Points for predicting match results and final positions",
+        "items": {
+          "exact_result": {
+            "title": "Exact score",
+            "description": "Ex: Predicted 2-1, Actual 2-1"
+          },
+          "correct_outcome": {
+            "title": "Correct 1X2 outcome",
+            "description": "Correct winner/draw but not the score"
+          },
+          "exact_position": {
+            "title": "Exact group position",
+            "description": "Team finishes 1st or 2nd as predicted"
+          },
+          "team_qualified": {
+            "title": "Team qualified",
+            "description": "Qualified but in a different position"
+          }
+        }
+      },
+      "knockout": {
+        "title": "Knockout Stage",
+        "description": "Higher difficulty = more points",
+        "items": {
+          "exact_90": {
+            "title": "Exact score in 90 minutes",
+            "description": "Exact score at the end of regulation time"
+          },
+          "winner_90": {
+            "title": "Correct winner in 90 minutes",
+            "description": "Winner correct but not the score"
+          },
+          "exact_et": {
+            "title": "Exact score in extra time",
+            "description": "Exact score at the end of extra time"
+          },
+          "winner_et": {
+            "title": "Correct winner in extra time",
+            "description": "Winner correct in extra time but not the score"
+          },
+          "winner_pens": {
+            "title": "Correct winner on penalties",
+            "description": "Match decided by penalties"
+          }
+        }
+      },
+      "progress": {
+        "title": "Tournament Progress (Cumulative)",
+        "description": "Earn extra points for correctly predicting which teams advance",
+        "cumulative": {
+          "title": "Cumulative points",
+          "description": "If you predict Brazil reaches the final and wins, you earn points for each round advanced (R32 + R16 + QF + SF + Final + Champion)."
+        },
+        "levels": {
+          "r32": "Advances to Round of 32",
+          "r16": "Advances to Round of 16",
+          "qf": "Advances to Quarterfinals",
+          "sf": "Advances to Semifinals",
+          "final": "Advances to Final",
+          "champion": "World Champion"
+        },
+        "example": "💡 Example: Predict Brazil wins the World Cup and get: 5 + 10 + 15 + 25 + 40 + 80 = 175 points"
+      },
+      "awards": {
+        "title": "Individual Awards",
+        "description": "Predict the winners of the tournament awards",
+        "items": {
+          "golden_boot": { "title": "Golden Boot", "description": "Top scorer of the tournament" },
+          "golden_ball": { "title": "Golden Ball", "description": "Best player of the tournament" },
+          "golden_glove": { "title": "Golden Glove", "description": "Best goalkeeper of the tournament" }
+        }
+      }
+    },
+    "groups": {
+      "title": "Competition System - Group Stage",
+      "description": "48 teams divided into 12 groups of 4",
+      "format": {
+        "title": "Group Format",
+        "items": {
+          "round_robin": "Each team plays the other 3 in its group (round-robin)",
+          "points_system": "Win = 3 points | Draw = 1 point | Loss = 0 points",
+          "final_round": "Final group matchday is played at the same day and time"
+        }
+      },
+      "qualification": {
+        "title": "Qualification to Round of 16",
+        "items": {
+          "top_two": "Top 2 teams from each group (24 teams)",
+          "best_thirds": "The 8 best third-placed teams (overall table)"
+        }
+      },
+      "tiebreakers": {
+        "title": "Tiebreaker Criteria",
+        "items": {
+          "h2h_points": { "title": "1. Points in head-to-head matches", "description": "Between tied teams" },
+          "h2h_goal_diff": { "title": "2. Goal difference (head-to-head)", "description": "Goals for - Goals against" },
+          "h2h_goals_scored": { "title": "3. Goals scored (head-to-head)", "description": "Total goals for" },
+          "overall_goal_diff": { "title": "4. Overall goal difference", "description": "Across all group matches" },
+          "overall_goals_scored": { "title": "5. Overall goals scored", "description": "Across all group matches" },
+          "fair_play": { "title": "6. Fair Play points", "description": "Yellow: -1 | Second yellow: -3 | Straight red: -4" },
+          "fifa_ranking": { "title": "7. FIFA World Ranking", "description": "Most recent FIFA ranking" }
+        }
+      },
+      "best_thirds": {
+        "title": "Best Third-Placed Teams",
+        "description": "8 of the 12 third-placed teams advance to the Round of 16",
+        "table_title": "Overall Thirds Table",
+        "table_description": "The 8 best third-placed teams are ordered using the same group tiebreakers (points, goal difference, goals scored, etc.)."
+      }
+    },
+    "knockout": {
+      "title": "Knockout Stage",
+      "description": "5 rounds from Round of 32 to the Final",
+      "structure": {
+        "title": "Tournament Structure",
+        "r32": "Round of 32 (R32)",
+        "r16": "Round of 16 (R16)",
+        "qf": "Quarterfinals",
+        "sf": "Semifinals",
+        "final": "Final",
+        "teams_32": "32 teams",
+        "teams_16": "16 teams",
+        "teams_8": "8 teams",
+        "teams_4": "4 teams",
+        "teams_2": "2 teams"
+      },
+      "match_format": {
+        "title": "Match Format",
+        "regulation": { "title": "Regulation Time", "description": "90 minutes (2 halves of 45)" },
+        "extra_time": { "title": "Extra Time (if tied)", "description": "30 extra minutes (2 halves of 15)" },
+        "penalties": { "title": "Penalties (if still tied)", "description": "Penalty shootout per FIFA Laws of the Game" }
+      }
+    },
+    "fifa": {
+      "title": "Official FIFA Rules - World Cup 2026",
+      "subtitle": "Official tournament format per FIFA",
+      "hero": {
+        "title": "FIFA World Cup 2026",
+        "description": "Organized by FIFA | Hosts: United States, Canada and Mexico"
+      },
+      "format": {
+        "title": "Tournament Format",
+        "teams_48": "48 teams in the final tournament",
+        "groups_12": "12 groups of 4 teams each",
+        "advancers_32": "32 teams advance to knockouts (24 group toppers + 8 best thirds)",
+        "knockout_5_rounds": "5 knockout rounds from Round of 32 to the Final"
+      },
+      "group_points": {
+        "title": "Group Stage Scoring",
+        "win": "Win",
+        "win_points": "3 points",
+        "draw": "Draw",
+        "draw_points": "1 point",
+        "loss": "Loss",
+        "loss_points": "0 points"
+      },
+      "hosts": {
+        "title": "2026 World Cup Hosts",
+        "subtitle": "First World Cup with 3 host nations:",
+        "usa": "United States: 11 host cities",
+        "mexico": "Mexico: 3 host cities",
+        "canada": "Canada: 2 host cities"
+      },
+      "info": {
+        "title": "Key Information",
+        "last_round": { "title": "Final group matchday", "description": "All matches of the final group matchday are played simultaneously (same day and time) to avoid sporting advantage." },
+        "cards": { "title": "Cards and sanctions", "description": "Yellow cards are reset after the quarterfinals. Red cards may carry multi-match bans depending on severity." },
+        "fair_play": { "title": "Fair Play", "description": "Disciplinary record (cards received) is one of the group-stage tiebreakers." }
+      }
+    }
+  },
+  "stadiums": {
+    "header": {
+      "title": "Stadiums",
+      "subtitle": "Explore the iconic venues where football history is written"
+    },
+    "stats": {
+      "labels": {
+        "stadiums": "Stadiums",
+        "countries": "Countries",
+        "total_capacity": "Total Capacity"
+      }
+    },
+    "card": {
+      "capacity_label": "Capacity",
+      "timezone_label": "Time zone"
+    },
+    "empty": {
+      "error": {
+        "title": "Failed to load stadiums",
+        "description": "Make sure the backend is running at {url}",
+        "retry": "Retry"
+      },
+      "empty": {
+        "title": "No stadiums available",
+        "description": "Looks like there are no stadiums registered yet"
+      }
+    }
+  },
+
   "landing": {
     "header": {
       "aria": {
@@ -233,7 +449,8 @@
       "name": "Full name",
       "email": "Email",
       "password": "Password",
-      "confirm_password": "Confirm password"
+      "confirm_password": "Confirm password",
+      "new_password": "New Password"
     },
     "placeholders": {
       "name": "Your name for the leaderboard",
@@ -250,6 +467,9 @@
       "confirm_password_required": "Please repeat the password to seal the play.",
       "passwords_mismatch": "Those passwords aren’t playing on the same team.",
       "forgot_email_required": "Drop your email and we’ll send the rescue link."
+    },
+    "hints": {
+      "password_min": "At least 8 characters"
     },
     "social": {
       "google": "Google",
@@ -328,6 +548,74 @@
       "success_state": {
         "message": "Link sent! Check your inbox and follow the play-by-play."
       }
+    },
+    "reset_password": {
+      "subtitle": "Reset your password",
+      "title": "New Password",
+      "description": "Enter your new password. It must be at least 8 characters.",
+      "loading": {
+        "verify_link": "Verifying link..."
+      },
+      "toasts": {
+        "invalid_token": {
+          "title": "Invalid token",
+          "description": "The recovery link is invalid or has expired."
+        },
+        "missing_token": {
+          "title": "Token not found",
+          "description": "Please use the link from your recovery email."
+        },
+        "success": {
+          "title": "Password reset!"
+        },
+        "error": {
+          "title": "Error resetting password",
+          "description": "Please request a new recovery link."
+        }
+      },
+      "submit": "Reset Password",
+      "submit_loading": "Resetting...",
+      "login_prompt": "Already have your password?",
+      "login_link": "Log in",
+      "back_home": "Back to home"
+    },
+    "verify_email": {
+      "subtitle": "Email Verification",
+      "states": {
+        "verified": {
+          "title": "Email Verified!",
+          "description": "Your account has been successfully verified"
+        },
+        "error": {
+          "title": "Verification Error",
+          "description": "We couldn't verify your email"
+        },
+        "pending": {
+          "title": "Verify Your Email",
+          "description": "Click the button below to verify your email address"
+        },
+        "missing_token": {
+          "title": "Token Not Found",
+          "description": "No verification token was found in the URL"
+        }
+      },
+      "ready": {
+        "title": "Almost there!",
+        "description": "To complete your signup, please verify your email by clicking the button below."
+      },
+      "buttons": {
+        "verify": {
+          "label": "Verify Email",
+          "loading": "Verifying..."
+        },
+        "go_to_login": "Go to Log In",
+        "create_account": "Create New Account"
+      },
+      "success": {
+        "title": "Verification successful!",
+        "description": "Your email <strong>{email}</strong> has been verified. Now log in to complete your signup with the {price} payment."
+      },
+      "back_home": "Back to home"
     }
   },
   "sidebar": {
@@ -362,6 +650,52 @@
       "error": {
         "title": "Sign out error",
         "description": "We couldn't sign you out. Try again."
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account and application preferences",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "account": "Account"
+    },
+    "profile": {
+      "title": "Profile information",
+      "description": "Update your profile picture and personal information",
+      "updateSuccess": "Profile updated successfully",
+      "pictureUploadSuccess": "Profile picture updated successfully",
+      "validation": {
+        "nameRequired": "Name is required",
+        "nameMin": "Name must be at least 2 characters",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Invalid email"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Update your password and manage account security",
+      "passwordChangeSuccess": "Password changed successfully",
+      "validation": {
+        "currentPasswordRequired": "Current password is required",
+        "newPasswordRequired": "New password is required",
+        "newPasswordMin": "Password must be at least 8 characters",
+        "newPasswordUppercase": "Must contain at least one uppercase letter",
+        "newPasswordLowercase": "Must contain at least one lowercase letter",
+        "newPasswordNumber": "Must contain at least one number",
+        "confirmPasswordRequired": "You must confirm the new password",
+        "passwordsMismatch": "Passwords don't match",
+        "passwordsSame": "New password must be different from current password"
+      }
+    },
+    "account": {
+      "title": "Account management",
+      "description": "Manage your account and personal data",
+      "deleteSuccess": "Account deleted successfully",
+      "validation": {
+        "passwordRequired": "You must enter your password to confirm",
+        "confirmationRequired": "You must confirm that you understand this action is irreversible"
       }
     }
   }

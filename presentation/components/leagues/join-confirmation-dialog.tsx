@@ -35,7 +35,7 @@ export function JoinConfirmationDialog({
 }: JoinConfirmationDialogProps) {
   if (!league) return null;
 
-  const isPublic = league.type === "public";
+  const isPublic = league.visibility === "public";
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>

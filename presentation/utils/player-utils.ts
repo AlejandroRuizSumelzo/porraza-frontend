@@ -86,10 +86,9 @@ export function getPositionBgLight(position: PlayerPosition): string {
  * Group players by position
  * Returns an object with position as key and array of players as value
  */
-export function groupPlayersByPosition(players: Player[]): Record<
-  PlayerPosition,
-  Player[]
-> {
+export function groupPlayersByPosition(
+  players: Player[]
+): Record<PlayerPosition, Player[]> {
   const grouped: Record<PlayerPosition, Player[]> = {
     goalkeeper: [],
     defender: [],
@@ -142,4 +141,111 @@ export function getPlayerInitials(name: string): string {
     return parts[0].substring(0, 2).toUpperCase();
   }
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Team folder name mapping
+ * Maps team names and FIFA codes to their corresponding folder names in public/players/
+ */
+const TEAM_FOLDER_MAP: Record<string, string> = {
+  // By team name (lowercase for case-insensitive matching)
+  argentina: "argentina",
+  australia: "australia",
+  brazil: "brazil",
+  brasil: "brazil",
+  canada: "canada",
+  canadá: "canada",
+  colombia: "colombia",
+  ecuador: "ecuador",
+  "united states": "eeuu",
+  usa: "eeuu",
+  eeuu: "eeuu",
+  "estados unidos": "eeuu",
+  england: "england",
+  inglaterra: "england",
+  france: "france",
+  francia: "france",
+  germany: "germany",
+  alemania: "germany",
+  iran: "iran",
+  irán: "iran",
+  italy: "italy",
+  italia: "italy",
+  mexico: "mexico",
+  méxico: "mexico",
+  "new zealand": "new_zealand",
+  "nueva zelanda": "new_zealand",
+  portugal: "portugal",
+  qatar: "qatar",
+  spain: "spain",
+  españa: "spain",
+  uruguay: "uruguay",
+
+  // By FIFA code
+  ARG: "argentina",
+  AUS: "australia",
+  BRA: "brazil",
+  CAN: "canada",
+  COL: "colombia",
+  ECU: "ecuador",
+  USA: "eeuu",
+  ENG: "england",
+  FRA: "france",
+  GER: "germany",
+  IRN: "iran",
+  ITA: "italy",
+  MEX: "mexico",
+  NZL: "new_zealand",
+  POR: "portugal",
+  QAT: "qatar",
+  ESP: "spain",
+  URU: "uruguay",
+};
+
+/**
+ * Get team folder name from team name or FIFA code
+ * Returns null if team is not found in the mapping
+ *
+ * @param teamIdentifier - Team name or FIFA code (e.g., "France", "FRA")
+ * @returns Folder name (e.g., "france") or null if not found
+ */
+export function getTeamFolderName(teamIdentifier: string): string | null {
+  const normalized = teamIdentifier.trim().toLowerCase();
+  return TEAM_FOLDER_MAP[normalized] || TEAM_FOLDER_MAP[teamIdentifier] || null;
+}
+
+/**
+ * Build player avatar URL
+ * Constructs the path to the player's avatar image in public/players/[team]/[filename]
+ *
+ * @param teamIdentifier - Team name or FIFA code (e.g., "France", "FRA")
+ * @param avatarFilename - Avatar filename from Player entity (e.g., "48036304.png")
+ * @returns Avatar URL path (e.g., "/players/france/48036304.png") or null if unavailable
+ *
+ * @example
+ * ```ts
+ * const url = getPlayerAvatarUrl("France", "48036304.png");
+ * // Returns: "/players/france/48036304.png"
+ * ```
+ */
+export function getPlayerAvatarUrl(
+  teamIdentifier: string,
+  avatarFilename: string | null
+): string | null {
+  // If no avatar filename, return null
+  if (!avatarFilename) {
+    return null;
+  }
+
+  // Get team folder name
+  const teamFolder = getTeamFolderName(teamIdentifier);
+  if (!teamFolder) {
+    console.warn(
+      `[getPlayerAvatarUrl] Team folder not found for: ${teamIdentifier}`
+    );
+    return null;
+  }
+
+  // Construct and return the path
+  return `/players/${teamFolder}/${avatarFilename}.png`;
 }

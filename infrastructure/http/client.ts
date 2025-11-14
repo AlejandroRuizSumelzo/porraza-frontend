@@ -245,15 +245,25 @@ export function createHttpClient(config: HttpClientConfig = {}): HttpClient {
       ...options,
     };
 
+    // Handle request body based on type
     if (body !== undefined) {
-      requestOptions.body = JSON.stringify(body);
+      // FormData should be sent as-is (browser will set Content-Type with boundary)
+      if (body instanceof FormData) {
+        requestOptions.body = body;
+        // Remove Content-Type header - browser will set it automatically with boundary
+        headers.delete("Content-Type");
+      } else {
+        // All other bodies are JSON-serialized
+        requestOptions.body = JSON.stringify(body);
+      }
     }
 
     // Debug logging for authentication (only for non-auth endpoints)
     if (!isAuthEndpoint(url)) {
       console.log(`[HttpClient] ${method} ${fullURL}`, {
         hasAuthHeader: headers.has("Authorization"),
-        authHeaderPreview: headers.get("Authorization")?.substring(0, 30) + "...",
+        authHeaderPreview:
+          headers.get("Authorization")?.substring(0, 30) + "...",
         credentials: requestOptions.credentials,
       });
     }

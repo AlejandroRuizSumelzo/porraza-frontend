@@ -61,8 +61,8 @@ export function TeamGridSelector({
         )}
       </div>
 
-      {/* Teams Grid */}
-      <div className="grid grid-cols-4 gap-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+      {/* Teams Grid - 2 columns on mobile for better visibility */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
         {filteredTeams.map((team) => {
           const isSelected = team.id === selectedTeamId;
 

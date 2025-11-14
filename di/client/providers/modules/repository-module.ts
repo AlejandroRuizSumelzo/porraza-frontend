@@ -1,6 +1,7 @@
 import type { HttpClient } from "@/infrastructure/http/client";
 import type { DependencyModule } from "@/di/client/providers/modules/base-module";
 import type { AuthRepository } from "@/domain/repositories/auth-repository";
+import type { UserRepository } from "@/domain/repositories/user-repository";
 import type { PaymentRepository } from "@/domain/repositories/payment-repository";
 import type { MatchRepository } from "@/domain/repositories/match-repository";
 import type { StadiumRepository } from "@/domain/repositories/stadium-repository";
@@ -9,6 +10,7 @@ import type { PlayerRepository } from "@/domain/repositories/player-repository";
 import type { PredictionRepository } from "@/domain/repositories/prediction-repository";
 import type { LeagueRepository } from "@/domain/repositories/league-repository";
 import { AuthRepositoryImpl } from "@/infrastructure/repositories/auth-repository-impl";
+import { UserRepositoryImpl } from "@/infrastructure/repositories/user-repository-impl";
 import { PaymentRepositoryImpl } from "@/infrastructure/repositories/payment-repository-impl";
 import { MatchRepositoryImpl } from "@/infrastructure/repositories/match-repository-impl";
 import { StadiumRepositoryImpl } from "@/infrastructure/repositories/stadium-repository-impl";
@@ -35,6 +37,10 @@ export class RepositoryModule implements DependencyModule {
   register() {
     // Register repositories needed by Client Components here
     const authRepository: AuthRepository = new AuthRepositoryImpl(
+      this.deps.httpClient
+    );
+
+    const userRepository: UserRepository = new UserRepositoryImpl(
       this.deps.httpClient
     );
 
@@ -67,6 +73,7 @@ export class RepositoryModule implements DependencyModule {
 
     return {
       authRepository,
+      userRepository,
       paymentRepository,
       matchRepository,
       stadiumRepository,

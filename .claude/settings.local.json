@@ -8,7 +8,9 @@
       "Bash(mkdir:*)",
       "Bash(rm:*)",
       "Bash(npx tsc:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(npx shadcn@latest add dropdown-menu)"
     ],
     "deny": [],
     "ask": []

@@ -7,7 +7,10 @@ import { z } from "zod";
  * Matches the CreateLeagueDto from the backend
  * - name: 3-100 characters (required)
  * - description: optional string
- * - type: 'public' or 'private' (required)
+ * - visibility: 'public' or 'private' (required)
+ * - category: 'general', 'corporate', 'friends', 'community' (required)
+ * - code: optional custom league code (6-20 uppercase alphanumeric)
+ * - requiredEmailDomain: optional (required for corporate leagues)
  */
 export const createLeagueSchema = z.object({
   name: z
@@ -23,9 +26,25 @@ export const createLeagueSchema = z.object({
     .optional()
     .or(z.literal("")),
 
-  type: z.enum(["public", "private"], {
-    message: "League type must be either 'public' or 'private'",
+  visibility: z.enum(["public", "private"], {
+    message: "League visibility must be either 'public' or 'private'",
   }),
+
+  category: z.enum(["general", "corporate", "friends", "community"], {
+    message: "League category must be general, corporate, friends, or community",
+  }),
+
+  code: z
+    .string()
+    .regex(/^[A-Z0-9]{6,20}$/, "Code must be 6-20 uppercase alphanumeric characters")
+    .optional()
+    .or(z.literal("")),
+
+  requiredEmailDomain: z
+    .string()
+    .regex(/^@.+\..+$/, "Email domain must start with @ (e.g., @google.com)")
+    .optional()
+    .or(z.literal("")),
 });
 
 /**
@@ -49,3 +68,32 @@ export const joinLeagueCodeSchema = z.object({
 });
 
 export type JoinLeagueCodeFormData = z.infer<typeof joinLeagueCodeSchema>;
+
+/**
+ * Edit League Schema
+ * Validation schema for editing an existing league
+ *
+ * IMPORTANT: Only name and description can be edited
+ * - Visibility (public/private) cannot be changed
+ * - Category cannot be changed
+ * - Code cannot be changed
+ * - RequiredEmailDomain cannot be changed
+ *
+ * Matches the UpdateLeagueDto from the backend (but only uses allowed fields)
+ */
+export const editLeagueSchema = z.object({
+  name: z
+    .string()
+    .min(3, "League name must be at least 3 characters")
+    .max(100, "League name must not exceed 100 characters")
+    .trim(),
+
+  description: z
+    .string()
+    .max(500, "Description must not exceed 500 characters")
+    .trim()
+    .optional()
+    .or(z.literal("")),
+});
+
+export type EditLeagueFormData = z.infer<typeof editLeagueSchema>;

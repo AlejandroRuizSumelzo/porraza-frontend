@@ -11,6 +11,7 @@ import type {
   ForgotPasswordResponseDTO,
   ResetPasswordResponseDTO,
 } from "@/infrastructure/http/dtos/auth-dto";
+import { UserMapper } from "@/infrastructure/mappers/user-mapper";
 
 /**
  * Auth Mapper
@@ -24,22 +25,13 @@ import type {
 export class AuthMapper {
   /**
    * Transform User DTO to Domain Entity
-   * Excludes createdAt and updatedAt as they're not needed in frontend
+   * Delegates to UserMapper for consistent user mapping
    *
    * @param dto - User data from API
    * @returns Domain User entity
    */
   static userToDomain(dto: UserDTO): User {
-    return {
-      id: dto.id,
-      email: dto.email,
-      name: dto.name,
-      isActive: dto.isActive,
-      isEmailVerified: dto.isEmailVerified,
-      lastLoginAt: dto.lastLoginAt,
-      hasPaid: dto.hasPaid,
-      stripeCustomerId: dto.stripeCustomerId,
-    };
+    return UserMapper.toDomain(dto);
   }
 
   /**
@@ -96,24 +88,13 @@ export class AuthMapper {
 
   /**
    * Transform Domain User to DTO
-   * Adds back createdAt and updatedAt for API requests (if needed)
+   * Delegates to UserMapper for consistent user mapping
    *
    * @param domain - Domain User entity
    * @returns User DTO for API
    */
   static userToDTO(domain: User): UserDTO {
-    return {
-      id: domain.id,
-      email: domain.email,
-      name: domain.name,
-      isActive: domain.isActive,
-      isEmailVerified: domain.isEmailVerified,
-      lastLoginAt: domain.lastLoginAt,
-      hasPaid: domain.hasPaid,
-      stripeCustomerId: domain.stripeCustomerId,
-      createdAt: "", // Not needed for requests
-      updatedAt: "", // Not needed for requests
-    };
+    return UserMapper.toDTO(domain);
   }
 
   /**

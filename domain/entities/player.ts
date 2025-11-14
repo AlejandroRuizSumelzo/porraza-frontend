@@ -36,6 +36,13 @@ export interface Player {
   jerseyNumber: number;
 
   /**
+   * Avatar image filename (stored in frontend public/players folder)
+   * Example: "ARG_10.png"
+   * Null if no avatar is available
+   */
+  avatarFilename: string | null;
+
+  /**
    * Timestamp when player was created in the system
    */
   createdAt: Date;

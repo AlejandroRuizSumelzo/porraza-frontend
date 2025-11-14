@@ -1,4 +1,8 @@
-import type { League } from "@/domain/entities/league";
+import type {
+  League,
+  LeagueCategory,
+  LeagueVisibility,
+} from "@/domain/entities/league";
 import type { LeagueRepository } from "@/domain/repositories/league-repository";
 
 /**
@@ -20,7 +24,9 @@ export class UpdateLeagueUseCase {
     data: {
       name?: string;
       description?: string;
-      type?: "public" | "private";
+      visibility?: LeagueVisibility;
+      category?: LeagueCategory;
+      requiredEmailDomain?: string;
     }
   ): Promise<League> {
     // Business validation
@@ -34,6 +40,35 @@ export class UpdateLeagueUseCase {
 
     if (data.name !== undefined && data.name.trim().length > 100) {
       throw new Error("League name must be at most 100 characters");
+    }
+
+    // Validate visibility if provided
+    if (data.visibility !== undefined) {
+      if (data.visibility !== "public" && data.visibility !== "private") {
+        throw new Error('League visibility must be either "public" or "private"');
+      }
+    }
+
+    // Validate category if provided
+    if (data.category !== undefined) {
+      const validCategories: LeagueCategory[] = [
+        "general",
+        "corporate",
+        "friends",
+        "community",
+      ];
+      if (!validCategories.includes(data.category)) {
+        throw new Error(
+          `League category must be one of: ${validCategories.join(", ")}`
+        );
+      }
+    }
+
+    // Validate requiredEmailDomain if provided
+    if (data.requiredEmailDomain !== undefined) {
+      if (data.requiredEmailDomain && !data.requiredEmailDomain.startsWith("@")) {
+        throw new Error("Required email domain must start with @");
+      }
     }
 
     // Delegate to repository

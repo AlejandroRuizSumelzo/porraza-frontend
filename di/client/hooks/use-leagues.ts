@@ -32,6 +32,22 @@ export function useGetPublicLeagues() {
 }
 
 /**
+ * Hook to get the GetCorporateLeaguesUseCase
+ */
+export function useGetCorporateLeagues() {
+  const { getCorporateLeaguesUseCase } = useDependencies();
+  return getCorporateLeaguesUseCase;
+}
+
+/**
+ * Hook to get the GetLeaguesByCategoryUseCase
+ */
+export function useGetLeaguesByCategory() {
+  const { getLeaguesByCategoryUseCase } = useDependencies();
+  return getLeaguesByCategoryUseCase;
+}
+
+/**
  * Hook to get the GetMyLeaguesUseCase
  */
 export function useGetMyLeagues() {
@@ -109,4 +125,20 @@ export function useRemoveMember() {
 export function useTransferAdmin() {
   const { transferAdminUseCase } = useDependencies();
   return transferAdminUseCase;
+}
+
+/**
+ * Hook to get the UploadLeagueLogoUseCase
+ */
+export function useUploadLeagueLogo() {
+  const { uploadLeagueLogoUseCase } = useDependencies();
+  return uploadLeagueLogoUseCase;
+}
+
+/**
+ * Hook to get the GetLeagueRankingUseCase
+ */
+export function useGetLeagueRanking() {
+  const { getLeagueRankingUseCase } = useDependencies();
+  return getLeagueRankingUseCase;
 }

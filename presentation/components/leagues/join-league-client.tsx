@@ -69,7 +69,7 @@ export function JoinLeagueClient({
     }
   };
 
-  const isPublic = league.type === "public";
+  const isPublic = league.visibility === "public";
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-background">

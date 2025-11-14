@@ -7,6 +7,7 @@ import { DependencyContainer } from "@/di/client/providers/dependency-container"
 import { HttpModule } from "@/di/client/providers/modules/http-module";
 import { RepositoryModule } from "@/di/client/providers/modules/repository-module";
 import { AuthUseCaseModule } from "@/di/client/providers/modules/auth-use-case-module";
+import { UserUseCaseModule } from "@/di/client/providers/modules/user-use-case-module";
 import { PaymentUseCaseModule } from "@/di/client/providers/modules/payment-use-case-module";
 import { MatchUseCaseModule } from "@/di/client/providers/modules/match-use-case-module";
 import { StadiumUseCaseModule } from "@/di/client/providers/modules/stadium-use-case-module";
@@ -45,6 +46,7 @@ export function DependencyProvider({ children }: DependencyProviderProps) {
     // Register all use case modules with their respective repositories
     const {
       authRepository,
+      userRepository,
       paymentRepository,
       matchRepository,
       stadiumRepository,
@@ -54,6 +56,7 @@ export function DependencyProvider({ children }: DependencyProviderProps) {
       leagueRepository,
     } = container.getDependencies();
     container.registerModule(new AuthUseCaseModule({ authRepository }));
+    container.registerModule(new UserUseCaseModule({ userRepository }));
     container.registerModule(new PaymentUseCaseModule({ paymentRepository }));
     container.registerModule(new MatchUseCaseModule({ matchRepository }));
     container.registerModule(new StadiumUseCaseModule({ stadiumRepository }));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Building2, Globe, MapPin } from "lucide-react";
 import type { Stadium } from "@/domain/entities/stadium";
 import { formatNumber } from "@/presentation/utils/formatters";
@@ -15,6 +15,7 @@ interface StadiumHeaderProps {
  */
 export function StadiumHeader({ stadiums }: StadiumHeaderProps) {
   const locale = useLocale();
+  const t = useTranslations();
 
   // Calculate stats
   const totalStadiums = stadiums.length;
@@ -27,17 +28,17 @@ export function StadiumHeader({ stadiums }: StadiumHeaderProps) {
   const stats = [
     {
       icon: Building2,
-      label: "Estadios",
+      label: t("stadiums.stats.labels.stadiums"),
       value: totalStadiums.toString(),
     },
     {
       icon: Globe,
-      label: "Países",
+      label: t("stadiums.stats.labels.countries"),
       value: countries.toString(),
     },
     {
       icon: MapPin,
-      label: "Capacidad Total",
+      label: t("stadiums.stats.labels.total_capacity"),
       value: formatNumber(totalCapacity > 0 ? totalCapacity : null, locale),
     },
   ];
@@ -46,9 +47,11 @@ export function StadiumHeader({ stadiums }: StadiumHeaderProps) {
     <div className="space-y-6">
       {/* Title and Description */}
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">Estadios</h1>
+        <h1 className="text-4xl font-bold tracking-tight">
+          {t("stadiums.header.title")}
+        </h1>
         <p className="mt-2 text-muted-foreground">
-          Explora los estadios más emblemáticos donde se juega la historia
+          {t("stadiums.header.subtitle")}
         </p>
       </div>
 

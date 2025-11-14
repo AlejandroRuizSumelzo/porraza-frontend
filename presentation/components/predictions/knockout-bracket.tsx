@@ -17,7 +17,7 @@ import {
 import { KnockoutMatchDialog } from "@/presentation/components/predictions/knockout-match-dialog";
 import { cn } from "@/presentation/utils/cn";
 import type { RoundOf32Match } from "@/domain/entities/round-of-32-match";
-import type { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
+import type { Knockouts } from "@/domain/entities/knockouts";
 import type { UserMatchPrediction } from "@/domain/entities/match-with-prediction";
 import type { MatchPhase } from "@/domain/entities/match";
 import type { MatchPrediction } from "@/domain/entities/match-prediction";
@@ -28,7 +28,7 @@ import {
 
 interface KnockoutBracketProps {
   matches: RoundOf32Match[];
-  knockoutPredictions: KnockoutMatchWithPrediction[] | null;
+  knockouts: Knockouts | null;
   predictionId: string | null;
   onSave: (phase: MatchPhase, matchPredictions: MatchPrediction[]) => Promise<void>;
   isSaving: boolean;
@@ -304,7 +304,7 @@ function CustomMatch({
  */
 export function KnockoutBracket({
   matches,
-  knockoutPredictions,
+  knockouts,
   predictionId,
   onSave,
   isSaving,
@@ -317,17 +317,67 @@ export function KnockoutBracket({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Create a map of predictions by matchId for quick lookup
+  // Extract predictions from all knockout rounds (progressive resolution)
   const predictionsMap = useMemo(() => {
-    if (!knockoutPredictions) return new Map<string, UserMatchPrediction>();
+    if (!knockouts) return new Map<string, UserMatchPrediction>();
 
     const map = new Map<string, UserMatchPrediction>();
-    knockoutPredictions.forEach((knockout) => {
-      map.set(knockout.match.id, knockout.userPrediction);
-    });
-    return map;
-  }, [knockoutPredictions]);
 
-  if (!matches || matches.length === 0) {
+    // Helper to convert UserKnockoutPrediction to UserMatchPrediction format
+    const convertPrediction = (
+      matchId: string,
+      pred: any
+    ): UserMatchPrediction => ({
+      id: pred.id,
+      predictionId: null,
+      matchId: pred.matchId,
+      homeScore: pred.homeScore,
+      awayScore: pred.awayScore,
+      homeScoreET: pred.homeScoreET,
+      awayScoreET: pred.awayScoreET,
+      penaltiesWinner: pred.penaltiesWinner,
+      pointsEarned: pred.pointsEarned,
+      pointsBreakdown: {},
+      createdAt: null,
+      updatedAt: null,
+    });
+
+    // Process all rounds
+    knockouts.roundOf32.forEach((match) => {
+      if (match.userPrediction) {
+        map.set(match.id, convertPrediction(match.id, match.userPrediction));
+      }
+    });
+
+    knockouts.roundOf16.forEach((match) => {
+      if (match.userPrediction) {
+        map.set(match.id, convertPrediction(match.id, match.userPrediction));
+      }
+    });
+
+    knockouts.quarterFinals.forEach((match) => {
+      if (match.userPrediction) {
+        map.set(match.id, convertPrediction(match.id, match.userPrediction));
+      }
+    });
+
+    knockouts.semiFinals.forEach((match) => {
+      if (match.userPrediction) {
+        map.set(match.id, convertPrediction(match.id, match.userPrediction));
+      }
+    });
+
+    if (knockouts.final.userPrediction) {
+      map.set(
+        knockouts.final.id,
+        convertPrediction(knockouts.final.id, knockouts.final.userPrediction)
+      );
+    }
+
+    return map;
+  }, [knockouts]);
+
+  if (!knockouts || !knockouts.roundOf32 || knockouts.roundOf32.length === 0) {
     return (
       <div className="rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-card via-primary/5 to-secondary/5 p-8 text-center shadow-lg shadow-primary/5 md:p-12">
         <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-xl shadow-primary/30 md:size-20">
@@ -345,16 +395,50 @@ export function KnockoutBracket({
     );
   }
 
-  // Convert matches to @g-loot/react-tournament-brackets format
-  const tournamentMatches = convertToTournamentBracket(matches);
+  // Convert knockouts structure to tournament bracket format
+  // Backend now sends data in correct bracket order
+  const tournamentMatches = convertToTournamentBracket(knockouts);
+
+  // Create explicit mapping between tournamentMatchId and actual knockout matches
+  // This ensures correct match retrieval when clicking on bracket
+  const tournamentMatchMap = useMemo(() => {
+    if (!knockouts) return new Map();
+
+    const map = new Map<number, typeof knockouts.roundOf32[0]>();
+
+    // Round of 32: tournament IDs 1-16
+    knockouts.roundOf32.forEach((match, index) => {
+      const tournamentId = index + 1;
+      map.set(tournamentId, match);
+    });
+
+    // Round of 16: tournament IDs 17-24
+    knockouts.roundOf16.forEach((match, index) => {
+      map.set(17 + index, match);
+    });
+
+    // Quarter Finals: tournament IDs 25-28
+    knockouts.quarterFinals.forEach((match, index) => {
+      map.set(25 + index, match);
+    });
+
+    // Semi Finals: tournament IDs 29-30
+    knockouts.semiFinals.forEach((match, index) => {
+      map.set(29 + index, match);
+    });
+
+    // Final: tournament ID 31
+    map.set(31, knockouts.final);
+
+    return map;
+  }, [knockouts]);
 
   // Create CustomMatch wrapper with access to predictionsMap
   const CustomMatchWithPredictions = (props: MatchComponentProps) => {
-    // Find prediction for this match
-    const matchIndex = Number(props.match.id) - 1;
-    const originalMatch = matches[matchIndex];
-    const userPrediction = originalMatch
-      ? predictionsMap.get(originalMatch.id)
+    const tournamentMatchId = Number(props.match.id);
+    const knockoutMatch = tournamentMatchMap.get(tournamentMatchId);
+    const userPrediction = knockoutMatch
+      ? predictionsMap.get(knockoutMatch.id)
       : null;
 
     return <CustomMatch {...props} userPrediction={userPrediction} />;
@@ -362,26 +446,33 @@ export function KnockoutBracket({
 
   // Handle match click to open dialog
   const handleMatchClick = (args: { match: Match }) => {
-    // Only handle Round of 32 matches (IDs 1-16), ignore TBD matches
-    const matchId = Number(args.match.id);
-    if (matchId >= 1 && matchId <= 16) {
-      // Find the original RoundOf32Match data (index is matchId - 1)
-      const originalMatch = matches[matchId - 1];
-      if (originalMatch) {
-        // Find user's prediction for this match (if exists)
-        const userPrediction = predictionsMap.get(originalMatch.id) || null;
+    const tournamentMatchId = Number(args.match.id);
+    const knockoutMatch = tournamentMatchMap.get(tournamentMatchId);
 
-        setSelectedMatch(originalMatch);
-        setSelectedPrediction(userPrediction);
-        setIsDialogOpen(true);
-      }
+    if (knockoutMatch && knockoutMatch.homeTeam && knockoutMatch.awayTeam) {
+      const legacyMatch = {
+        id: knockoutMatch.id,
+        matchNumber: knockoutMatch.matchNumber,
+        homeTeam: knockoutMatch.homeTeam,
+        awayTeam: knockoutMatch.awayTeam,
+        stadium: knockoutMatch.stadium,
+        matchDate: knockoutMatch.matchDate,
+        matchTime: knockoutMatch.matchTime,
+        phase: knockoutMatch.phase as MatchPhase,
+        predictionsLockedAt: knockoutMatch.predictionsLockedAt,
+      };
+
+      const userPrediction = predictionsMap.get(knockoutMatch.id) || null;
+
+      setSelectedMatch(legacyMatch);
+      setSelectedPrediction(userPrediction);
+      setIsDialogOpen(true);
     }
   };
 
   // Remove "Round " prefix from round headers in SVG
   useEffect(() => {
     const removeRoundPrefix = () => {
-      // Find all <text> elements inside SVG (round headers)
       const textElements = document.querySelectorAll("svg text");
       textElements.forEach((textElement) => {
         const content = textElement.textContent;
@@ -391,7 +482,6 @@ export function KnockoutBracket({
       });
     };
 
-    // Run multiple times to catch async renders
     const timer1 = setTimeout(removeRoundPrefix, 50);
     const timer2 = setTimeout(removeRoundPrefix, 200);
     const timer3 = setTimeout(removeRoundPrefix, 500);
@@ -402,11 +492,6 @@ export function KnockoutBracket({
       clearTimeout(timer3);
     };
   }, [tournamentMatches]);
-
-  console.log(
-    "[KnockoutBracket] Displaying bracket with matches:",
-    tournamentMatches.length
-  );
 
   return (
     <div className="space-y-6">
@@ -427,7 +512,7 @@ export function KnockoutBracket({
           variant="secondary"
           className="w-fit self-start bg-secondary text-xs text-white shadow-md shadow-secondary/30 hover:bg-secondary/90 md:self-center md:text-sm"
         >
-          {matches.length} partidos
+          {tournamentMatches.length} partidos
         </Badge>
       </div>
 

@@ -34,13 +34,13 @@ export function PhaseSection({ phaseData }: PhaseSectionProps) {
         color: "text-secondary",
         bgColor: "bg-secondary/10",
       },
-      QUARTER_FINALS: {
+      QUARTER_FINAL: {
         icon: Trophy,
         label: "Cuartos de Final",
         color: "text-secondary",
         bgColor: "bg-secondary/10",
       },
-      SEMI_FINALS: {
+      SEMI_FINAL: {
         icon: Medal,
         label: "Semifinales",
         color: "text-destructive",

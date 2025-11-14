@@ -18,6 +18,7 @@ import type { BestThirdPlaceDTO } from "@/infrastructure/http/dtos/best-third-pl
 import type { RoundOf32MatchDTO } from "@/infrastructure/http/dtos/round-of-32-match-dto";
 import type { KnockoutMatchWithPredictionDTO } from "@/infrastructure/http/dtos/knockout-match-with-prediction-dto";
 import type { SaveKnockoutPredictionsResponseDTO } from "@/infrastructure/http/dtos/knockout-predictions-response-dto";
+import type { KnockoutsDTO } from "@/infrastructure/http/dtos/knockouts-dto";
 import { PredictionMapper } from "@/infrastructure/mappers/prediction-mapper";
 import { HttpError } from "@/infrastructure/http/client";
 
@@ -30,7 +31,7 @@ interface GetOrCreatePredictionAPIResponse {
   matches: MatchWithPredictionDTO[];
   bestThirdPlaces?: BestThirdPlaceDTO[];
   roundOf32Matches?: RoundOf32MatchDTO[];
-  knockoutPredictions?: KnockoutMatchWithPredictionDTO[];
+  knockouts?: KnockoutsDTO;
 }
 
 /**
@@ -76,11 +77,9 @@ export class PredictionRepositoryImpl implements PredictionRepository {
           )
         : undefined;
 
-      // Transform knockoutPredictions if present (knockout matches with user predictions)
-      const knockoutPredictions = response.data.knockoutPredictions
-        ? PredictionMapper.knockoutMatchesWithPredictionsToDomain(
-            response.data.knockoutPredictions
-          )
+      // Transform knockouts if present (all knockout rounds with progressive resolution)
+      const knockouts = response.data.knockouts
+        ? PredictionMapper.knockoutsToDomain(response.data.knockouts)
         : undefined;
 
       return {
@@ -93,7 +92,7 @@ export class PredictionRepositoryImpl implements PredictionRepository {
         ),
         bestThirdPlaces,
         roundOf32Matches,
-        knockoutPredictions,
+        knockouts,
       };
     } catch (error) {
       if (error instanceof HttpError) {

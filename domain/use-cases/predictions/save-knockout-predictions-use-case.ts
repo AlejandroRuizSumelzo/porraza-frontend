@@ -12,8 +12,8 @@ import {
 const MAX_MATCHES_PER_PHASE: Record<string, number> = {
   ROUND_OF_32: 16,
   ROUND_OF_16: 8,
-  QUARTER_FINALS: 4,
-  SEMI_FINALS: 2,
+  QUARTER_FINAL: 4,
+  SEMI_FINAL: 2,
   FINAL: 1,
 };
 
@@ -23,8 +23,8 @@ const MAX_MATCHES_PER_PHASE: Record<string, number> = {
 const VALID_KNOCKOUT_PHASES: MatchPhase[] = [
   "ROUND_OF_32",
   "ROUND_OF_16",
-  "QUARTER_FINALS",
-  "SEMI_FINALS",
+  "QUARTER_FINAL",
+  "SEMI_FINAL",
   "FINAL",
 ];
 
@@ -41,7 +41,7 @@ export class SaveKnockoutPredictionsUseCase {
    * Execute the use case
    * Supports saving 1 to N match predictions for a knockout phase
    * @param predictionId - Prediction UUID
-   * @param phase - Knockout phase (ROUND_OF_32, ROUND_OF_16, QUARTER_FINALS, SEMI_FINALS, FINAL)
+   * @param phase - Knockout phase (ROUND_OF_32, ROUND_OF_16, QUARTER_FINAL, SEMI_FINAL, FINAL)
    * @param predictions - Array of 1 to N match predictions (allows partial phase saves)
    * @returns Promise with save confirmation
    */
@@ -65,7 +65,9 @@ export class SaveKnockoutPredictionsUseCase {
     // Validate phase
     if (!phase || !VALID_KNOCKOUT_PHASES.includes(phase)) {
       throw new Error(
-        `Invalid knockout phase: ${phase}. Must be one of: ${VALID_KNOCKOUT_PHASES.join(", ")}`
+        `Invalid knockout phase: ${phase}. Must be one of: ${VALID_KNOCKOUT_PHASES.join(
+          ", "
+        )}`
       );
     }
 
@@ -131,19 +133,13 @@ export class SaveKnockoutPredictionsUseCase {
     }
 
     // Validate regular time scores
-    if (
-      prediction.homeScore < 0 ||
-      !Number.isInteger(prediction.homeScore)
-    ) {
+    if (prediction.homeScore < 0 || !Number.isInteger(prediction.homeScore)) {
       throw new Error(
         `${errorPrefix}: Home score must be a non-negative integer`
       );
     }
 
-    if (
-      prediction.awayScore < 0 ||
-      !Number.isInteger(prediction.awayScore)
-    ) {
+    if (prediction.awayScore < 0 || !Number.isInteger(prediction.awayScore)) {
       throw new Error(
         `${errorPrefix}: Away score must be a non-negative integer`
       );
@@ -189,8 +185,7 @@ export class SaveKnockoutPredictionsUseCase {
         }
 
         // If still tied after ET, must have penalties
-        const isTiedAfterET =
-          prediction.homeScoreET === prediction.awayScoreET;
+        const isTiedAfterET = prediction.homeScoreET === prediction.awayScoreET;
 
         if (isTiedAfterET && !hasPenalties) {
           throw new Error(

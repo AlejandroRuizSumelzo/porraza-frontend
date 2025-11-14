@@ -48,7 +48,10 @@ export function CreateLeagueTab({
     defaultValues: {
       name: "",
       description: "",
-      type: "public",
+      visibility: "public",
+      category: "general",
+      code: "",
+      requiredEmailDomain: "",
     },
   });
 
@@ -91,12 +94,12 @@ export function CreateLeagueTab({
             <FieldError errors={[form.formState.errors.description]} />
           </Field>
 
-          <Field data-invalid={!!form.formState.errors.type}>
-            <FieldLabel>Tipo de Liga *</FieldLabel>
+          <Field data-invalid={!!form.formState.errors.visibility}>
+            <FieldLabel>Visibilidad de Liga *</FieldLabel>
             <RadioGroup
               defaultValue="public"
               onValueChange={(value) =>
-                form.setValue("type", value as "public" | "private")
+                form.setValue("visibility", value as "public" | "private")
               }
             >
               <div className="flex items-center space-x-2 rounded-lg border border-primary/20 bg-primary/5 p-4 transition-colors hover:border-primary/40">
@@ -124,7 +127,7 @@ export function CreateLeagueTab({
                 </label>
               </div>
             </RadioGroup>
-            <FieldError errors={[form.formState.errors.type]} />
+            <FieldError errors={[form.formState.errors.visibility]} />
           </Field>
 
           <Field>

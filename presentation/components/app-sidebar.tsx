@@ -10,6 +10,7 @@ import {
   Users,
   ChevronRight,
   Settings2,
+  CheckCircle2,
 } from "lucide-react";
 
 import {
@@ -30,6 +31,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/presentation/components/ui/collapsible";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/presentation/components/ui/avatar";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { navigationItems } from "@/presentation/utils/routes";
@@ -43,6 +49,23 @@ import {
 } from "@/infrastructure/store/selectors";
 import { EmptyStateLeagues } from "@/presentation/components/sidebar/empty-state-leagues";
 import { toast } from "sonner";
+
+/**
+ * Helper function to get initials from league name
+ * Returns first 2 characters of each word (max 2 words)
+ * Example: "Liga Mundial 2026" -> "LM"
+ */
+function getLeagueInitials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].substring(0, 2).toUpperCase();
+  }
+  return words
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+}
 
 export function AppSidebar() {
   const tNavigation = useTranslations("navigation");
@@ -123,30 +146,74 @@ export function AppSidebar() {
                 ) : (
                   <>
                     <SidebarMenu>
-                      {leagues.map((league) => (
-                        <SidebarMenuItem key={league.id}>
-                          <SidebarMenuButton
-                            onClick={() => handleLeagueSelect(league.id)}
-                            isActive={selectedLeagueId === league.id}
-                            tooltip={league.description || league.name}
-                            className="group/item transition-all duration-200"
-                          >
-                            <span className="truncate font-medium">
-                              {league.name}
-                            </span>
-                            <Badge
-                              variant="secondary"
-                              className={`ml-auto shrink-0 text-[10px] px-2 py-0.5 font-semibold transition-all duration-200 ${
-                                selectedLeagueId === league.id
-                                  ? "bg-gradient-to-r from-primary/20 to-secondary/20 text-primary border border-primary/30"
-                                  : "group-hover/item:bg-muted"
+                      {leagues.map((league) => {
+                        const isSelected = selectedLeagueId === league.id;
+                        return (
+                          <SidebarMenuItem key={league.id}>
+                            <SidebarMenuButton
+                              onClick={() => handleLeagueSelect(league.id)}
+                              isActive={isSelected}
+                              tooltip={league.description || league.name}
+                              className={`group/item transition-all duration-200 h-12 ${
+                                isSelected
+                                  ? "bg-primary/10 hover:bg-primary/15 border-l-2 border-primary"
+                                  : "hover:bg-accent/50"
                               }`}
                             >
-                              {league.currentMembers}
-                            </Badge>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
+                              {/* League Avatar */}
+                              <Avatar className="h-8 w-8 shrink-0 rounded-md">
+                                {league.logoUrl ? (
+                                  <AvatarImage
+                                    src={league.logoUrl}
+                                    alt={`Logo de ${league.name}`}
+                                    className="object-cover"
+                                  />
+                                ) : null}
+                                <AvatarFallback
+                                  className={`rounded-md text-xs font-bold transition-colors ${
+                                    isSelected
+                                      ? "bg-primary/20 text-primary"
+                                      : "bg-muted text-muted-foreground group-hover/item:bg-primary/10 group-hover/item:text-primary"
+                                  }`}
+                                >
+                                  {getLeagueInitials(league.name)}
+                                </AvatarFallback>
+                              </Avatar>
+
+                              {/* League Name */}
+                              <div className="flex-1 flex items-center min-w-0 gap-2">
+                                <span
+                                  className={`truncate text-sm ${
+                                    isSelected
+                                      ? "font-semibold text-primary"
+                                      : "font-medium"
+                                  }`}
+                                >
+                                  {league.name}
+                                </span>
+                              </div>
+
+                              {/* Members Badge + Selected Indicator */}
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <Badge
+                                  variant="secondary"
+                                  className={`text-[10px] px-1.5 py-0.5 font-semibold transition-all duration-200 ${
+                                    isSelected
+                                      ? "bg-primary/20 text-primary border border-primary/30"
+                                      : "bg-muted text-muted-foreground group-hover/item:bg-primary/10 group-hover/item:text-primary"
+                                  }`}
+                                >
+                                  <Users className="h-2.5 w-2.5 mr-0.5" />
+                                  {league.currentMembers}
+                                </Badge>
+                                {isSelected && (
+                                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                                )}
+                              </div>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
                     </SidebarMenu>
 
                     {/* Separator + Manage Leagues Button */}

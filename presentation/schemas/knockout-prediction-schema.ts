@@ -6,8 +6,8 @@ import { z } from "zod";
 export const knockoutPhaseEnum = z.enum([
   "ROUND_OF_32",
   "ROUND_OF_16",
-  "QUARTER_FINALS",
-  "SEMI_FINALS",
+  "QUARTER_FINAL",
+  "SEMI_FINAL",
   "FINAL",
 ]);
 
@@ -184,6 +184,32 @@ export const knockoutMatchPredictionSchema = z
         "Penalties winner should not be set if extra time resolves the tie",
       path: ["penaltiesWinner"],
     }
+  )
+  .refine(
+    (data) => {
+      // Rule 5: ET scores must be >= regular time scores (cumulative scoring)
+      // This is because ET scores include goals from both regular time AND extra time
+      if (
+        typeof data.homeScoreET === "number" &&
+        typeof data.awayScoreET === "number"
+      ) {
+        // Home ET score must be >= home regular score
+        if (data.homeScoreET < data.homeScore) {
+          return false;
+        }
+        // Away ET score must be >= away regular score
+        if (data.awayScoreET < data.awayScore) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    {
+      message:
+        "Los marcadores de prórroga deben ser acumulativos (incluir goles del tiempo regular). Ej: Si tiempo regular es 1-1 y se marca 1 gol más, la prórroga debe ser 2-1",
+      path: ["homeScoreET"],
+    }
   );
 
 /**
@@ -208,8 +234,8 @@ export const saveKnockoutPredictionsSchema = z.object({
    * Number of predictions must match the phase:
    * - ROUND_OF_32: 16 matches
    * - ROUND_OF_16: 8 matches
-   * - QUARTER_FINALS: 4 matches
-   * - SEMI_FINALS: 2 matches
+   * - QUARTER_FINAL: 4 matches
+   * - SEMI_FINAL: 2 matches
    * - FINAL: 1 match
    */
   predictions: z

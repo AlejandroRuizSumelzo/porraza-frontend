@@ -99,6 +99,7 @@ function MatchContent({
   const awayScore = form.watch("awayScore");
   const homeScoreET = form.watch("homeScoreET");
   const awayScoreET = form.watch("awayScoreET");
+  const penaltiesWinner = form.watch("penaltiesWinner");
 
   // Helper to check if a value is a valid number (not NaN, not undefined, not null)
   const isValidNumber = (val: any): val is number => {
@@ -146,6 +147,53 @@ function MatchContent({
     }
   }, [showPenalties, form]);
 
+  // Calculate if the form is incomplete (used to disable submit button)
+  // This mirrors the Zod schema validation rules to provide real-time feedback
+  const isFormIncomplete = (): boolean => {
+    // Rule 1: Regular time scores must be valid numbers
+    if (!hasValidRegularTimeScores) {
+      return true;
+    }
+
+    // Rule 2: If tied in regular time, extra time scores must be valid
+    if (isTied) {
+      if (!hasValidETScores) {
+        return true;
+      }
+
+      // Rule 2.1: ET scores must be >= regular time scores (cumulative)
+      if (hasValidETScores) {
+        if (homeScoreET < homeScore || awayScoreET < awayScore) {
+          return true;
+        }
+      }
+
+      // Rule 3: If tied after extra time, penalties winner must be selected
+      if (isTiedInET) {
+        if (!penaltiesWinner) {
+          return true;
+        }
+      }
+
+      // Rule 4: If NOT tied after extra time, penalties winner should NOT be selected
+      if (!isTiedInET) {
+        if (penaltiesWinner !== null) {
+          return true;
+        }
+      }
+    }
+
+    // Rule 5: If NOT tied in regular time, ET/penalties should be null
+    // This catches cases where user had entered ET/penalties but then changed regular time
+    if (!isTied) {
+      if (homeScoreET !== null || awayScoreET !== null || penaltiesWinner !== null) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   // Stadium image path
   const stadiumImagePath = `/stadiums/${match.stadium.code}.webp`;
 
@@ -164,17 +212,6 @@ function MatchContent({
     }
 
     try {
-      console.log("[KnockoutMatchDialog] Prediction submitted:", data);
-      console.log("Match ID:", data.matchId);
-      console.log("Home Team:", match.homeTeam.name, "- Score:", data.homeScore);
-      console.log("Away Team:", match.awayTeam.name, "- Score:", data.awayScore);
-      if (data.homeScoreET !== null && data.awayScoreET !== null) {
-        console.log("Extra Time:", data.homeScoreET, "-", data.awayScoreET);
-      }
-      if (data.penaltiesWinner) {
-        console.log("Penalties Winner:", data.penaltiesWinner);
-      }
-
       // Convert form data to MatchPrediction entity
       const matchPrediction: MatchPrediction = {
         matchId: data.matchId,
@@ -392,9 +429,14 @@ function MatchContent({
           {/* Extra Time (only if tied) */}
           {isTied && (
             <div className="mb-3 space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-3 md:mb-4">
-              <p className="text-xs font-semibold text-primary md:text-sm">
-                ⏱️ Tiempo Extra (empate en 90')
-              </p>
+              <div>
+                <p className="text-xs font-semibold text-primary md:text-sm">
+                  ⏱️ Tiempo Extra (empate en 90')
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Marcador total acumulado (incluye goles del tiempo regular + prórroga)
+                </p>
+              </div>
               <div className="flex items-center gap-3">
                 {/* Home Score ET */}
                 <Field
@@ -405,15 +447,15 @@ function MatchContent({
                     htmlFor="homeScoreET"
                     className="text-xs md:text-sm"
                   >
-                    {match.homeTeam.fifaCode}
+                    {match.homeTeam.fifaCode} (mín. {homeScore})
                   </FieldLabel>
                   <Input
                     id="homeScoreET"
                     type="number"
                     inputMode="numeric"
-                    min="0"
+                    min={homeScore}
                     step="1"
-                    placeholder="-"
+                    placeholder={`≥${homeScore}`}
                     className="text-center text-base font-bold md:text-lg"
                     {...form.register("homeScoreET", {
                       setValueAs: (v) => (v === "" || isNaN(v) ? null : Number(v)),
@@ -436,15 +478,15 @@ function MatchContent({
                     htmlFor="awayScoreET"
                     className="text-xs md:text-sm"
                   >
-                    {match.awayTeam.fifaCode}
+                    {match.awayTeam.fifaCode} (mín. {awayScore})
                   </FieldLabel>
                   <Input
                     id="awayScoreET"
                     type="number"
                     inputMode="numeric"
-                    min="0"
+                    min={awayScore}
                     step="1"
-                    placeholder="-"
+                    placeholder={`≥${awayScore}`}
                     className="text-center text-base font-bold md:text-lg"
                     {...form.register("awayScoreET", {
                       setValueAs: (v) => (v === "" || isNaN(v) ? null : Number(v)),
@@ -510,7 +552,7 @@ function MatchContent({
           type="submit"
           className="w-full"
           size="lg"
-          disabled={form.formState.isSubmitting || isSaving}
+          disabled={isFormIncomplete() || form.formState.isSubmitting || isSaving}
         >
           {form.formState.isSubmitting || isSaving
             ? "Guardando..."

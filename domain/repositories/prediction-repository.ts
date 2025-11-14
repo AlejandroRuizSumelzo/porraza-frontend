@@ -7,6 +7,7 @@ import { GroupStanding } from "@/domain/entities/group-standing";
 import { BestThirdPlace } from "@/domain/entities/best-third-place";
 import { RoundOf32Match } from "@/domain/entities/round-of-32-match";
 import { KnockoutMatchWithPrediction } from "@/domain/entities/knockout-match-with-prediction";
+import { Knockouts } from "@/domain/entities/knockouts";
 import { MatchPhase } from "@/domain/entities/match";
 
 /**
@@ -18,7 +19,7 @@ export interface GetOrCreatePredictionResponse {
   matches: MatchWithPrediction[];
   bestThirdPlaces?: BestThirdPlace[];
   roundOf32Matches?: RoundOf32Match[];
-  knockoutPredictions?: KnockoutMatchWithPrediction[];
+  knockouts?: Knockouts;
 }
 
 /**
@@ -105,7 +106,7 @@ export interface PredictionRepository {
    * Save knockout phase predictions
    * Validates that previous phase is complete and teams match expected winners
    * @param predictionId - Prediction UUID
-   * @param phase - Knockout phase (ROUND_OF_32, ROUND_OF_16, QUARTER_FINALS, SEMI_FINALS, FINAL)
+   * @param phase - Knockout phase (ROUND_OF_32, ROUND_OF_16, QUARTER_FINAL, SEMI_FINAL, FINAL)
    * @param predictions - Array of match predictions for the knockout phase
    * @returns Promise with save confirmation and phase completion status
    */

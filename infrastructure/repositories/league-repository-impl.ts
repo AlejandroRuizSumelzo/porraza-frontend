@@ -1,12 +1,19 @@
-import type { League, LeagueMember } from "@/domain/entities/league";
+import type {
+  League,
+  LeagueCategory,
+  LeagueMember,
+  LeagueRanking,
+  LeagueVisibility,
+} from "@/domain/entities/league";
 import type { LeagueRepository } from "@/domain/repositories/league-repository";
 import type { HttpClient } from "@/infrastructure/http/client";
 import { HttpError } from "@/infrastructure/http/client";
-import {
-  LeagueMapper,
-  type LeagueDTO,
-  type LeagueMemberDTO,
-} from "@/infrastructure/mappers/league-mapper";
+import type {
+  LeagueDTO,
+  LeagueMemberDTO,
+  LeagueRankingResponseDTO,
+} from "@/infrastructure/http/dtos/league-dto";
+import { LeagueMapper } from "@/infrastructure/mappers/league-mapper";
 
 /**
  * League Repository Implementation
@@ -25,7 +32,10 @@ export class LeagueRepositoryImpl implements LeagueRepository {
   async create(data: {
     name: string;
     description?: string;
-    type: "public" | "private";
+    visibility: LeagueVisibility;
+    category: LeagueCategory;
+    code?: string;
+    requiredEmailDomain?: string;
   }): Promise<League> {
     try {
       const dto = LeagueMapper.toCreateDTO(data);
@@ -89,6 +99,58 @@ export class LeagueRepositoryImpl implements LeagueRepository {
           response: error.response,
         });
         throw new Error(`Failed to fetch public leagues: ${error.message}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Get only public corporate leagues
+   */
+  async getCorporate(): Promise<League[]> {
+    try {
+      const response = await this.httpClient.get<LeagueDTO[]>(
+        `${this.baseUrl}/corporate`
+      );
+      return response.data.map(LeagueMapper.toDomain);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        console.error("[LeagueRepository] Error fetching corporate leagues:", {
+          status: error.status,
+          message: error.message,
+          response: error.response,
+        });
+        throw new Error(`Failed to fetch corporate leagues: ${error.message}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Get public leagues filtered by category
+   */
+  async getByCategory(category: LeagueCategory): Promise<League[]> {
+    try {
+      const response = await this.httpClient.get<LeagueDTO[]>(
+        `${this.baseUrl}/category/${category}`
+      );
+      return response.data.map(LeagueMapper.toDomain);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        console.error(
+          `[LeagueRepository] Error fetching leagues by category ${category}:`,
+          {
+            status: error.status,
+            message: error.message,
+            response: error.response,
+          }
+        );
+
+        if (error.status === 400) {
+          throw new Error(`Invalid category: ${category}`);
+        }
+
+        throw new Error(`Failed to fetch leagues by category: ${error.message}`);
       }
       throw error;
     }
@@ -182,7 +244,9 @@ export class LeagueRepositoryImpl implements LeagueRepository {
     data: {
       name?: string;
       description?: string;
-      type?: "public" | "private";
+      visibility?: LeagueVisibility;
+      category?: LeagueCategory;
+      requiredEmailDomain?: string;
     }
   ): Promise<League> {
     try {
@@ -404,6 +468,84 @@ export class LeagueRepositoryImpl implements LeagueRepository {
         }
 
         throw new Error(`Failed to transfer admin: ${error.message}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Upload or update league logo (admin only)
+   * Allowed file types: JPEG, PNG, WebP. Maximum file size: 5 MB
+   */
+  async uploadLogo(id: string, file: File): Promise<League> {
+    try {
+      // Create FormData to send the file
+      const formData = new FormData();
+      formData.append("logo", file);
+
+      // IMPORTANT: Don't set Content-Type header manually for FormData
+      // The browser will automatically set it with the correct boundary:
+      // Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...
+      const response = await this.httpClient.post<LeagueDTO>(
+        `${this.baseUrl}/${id}/logo`,
+        formData
+      );
+      return LeagueMapper.toDomain(response.data);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        console.error("[LeagueRepository] Error uploading league logo:", {
+          status: error.status,
+          message: error.message,
+          response: error.response,
+        });
+
+        if (error.status === 400) {
+          throw new Error(
+            "Invalid file. Only JPEG, PNG, and WebP images under 5MB are allowed"
+          );
+        }
+
+        if (error.status === 403) {
+          throw new Error("Only the admin can upload the league logo");
+        }
+
+        if (error.status === 404) {
+          throw new Error("League not found");
+        }
+
+        throw new Error(`Failed to upload league logo: ${error.message}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Get league ranking/leaderboard
+   * Retrieve the real-time ranking of all members in a league ordered by points
+   */
+  async getLeagueRanking(id: string): Promise<LeagueRanking> {
+    try {
+      const response = await this.httpClient.get<LeagueRankingResponseDTO>(
+        `${this.baseUrl}/${id}/ranking`
+      );
+      return LeagueMapper.toRankingDomain(response.data);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        console.error("[LeagueRepository] Error fetching league ranking:", {
+          status: error.status,
+          message: error.message,
+          response: error.response,
+        });
+
+        if (error.status === 401) {
+          throw new Error("You must be authenticated to view league rankings");
+        }
+
+        if (error.status === 404) {
+          throw new Error("League not found");
+        }
+
+        throw new Error(`Failed to fetch league ranking: ${error.message}`);
       }
       throw error;
     }

@@ -2,8 +2,9 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
+import { useTranslations, useMessages } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ import {
   CardTitle,
 } from "@/presentation/components/ui/card";
 import { Lock, ArrowLeft, KeyRound, AlertCircle } from "lucide-react";
+import { APP_ROUTES } from "@/presentation/utils/routes";
 
 /**
  * Reset Password Page Content Component
@@ -37,6 +39,8 @@ import { Lock, ArrowLeft, KeyRound, AlertCircle } from "lucide-react";
  * Separated from page component to use useSearchParams inside Suspense.
  */
 function ResetPasswordContent() {
+  const t = useTranslations();
+  const messages = useMessages();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
@@ -55,12 +59,12 @@ function ResetPasswordContent() {
   useEffect(() => {
     const tokenFromUrl = searchParams.get("token");
     if (!tokenFromUrl) {
-      toast.error("Token inválido", {
-        description: "El enlace de recuperación es inválido o ha expirado.",
+      toast.error(t("auth.reset_password.toasts.invalid_token.title"), {
+        description: t("auth.reset_password.toasts.invalid_token.description"),
       });
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push("/login");
+        router.push(APP_ROUTES.auth.login);
       }, 3000);
     } else {
       setToken(tokenFromUrl);
@@ -69,8 +73,8 @@ function ResetPasswordContent() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
-      toast.error("Token no encontrado", {
-        description: "Por favor, usa el enlace del email de recuperación.",
+      toast.error(t("auth.reset_password.toasts.missing_token.title"), {
+        description: t("auth.reset_password.toasts.missing_token.description"),
       });
       return;
     }
@@ -81,18 +85,18 @@ function ResetPasswordContent() {
 
     if (response) {
       // Success
-      toast.success("¡Contraseña restablecida!", {
+      toast.success(t("auth.reset_password.toasts.success.title"), {
         description: response.message,
       });
 
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        router.push("/login");
+        router.push(APP_ROUTES.auth.login);
       }, 2000);
     } else {
       // Error
-      toast.error("Error al restablecer contraseña", {
-        description: error || "Por favor, solicita un nuevo enlace de recuperación.",
+      toast.error(t("auth.reset_password.toasts.error.title"), {
+        description: error || t("auth.reset_password.toasts.error.description"),
       });
     }
   };
@@ -103,7 +107,9 @@ function ResetPasswordContent() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-          <p className="text-muted-foreground">Verificando enlace...</p>
+          <p className="text-muted-foreground">
+            {t("auth.reset_password.loading.verify_link")}
+          </p>
         </div>
       </div>
     );
@@ -131,7 +137,7 @@ function ResetPasswordContent() {
               <div className="relative w-20 h-20 group-hover:scale-105 transition-transform">
                 <Image
                   src="/logo/porraza-icon.webp"
-                  alt="Porraza Logo"
+                  alt={messages.common?.app_name ?? "Porraza"}
                   width={80}
                   height={80}
                   className="object-contain drop-shadow-lg"
@@ -139,12 +145,12 @@ function ResetPasswordContent() {
                 />
               </div>
               <h1 className="text-5xl font-display font-bold gradient-text-tricolor">
-                Porraza
+                {messages.common?.app_name ?? "Porraza"}
               </h1>
             </div>
           </Link>
           <p className="text-muted-foreground text-lg mt-3">
-            Restablecer tu contraseña
+            {t("auth.reset_password.subtitle")}
           </p>
         </motion.div>
 
@@ -160,10 +166,10 @@ function ResetPasswordContent() {
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <KeyRound className="w-5 h-5 text-primary" />
                 </div>
-                Nueva Contraseña
+                {t("auth.reset_password.title")}
               </CardTitle>
               <CardDescription className="text-base">
-                Ingresa tu nueva contraseña. Debe tener al menos 8 caracteres.
+                {t("auth.reset_password.description")}
               </CardDescription>
             </CardHeader>
 
@@ -179,18 +185,18 @@ function ResetPasswordContent() {
                     className="flex items-center gap-2"
                   >
                     <Lock className="w-4 h-4 text-muted-foreground" />
-                    Nueva Contraseña
+                    {t("forms.fields.new_password")}
                   </FieldLabel>
                   <PasswordInput
                     id="newPassword"
-                    placeholder="••••••••"
+                    placeholder={t("forms.placeholders.password")}
                     aria-invalid={!!form.formState.errors.newPassword}
                     className="h-11 transition-all focus:shadow-primary"
                     disabled={isLoading}
                     {...form.register("newPassword")}
                   />
                   <FieldDescription>
-                    Mínimo 8 caracteres
+                    {t("forms.hints.password_min")}
                   </FieldDescription>
                   <FieldError errors={[form.formState.errors.newPassword]} />
                 </Field>
@@ -202,17 +208,19 @@ function ResetPasswordContent() {
                     className="flex items-center gap-2"
                   >
                     <Lock className="w-4 h-4 text-muted-foreground" />
-                    Confirmar Contraseña
+                    {t("forms.fields.confirm_password")}
                   </FieldLabel>
                   <PasswordInput
                     id="confirmPassword"
-                    placeholder="••••••••"
+                    placeholder={t("forms.placeholders.password")}
                     aria-invalid={!!form.formState.errors.confirmPassword}
                     className="h-11 transition-all focus:shadow-primary"
                     disabled={isLoading}
                     {...form.register("confirmPassword")}
                   />
-                  <FieldError errors={[form.formState.errors.confirmPassword]} />
+                  <FieldError
+                    errors={[form.formState.errors.confirmPassword]}
+                  />
                 </Field>
 
                 {/* Error display */}
@@ -232,12 +240,12 @@ function ResetPasswordContent() {
                   {isLoading ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Restableciendo...
+                      {t("auth.reset_password.submit_loading")}
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
                       <KeyRound className="w-4 h-4" />
-                      Restablecer Contraseña
+                      {t("auth.reset_password.submit")}
                     </span>
                   )}
                 </Button>
@@ -246,12 +254,12 @@ function ResetPasswordContent() {
               {/* Back to login link */}
               <div className="text-center pt-4 border-t border-border">
                 <p className="text-sm text-muted-foreground">
-                  ¿Ya tienes tu contraseña?{" "}
+                  {t("auth.reset_password.login_prompt")}{" "}
                   <Link
-                    href="/login"
+                    href={APP_ROUTES.auth.login}
                     className="text-primary hover:text-primary/80 font-semibold transition-colors"
                   >
-                    Inicia sesión
+                    {t("auth.reset_password.login_link")}
                   </Link>
                 </p>
               </div>
@@ -271,7 +279,7 @@ function ResetPasswordContent() {
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Volver al inicio
+            {t("auth.reset_password.back_home")}
           </Link>
         </motion.div>
       </div>
@@ -288,13 +296,14 @@ function ResetPasswordContent() {
  * - Delegates all logic to ResetPasswordContent component
  */
 export default function ResetPasswordPage() {
+  const t = useTranslations();
   return (
     <Suspense
       fallback={
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-            <p className="text-muted-foreground">Cargando...</p>
+            <p className="text-muted-foreground">{t("common.loading")}</p>
           </div>
         </div>
       }

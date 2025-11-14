@@ -4,6 +4,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/presentation/components/ui/sidebar";
+import { SettingsPageContent } from "@/presentation/components/settings/settings-page-content";
 
 export default function SettingsPage() {
   const { open, isMobile } = useSidebar();
@@ -14,12 +15,8 @@ export default function SettingsPage() {
         {(isMobile || !open) && <SidebarTrigger />}
         <h1 className="text-xl font-semibold">Configuración</h1>
       </header>
-      <main className="flex-1 overflow-auto p-4">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-muted-foreground">
-            Administra tu cuenta y preferencias de la aplicación.
-          </p>
-        </div>
+      <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+        <SettingsPageContent />
       </main>
     </div>
   );

@@ -7,4 +7,5 @@ export interface User {
   lastLoginAt: string | null;
   hasPaid: boolean;
   stripeCustomerId?: string | null;
+  profilePictureUrl?: string | null;
 }

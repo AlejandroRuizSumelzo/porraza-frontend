@@ -1,5 +1,6 @@
 import { Building2, AlertCircle } from "lucide-react";
 import { Card, CardContent } from "@/presentation/components/ui/card";
+import { useTranslations } from "next-intl";
 
 interface EmptyStateProps {
   type?: "empty" | "error";
@@ -15,6 +16,7 @@ export function StadiumEmptyState({
   message,
 }: EmptyStateProps) {
   const isError = type === "error";
+  const t = useTranslations();
 
   return (
     <Card className="border-dashed">
@@ -34,14 +36,18 @@ export function StadiumEmptyState({
         </div>
 
         <h3 className="mb-2 text-xl font-semibold">
-          {isError ? "Error al cargar estadios" : "No hay estadios disponibles"}
+          {isError
+            ? t("stadiums.empty.error.title")
+            : t("stadiums.empty.empty.title")}
         </h3>
 
         <p className="max-w-md text-center text-sm text-muted-foreground">
           {message ||
             (isError
-              ? "Asegúrate de que el backend esté corriendo en http://localhost:3001"
-              : "Parece que aún no hay estadios registrados en el sistema")}
+              ? t("stadiums.empty.error.description", {
+                  url: "http://localhost:3001",
+                })
+              : t("stadiums.empty.empty.description"))}
         </p>
 
         {isError && (
@@ -49,7 +55,7 @@ export function StadiumEmptyState({
             onClick={() => window.location.reload()}
             className="mt-6 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Reintentar
+            {t("stadiums.empty.error.retry")}
           </button>
         )}
       </CardContent>

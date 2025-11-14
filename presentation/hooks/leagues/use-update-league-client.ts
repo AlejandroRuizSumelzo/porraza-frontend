@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useUpdateLeague } from "@/di/client/hooks/use-leagues";
-import type { League } from "@/domain/entities/league";
+import type { League, LeagueCategory, LeagueVisibility } from "@/domain/entities/league";
 
 /**
  * Custom Hook: useUpdateLeagueClient
@@ -39,7 +39,9 @@ import type { League } from "@/domain/entities/league";
 interface UpdateLeagueParams {
   name?: string;
   description?: string;
-  type?: "public" | "private";
+  visibility?: LeagueVisibility;
+  category?: LeagueCategory;
+  requiredEmailDomain?: string;
 }
 
 interface UseUpdateLeagueResult {
@@ -98,7 +100,8 @@ export function useUpdateLeagueClient(): UseUpdateLeagueResult {
       console.log("[useUpdateLeagueClient] League updated successfully:", {
         id: result.id,
         name: result.name,
-        type: result.type,
+        visibility: result.visibility,
+        category: result.category,
       });
 
       setUpdatedLeague(result);

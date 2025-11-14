@@ -1,8 +1,22 @@
 "use client";
 
-import { SidebarTrigger, useSidebar } from "@/presentation/components/ui/sidebar";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/presentation/components/ui/tabs";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/presentation/components/ui/card";
+import {
+  SidebarTrigger,
+  useSidebar,
+} from "@/presentation/components/ui/sidebar";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/presentation/components/ui/tabs";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/presentation/components/ui/card";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Separator } from "@/presentation/components/ui/separator";
 import {
@@ -17,8 +31,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Minus,
-  Flag
+  Flag,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /**
  * Rules Page Content Component (Client Component)
@@ -32,13 +47,14 @@ import {
  */
 export function RulesPageContent() {
   const { open, isMobile } = useSidebar();
+  const t = useTranslations();
 
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
         {(isMobile || !open) && <SidebarTrigger />}
-        <h1 className="text-xl font-semibold">Reglas del juego</h1>
+        <h1 className="text-xl font-semibold">{t("rules.header.title")}</h1>
       </header>
 
       {/* Main Content */}
@@ -49,12 +65,9 @@ export function RulesPageContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Trophy className="size-5 text-primary" />
-                Bienvenido a Porraza Mundial 2026
+                {t("rules.intro.title")}
               </CardTitle>
-              <CardDescription>
-                Compite con tus amigos prediciendo los resultados del Mundial de Fútbol.
-                Conoce las reglas para maximizar tus puntos y escalar en el leaderboard.
-              </CardDescription>
+              <CardDescription>{t("rules.intro.description")}</CardDescription>
             </CardHeader>
           </Card>
 
@@ -63,19 +76,19 @@ export function RulesPageContent() {
             <TabsList className="mb-6 w-full justify-start">
               <TabsTrigger value="scoring" className="gap-2">
                 <Target className="size-4" />
-                Puntuación
+                {t("rules.tabs.scoring")}
               </TabsTrigger>
               <TabsTrigger value="groups" className="gap-2">
                 <Users className="size-4" />
-                Fase de Grupos
+                {t("rules.tabs.groups")}
               </TabsTrigger>
               <TabsTrigger value="knockout" className="gap-2">
                 <Trophy className="size-4" />
-                Eliminatorias
+                {t("rules.tabs.knockout")}
               </TabsTrigger>
               <TabsTrigger value="fifa" className="gap-2">
                 <Flag className="size-4" />
-                Reglas FIFA
+                {t("rules.tabs.fifa")}
               </TabsTrigger>
             </TabsList>
 
@@ -86,10 +99,10 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Target className="size-5" />
-                    Fase de Grupos
+                    {t("rules.scoring.group.title")}
                   </CardTitle>
                   <CardDescription>
-                    Puntos por acertar resultados de partidos y posiciones finales
+                    {t("rules.scoring.group.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -98,22 +111,40 @@ export function RulesPageContent() {
                       <div className="flex items-center gap-3">
                         <CheckCircle2 className="size-5 text-green-500" />
                         <div>
-                          <p className="font-medium">Resultado exacto</p>
-                          <p className="text-sm text-muted-foreground">Ej: Predicción 2-1, Real 2-1</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.group.items.exact_result.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.group.items.exact_result.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+3 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +3 pts
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div className="flex items-center gap-3">
                         <CheckCircle2 className="size-5 text-blue-500" />
                         <div>
-                          <p className="font-medium">Acierto 1X2 correcto</p>
-                          <p className="text-sm text-muted-foreground">Aciertas ganador/empate pero no marcador</p>
+                          <p className="font-medium">
+                            {t(
+                              "rules.scoring.group.items.correct_outcome.title"
+                            )}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.group.items.correct_outcome.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="text-base">+1 pt</Badge>
+                      <Badge variant="secondary" className="text-base">
+                        +1 pt
+                      </Badge>
                     </div>
 
                     <Separator />
@@ -122,22 +153,42 @@ export function RulesPageContent() {
                       <div className="flex items-center gap-3">
                         <Medal className="size-5 text-amber-500" />
                         <div>
-                          <p className="font-medium">Posición exacta en grupo</p>
-                          <p className="text-sm text-muted-foreground">El equipo termina 1º o 2º como predijiste</p>
+                          <p className="font-medium">
+                            {t(
+                              "rules.scoring.group.items.exact_position.title"
+                            )}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.group.items.exact_position.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+3 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +3 pts
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div className="flex items-center gap-3">
                         <Medal className="size-5 text-gray-500" />
                         <div>
-                          <p className="font-medium">Equipo clasificado</p>
-                          <p className="text-sm text-muted-foreground">Clasificó pero en diferente posición</p>
+                          <p className="font-medium">
+                            {t(
+                              "rules.scoring.group.items.team_qualified.title"
+                            )}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.group.items.team_qualified.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="text-base">+1 pt</Badge>
+                      <Badge variant="secondary" className="text-base">
+                        +1 pt
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -148,10 +199,10 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Trophy className="size-5" />
-                    Fase Eliminatoria
+                    {t("rules.scoring.knockout.title")}
                   </CardTitle>
                   <CardDescription>
-                    Mayor dificultad = más puntos
+                    {t("rules.scoring.knockout.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -160,22 +211,38 @@ export function RulesPageContent() {
                       <div className="flex items-center gap-3">
                         <Clock className="size-5 text-green-500" />
                         <div>
-                          <p className="font-medium">Resultado exacto en 90 minutos</p>
-                          <p className="text-sm text-muted-foreground">Marcador exacto al final del tiempo reglamentario</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.knockout.items.exact_90.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.knockout.items.exact_90.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+5 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +5 pts
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div className="flex items-center gap-3">
                         <CheckCircle2 className="size-5 text-blue-500" />
                         <div>
-                          <p className="font-medium">Ganador correcto en 90 minutos</p>
-                          <p className="text-sm text-muted-foreground">Aciertas el ganador pero no el marcador</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.knockout.items.winner_90.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.knockout.items.winner_90.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="text-base">+2 pts</Badge>
+                      <Badge variant="secondary" className="text-base">
+                        +2 pts
+                      </Badge>
                     </div>
 
                     <Separator />
@@ -184,22 +251,38 @@ export function RulesPageContent() {
                       <div className="flex items-center gap-3">
                         <Zap className="size-5 text-amber-500" />
                         <div>
-                          <p className="font-medium">Resultado exacto en prórroga</p>
-                          <p className="text-sm text-muted-foreground">Marcador exacto al final de la prórroga</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.knockout.items.exact_et.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.knockout.items.exact_et.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+8 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +8 pts
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div className="flex items-center gap-3">
                         <CheckCircle2 className="size-5 text-purple-500" />
                         <div>
-                          <p className="font-medium">Ganador correcto en prórroga</p>
-                          <p className="text-sm text-muted-foreground">Aciertas ganador en prórroga pero no marcador</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.knockout.items.winner_et.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.knockout.items.winner_et.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="text-base">+3 pts</Badge>
+                      <Badge variant="secondary" className="text-base">
+                        +3 pts
+                      </Badge>
                     </div>
 
                     <Separator />
@@ -208,11 +291,21 @@ export function RulesPageContent() {
                       <div className="flex items-center gap-3">
                         <Target className="size-5 text-red-500" />
                         <div>
-                          <p className="font-medium">Ganador correcto en penaltis</p>
-                          <p className="text-sm text-muted-foreground">Partido se decidió por penaltis</p>
+                          <p className="font-medium">
+                            {t(
+                              "rules.scoring.knockout.items.winner_pens.title"
+                            )}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.knockout.items.winner_pens.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+4 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +4 pts
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -223,10 +316,10 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="size-5" />
-                    Progreso en el Torneo (Acumulativo)
+                    {t("rules.scoring.progress.title")}
                   </CardTitle>
                   <CardDescription>
-                    Gana puntos adicionales por acertar qué equipos avanzan en el torneo
+                    {t("rules.scoring.progress.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -234,9 +327,11 @@ export function RulesPageContent() {
                     <div className="flex items-start gap-3">
                       <AlertCircle className="size-5 text-primary mt-0.5" />
                       <div className="space-y-1">
-                        <p className="font-medium">Puntos acumulativos</p>
+                        <p className="font-medium">
+                          {t("rules.scoring.progress.cumulative.title")}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          Si aciertas que Brasil llega a la final y gana, obtienes puntos por cada ronda que avanza (R32 + R16 + Cuartos + Semifinal + Final + Campeón).
+                          {t("rules.scoring.progress.cumulative.description")}
                         </p>
                       </div>
                     </div>
@@ -245,50 +340,64 @@ export function RulesPageContent() {
                   <div className="grid gap-3">
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div>
-                        <p className="font-medium">Pasa a Ronda de 32</p>
+                        <p className="font-medium">
+                          {t("rules.scoring.progress.levels.r32")}
+                        </p>
                       </div>
                       <Badge variant="secondary">+5 pts</Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div>
-                        <p className="font-medium">Pasa a Octavos (R16)</p>
+                        <p className="font-medium">
+                          {t("rules.scoring.progress.levels.r16")}
+                        </p>
                       </div>
                       <Badge variant="secondary">+10 pts</Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div>
-                        <p className="font-medium">Pasa a Cuartos de Final</p>
+                        <p className="font-medium">
+                          {t("rules.scoring.progress.levels.qf")}
+                        </p>
                       </div>
                       <Badge variant="secondary">+15 pts</Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div>
-                        <p className="font-medium">Pasa a Semifinales</p>
+                        <p className="font-medium">
+                          {t("rules.scoring.progress.levels.sf")}
+                        </p>
                       </div>
                       <Badge variant="secondary">+25 pts</Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div>
-                        <p className="font-medium">Pasa a la Final</p>
+                        <p className="font-medium">
+                          {t("rules.scoring.progress.levels.final")}
+                        </p>
                       </div>
                       <Badge variant="default">+40 pts</Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-primary/10 p-3">
                       <div>
-                        <p className="font-bold">Campeón del Mundial</p>
+                        <p className="font-bold">
+                          {t("rules.scoring.progress.levels.champion")}
+                        </p>
                       </div>
-                      <Badge variant="default" className="text-base font-bold">+80 pts</Badge>
+                      <Badge variant="default" className="text-base font-bold">
+                        +80 pts
+                      </Badge>
                     </div>
                   </div>
 
                   <div className="rounded-lg border bg-green-500/10 p-4 border-green-500/20">
                     <p className="text-sm font-medium text-green-700 dark:text-green-400">
-                      💡 Ejemplo: Si predices que Brasil gana el Mundial y aciertas, obtienes: 5 + 10 + 15 + 25 + 40 + 80 = <span className="font-bold">175 puntos</span>
+                      {t("rules.scoring.progress.example")}
                     </p>
                   </div>
                 </CardContent>
@@ -299,10 +408,10 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Award className="size-5" />
-                    Premios Individuales
+                    {t("rules.scoring.awards.title")}
                   </CardTitle>
                   <CardDescription>
-                    Predice los ganadores de los premios del torneo
+                    {t("rules.scoring.awards.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -311,33 +420,57 @@ export function RulesPageContent() {
                       <div className="flex items-center gap-3">
                         <Trophy className="size-5 text-amber-500" />
                         <div>
-                          <p className="font-medium">Bota de Oro</p>
-                          <p className="text-sm text-muted-foreground">Máximo goleador del torneo</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.awards.items.golden_boot.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.awards.items.golden_boot.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+50 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +50 pts
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div className="flex items-center gap-3">
                         <Award className="size-5 text-blue-500" />
                         <div>
-                          <p className="font-medium">Balón de Oro</p>
-                          <p className="text-sm text-muted-foreground">Mejor jugador del torneo</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.awards.items.golden_ball.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.awards.items.golden_ball.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+50 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +50 pts
+                      </Badge>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                       <div className="flex items-center gap-3">
                         <Medal className="size-5 text-purple-500" />
                         <div>
-                          <p className="font-medium">Guante de Oro</p>
-                          <p className="text-sm text-muted-foreground">Mejor portero del torneo</p>
+                          <p className="font-medium">
+                            {t("rules.scoring.awards.items.golden_glove.title")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "rules.scoring.awards.items.golden_glove.description"
+                            )}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="default" className="text-base">+50 pts</Badge>
+                      <Badge variant="default" className="text-base">
+                        +50 pts
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -350,10 +483,10 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="size-5" />
-                    Sistema de Competencia - Fase de Grupos
+                    {t("rules.groups.title")}
                   </CardTitle>
                   <CardDescription>
-                    48 selecciones divididas en 12 grupos de 4 equipos
+                    {t("rules.groups.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -361,20 +494,26 @@ export function RulesPageContent() {
                     <div>
                       <h3 className="font-semibold mb-2 flex items-center gap-2">
                         <CheckCircle2 className="size-4 text-green-500" />
-                        Formato de Grupo
+                        {t("rules.groups.format.title")}
                       </h3>
                       <ul className="space-y-2 text-sm text-muted-foreground ml-6">
                         <li className="flex items-start gap-2">
                           <Minus className="size-4 mt-0.5 shrink-0" />
-                          <span>Cada equipo enfrenta a los otros 3 del grupo (sistema liguilla)</span>
+                          <span>
+                            {t("rules.groups.format.items.round_robin")}
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <Minus className="size-4 mt-0.5 shrink-0" />
-                          <span>Victoria = 3 puntos | Empate = 1 punto | Derrota = 0 puntos</span>
+                          <span>
+                            {t("rules.groups.format.items.points_system")}
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <Minus className="size-4 mt-0.5 shrink-0" />
-                          <span>La última jornada de cada grupo se juega al mismo día y hora</span>
+                          <span>
+                            {t("rules.groups.format.items.final_round")}
+                          </span>
                         </li>
                       </ul>
                     </div>
@@ -384,16 +523,20 @@ export function RulesPageContent() {
                     <div>
                       <h3 className="font-semibold mb-2 flex items-center gap-2">
                         <Trophy className="size-4 text-amber-500" />
-                        Clasificación a Octavos
+                        {t("rules.groups.qualification.title")}
                       </h3>
                       <ul className="space-y-2 text-sm text-muted-foreground ml-6">
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-green-500" />
-                          <span>Los 2 primeros lugares de cada grupo (24 equipos)</span>
+                          <span>
+                            {t("rules.groups.qualification.items.top_two")}
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-green-500" />
-                          <span>Los 8 mejores terceros lugares (según tabla general)</span>
+                          <span>
+                            {t("rules.groups.qualification.items.best_thirds")}
+                          </span>
                         </li>
                       </ul>
                     </div>
@@ -403,38 +546,92 @@ export function RulesPageContent() {
                     <div>
                       <h3 className="font-semibold mb-3 flex items-center gap-2">
                         <AlertCircle className="size-4 text-primary" />
-                        Criterios de Desempate
+                        {t("rules.groups.tiebreakers.title")}
                       </h3>
                       <div className="space-y-3">
                         <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">1. Puntos en enfrentamientos directos</p>
-                          <p className="text-xs text-muted-foreground">Entre equipos empatados</p>
-                        </div>
-                        <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">2. Diferencia de goles (enfrentamientos directos)</p>
-                          <p className="text-xs text-muted-foreground">Goles a favor - Goles en contra</p>
-                        </div>
-                        <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">3. Goles marcados (enfrentamientos directos)</p>
-                          <p className="text-xs text-muted-foreground">Total de goles a favor</p>
-                        </div>
-                        <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">4. Diferencia de goles general</p>
-                          <p className="text-xs text-muted-foreground">En todos los partidos del grupo</p>
-                        </div>
-                        <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">5. Goles marcados general</p>
-                          <p className="text-xs text-muted-foreground">En todos los partidos del grupo</p>
-                        </div>
-                        <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">6. Puntos de conducta deportiva</p>
+                          <p className="font-medium text-sm mb-1">
+                            {t(
+                              "rules.groups.tiebreakers.items.h2h_points.title"
+                            )}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            Amarilla: -1 pt | Doble amarilla: -3 pts | Roja directa: -4 pts
+                            {t(
+                              "rules.groups.tiebreakers.items.h2h_points.description"
+                            )}
                           </p>
                         </div>
                         <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">7. Clasificación Mundial FIFA</p>
-                          <p className="text-xs text-muted-foreground">Ranking más reciente de FIFA</p>
+                          <p className="font-medium text-sm mb-1">
+                            {t(
+                              "rules.groups.tiebreakers.items.h2h_goal_diff.title"
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.groups.tiebreakers.items.h2h_goal_diff.description"
+                            )}
+                          </p>
+                        </div>
+                        <div className="rounded-lg border bg-card p-3">
+                          <p className="font-medium text-sm mb-1">
+                            {t(
+                              "rules.groups.tiebreakers.items.h2h_goals_scored.title"
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.groups.tiebreakers.items.h2h_goals_scored.description"
+                            )}
+                          </p>
+                        </div>
+                        <div className="rounded-lg border bg-card p-3">
+                          <p className="font-medium text-sm mb-1">
+                            {t(
+                              "rules.groups.tiebreakers.items.overall_goal_diff.title"
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.groups.tiebreakers.items.overall_goal_diff.description"
+                            )}
+                          </p>
+                        </div>
+                        <div className="rounded-lg border bg-card p-3">
+                          <p className="font-medium text-sm mb-1">
+                            {t(
+                              "rules.groups.tiebreakers.items.overall_goals_scored.title"
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.groups.tiebreakers.items.overall_goals_scored.description"
+                            )}
+                          </p>
+                        </div>
+                        <div className="rounded-lg border bg-card p-3">
+                          <p className="font-medium text-sm mb-1">
+                            {t(
+                              "rules.groups.tiebreakers.items.fair_play.title"
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.groups.tiebreakers.items.fair_play.description"
+                            )}
+                          </p>
+                        </div>
+                        <div className="rounded-lg border bg-card p-3">
+                          <p className="font-medium text-sm mb-1">
+                            {t(
+                              "rules.groups.tiebreakers.items.fifa_ranking.title"
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.groups.tiebreakers.items.fifa_ranking.description"
+                            )}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -447,10 +644,10 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Medal className="size-5" />
-                    Mejores Terceros Lugares
+                    {t("rules.groups.best_thirds.title")}
                   </CardTitle>
                   <CardDescription>
-                    8 de los 12 terceros lugares clasifican a octavos
+                    {t("rules.groups.best_thirds.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -458,9 +655,11 @@ export function RulesPageContent() {
                     <div className="flex items-start gap-3">
                       <AlertCircle className="size-5 text-primary mt-0.5" />
                       <div className="space-y-1">
-                        <p className="font-medium">Tabla General de Terceros</p>
+                        <p className="font-medium">
+                          {t("rules.groups.best_thirds.table_title")}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          Los 8 mejores terceros lugares se ordenan por los mismos criterios de desempate de la fase de grupos (puntos, diferencia de goles, goles marcados, etc.).
+                          {t("rules.groups.best_thirds.table_description")}
                         </p>
                       </div>
                     </div>
@@ -475,10 +674,10 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Trophy className="size-5" />
-                    Fase de Eliminación Directa
+                    {t("rules.knockout.title")}
                   </CardTitle>
                   <CardDescription>
-                    5 rondas desde dieciseisavos hasta la final
+                    {t("rules.knockout.description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -486,28 +685,48 @@ export function RulesPageContent() {
                     <div>
                       <h3 className="font-semibold mb-2 flex items-center gap-2">
                         <Target className="size-4 text-primary" />
-                        Estructura del Torneo
+                        {t("rules.knockout.structure.title")}
                       </h3>
                       <div className="grid gap-2">
                         <div className="flex items-center justify-between rounded-lg border bg-card p-3">
-                          <span className="text-sm">Dieciseisavos de Final (R32)</span>
-                          <Badge variant="outline">32 equipos</Badge>
+                          <span className="text-sm">
+                            {t("rules.knockout.structure.r32")}
+                          </span>
+                          <Badge variant="outline">
+                            {t("rules.knockout.structure.teams_32")}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border bg-card p-3">
-                          <span className="text-sm">Octavos de Final (R16)</span>
-                          <Badge variant="outline">16 equipos</Badge>
+                          <span className="text-sm">
+                            {t("rules.knockout.structure.r16")}
+                          </span>
+                          <Badge variant="outline">
+                            {t("rules.knockout.structure.teams_16")}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border bg-card p-3">
-                          <span className="text-sm">Cuartos de Final</span>
-                          <Badge variant="outline">8 equipos</Badge>
+                          <span className="text-sm">
+                            {t("rules.knockout.structure.qf")}
+                          </span>
+                          <Badge variant="outline">
+                            {t("rules.knockout.structure.teams_8")}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border bg-card p-3">
-                          <span className="text-sm">Semifinales</span>
-                          <Badge variant="outline">4 equipos</Badge>
+                          <span className="text-sm">
+                            {t("rules.knockout.structure.sf")}
+                          </span>
+                          <Badge variant="outline">
+                            {t("rules.knockout.structure.teams_4")}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border bg-primary/10 p-3">
-                          <span className="text-sm font-semibold">Final</span>
-                          <Badge variant="default">2 equipos</Badge>
+                          <span className="text-sm font-semibold">
+                            {t("rules.knockout.structure.final")}
+                          </span>
+                          <Badge variant="default">
+                            {t("rules.knockout.structure.teams_2")}
+                          </Badge>
                         </div>
                       </div>
                     </div>
@@ -517,20 +736,38 @@ export function RulesPageContent() {
                     <div>
                       <h3 className="font-semibold mb-2 flex items-center gap-2">
                         <Clock className="size-4 text-amber-500" />
-                        Formato de Partidos
+                        {t("rules.knockout.match_format.title")}
                       </h3>
                       <div className="space-y-3">
                         <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">Tiempo Reglamentario</p>
-                          <p className="text-xs text-muted-foreground">90 minutos (2 tiempos de 45 minutos)</p>
+                          <p className="font-medium text-sm mb-1">
+                            {t("rules.knockout.match_format.regulation.title")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.knockout.match_format.regulation.description"
+                            )}
+                          </p>
                         </div>
                         <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">Prórroga (si hay empate)</p>
-                          <p className="text-xs text-muted-foreground">30 minutos extra (2 tiempos de 15 minutos)</p>
+                          <p className="font-medium text-sm mb-1">
+                            {t("rules.knockout.match_format.extra_time.title")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.knockout.match_format.extra_time.description"
+                            )}
+                          </p>
                         </div>
                         <div className="rounded-lg border bg-card p-3">
-                          <p className="font-medium text-sm mb-1">Penaltis (si persiste empate)</p>
-                          <p className="text-xs text-muted-foreground">Tanda de penaltis según Reglas de Juego FIFA</p>
+                          <p className="font-medium text-sm mb-1">
+                            {t("rules.knockout.match_format.penalties.title")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "rules.knockout.match_format.penalties.description"
+                            )}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -546,9 +783,14 @@ export function RulesPageContent() {
                         <div className="flex items-start gap-3">
                           <AlertCircle className="size-5 text-primary mt-0.5" />
                           <div className="space-y-1">
-                            <p className="font-medium">Optimización de Viajes</p>
+                            <p className="font-medium">
+                              Optimización de Viajes
+                            </p>
                             <p className="text-sm text-muted-foreground">
-                              Las llaves están divididas en dos rutas, priorizando la disminución de distancias recorridas e intervalos de tiempo de descanso entre partidos.
+                              Las llaves están divididas en dos rutas,
+                              priorizando la disminución de distancias
+                              recorridas e intervalos de tiempo de descanso
+                              entre partidos.
                             </p>
                           </div>
                         </div>
@@ -565,20 +807,20 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Flag className="size-5" />
-                    Reglas Oficiales FIFA - Mundial 2026
+                    {t("rules.fifa.title")}
                   </CardTitle>
-                  <CardDescription>
-                    Formato oficial del torneo según la FIFA
-                  </CardDescription>
+                  <CardDescription>{t("rules.fifa.subtitle")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="rounded-lg border bg-primary/10 p-4 border-primary/20">
                     <div className="flex items-start gap-3">
                       <Trophy className="size-5 text-primary mt-0.5" />
                       <div className="space-y-1">
-                        <p className="font-semibold">Copa Mundial de Fútbol 2026</p>
+                        <p className="font-semibold">
+                          {t("rules.fifa.hero.title")}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          Organizada por FIFA | Sede: Estados Unidos, Canadá y México
+                          {t("rules.fifa.hero.description")}
                         </p>
                       </div>
                     </div>
@@ -586,23 +828,27 @@ export function RulesPageContent() {
 
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-semibold mb-3">Formato del Torneo</h3>
+                      <h3 className="font-semibold mb-3">
+                        {t("rules.fifa.format.title")}
+                      </h3>
                       <ul className="space-y-2 text-sm text-muted-foreground ml-6">
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-green-500" />
-                          <span><strong>48 selecciones</strong> participan en la fase final</span>
+                          <span>{t("rules.fifa.format.teams_48")}</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-green-500" />
-                          <span><strong>12 grupos</strong> de 4 equipos cada uno</span>
+                          <span>{t("rules.fifa.format.groups_12")}</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-green-500" />
-                          <span><strong>32 equipos</strong> clasifican a fase eliminatoria (24 primeros + 8 mejores terceros)</span>
+                          <span>{t("rules.fifa.format.advancers_32")}</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <CheckCircle2 className="size-4 mt-0.5 shrink-0 text-green-500" />
-                          <span><strong>5 rondas eliminatorias</strong> desde dieciseisavos hasta la final</span>
+                          <span>
+                            {t("rules.fifa.format.knockout_5_rounds")}
+                          </span>
                         </li>
                       </ul>
                     </div>
@@ -610,28 +856,42 @@ export function RulesPageContent() {
                     <Separator />
 
                     <div>
-                      <h3 className="font-semibold mb-3">Puntuación en Fase de Grupos</h3>
+                      <h3 className="font-semibold mb-3">
+                        {t("rules.fifa.group_points.title")}
+                      </h3>
                       <div className="grid gap-2">
                         <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                           <div className="flex items-center gap-2">
                             <CheckCircle2 className="size-4 text-green-500" />
-                            <span className="text-sm">Victoria</span>
+                            <span className="text-sm">
+                              {t("rules.fifa.group_points.win")}
+                            </span>
                           </div>
-                          <Badge variant="default">3 puntos</Badge>
+                          <Badge variant="default">
+                            {t("rules.fifa.group_points.win_points")}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                           <div className="flex items-center gap-2">
                             <Minus className="size-4 text-gray-500" />
-                            <span className="text-sm">Empate</span>
+                            <span className="text-sm">
+                              {t("rules.fifa.group_points.draw")}
+                            </span>
                           </div>
-                          <Badge variant="secondary">1 punto</Badge>
+                          <Badge variant="secondary">
+                            {t("rules.fifa.group_points.draw_points")}
+                          </Badge>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border bg-card p-3">
                           <div className="flex items-center gap-2">
                             <AlertCircle className="size-4 text-red-500" />
-                            <span className="text-sm">Derrota</span>
+                            <span className="text-sm">
+                              {t("rules.fifa.group_points.loss")}
+                            </span>
                           </div>
-                          <Badge variant="outline">0 puntos</Badge>
+                          <Badge variant="outline">
+                            {t("rules.fifa.group_points.loss_points")}
+                          </Badge>
                         </div>
                       </div>
                     </div>
@@ -639,22 +899,26 @@ export function RulesPageContent() {
                     <Separator />
 
                     <div>
-                      <h3 className="font-semibold mb-3">Sedes del Mundial 2026</h3>
+                      <h3 className="font-semibold mb-3">
+                        {t("rules.fifa.hosts.title")}
+                      </h3>
                       <div className="rounded-lg border bg-muted/50 p-4">
                         <div className="space-y-2 text-sm">
-                          <p className="font-medium">Primera Copa Mundial con 3 países anfitriones:</p>
+                          <p className="font-medium">
+                            {t("rules.fifa.hosts.subtitle")}
+                          </p>
                           <ul className="space-y-1 ml-6 text-muted-foreground">
                             <li className="flex items-start gap-2">
                               <Minus className="size-4 mt-0.5 shrink-0" />
-                              <span><strong>Estados Unidos:</strong> 11 ciudades sede</span>
+                              <span>{t("rules.fifa.hosts.usa")}</span>
                             </li>
                             <li className="flex items-start gap-2">
                               <Minus className="size-4 mt-0.5 shrink-0" />
-                              <span><strong>México:</strong> 3 ciudades sede</span>
+                              <span>{t("rules.fifa.hosts.mexico")}</span>
                             </li>
                             <li className="flex items-start gap-2">
                               <Minus className="size-4 mt-0.5 shrink-0" />
-                              <span><strong>Canadá:</strong> 2 ciudades sede</span>
+                              <span>{t("rules.fifa.hosts.canada")}</span>
                             </li>
                           </ul>
                         </div>
@@ -669,26 +933,32 @@ export function RulesPageContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Clock className="size-5" />
-                    Información Importante
+                    {t("rules.fifa.info.title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="rounded-lg border bg-card p-3">
-                    <p className="font-medium text-sm mb-1">Última jornada de grupos</p>
+                    <p className="font-medium text-sm mb-1">
+                      {t("rules.fifa.info.last_round.title")}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      Todos los partidos de la última jornada de cada grupo se juegan simultáneamente (mismo día y hora) para evitar ventajas deportivas.
+                      {t("rules.fifa.info.last_round.description")}
                     </p>
                   </div>
                   <div className="rounded-lg border bg-card p-3">
-                    <p className="font-medium text-sm mb-1">Tarjetas y sanciones</p>
+                    <p className="font-medium text-sm mb-1">
+                      {t("rules.fifa.info.cards.title")}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      Las tarjetas amarillas se resetean después de cuartos de final. Las rojas pueden conllevar sanciones de más de un partido según gravedad.
+                      {t("rules.fifa.info.cards.description")}
                     </p>
                   </div>
                   <div className="rounded-lg border bg-card p-3">
-                    <p className="font-medium text-sm mb-1">Fair Play</p>
+                    <p className="font-medium text-sm mb-1">
+                      {t("rules.fifa.info.fair_play.title")}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      El comportamiento deportivo (tarjetas recibidas) es uno de los criterios de desempate en fase de grupos.
+                      {t("rules.fifa.info.fair_play.description")}
                     </p>
                   </div>
                 </CardContent>

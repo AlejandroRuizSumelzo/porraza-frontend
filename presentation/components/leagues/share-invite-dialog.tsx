@@ -91,7 +91,7 @@ export function ShareInviteDialog({
     }
   };
 
-  const isPublic = league.type === "public";
+  const isPublic = league.visibility === "public";
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

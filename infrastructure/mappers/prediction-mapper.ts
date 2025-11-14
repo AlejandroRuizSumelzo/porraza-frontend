@@ -33,6 +33,16 @@ import type { KnockoutMatchDTO } from "@/infrastructure/http/dtos/knockout-match
 import type { KnockoutMatchWithPredictionDTO } from "@/infrastructure/http/dtos/knockout-match-with-prediction-dto";
 import type { SaveKnockoutPredictionsRequestDTO } from "@/infrastructure/http/dtos/knockout-predictions-request-dto";
 import type { SaveKnockoutPredictionsResponseDTO } from "@/infrastructure/http/dtos/knockout-predictions-response-dto";
+import type {
+  KnockoutsDTO,
+  KnockoutMatchDetailDTO,
+  UserKnockoutPredictionDTO,
+} from "@/infrastructure/http/dtos/knockouts-dto";
+import type {
+  Knockouts,
+  KnockoutMatchDetail,
+  UserKnockoutPrediction,
+} from "@/domain/entities/knockouts";
 import { TeamMapper } from "@/infrastructure/mappers/team-mapper";
 import { StadiumMapper } from "@/infrastructure/mappers/stadium-mapper";
 import { GroupMapper } from "@/infrastructure/mappers/group-mapper";
@@ -478,5 +488,75 @@ export class PredictionMapper {
     dtos: KnockoutMatchWithPredictionDTO[]
   ): KnockoutMatchWithPrediction[] {
     return dtos.map((dto) => this.knockoutMatchWithPredictionToDomain(dto));
+  }
+
+  /**
+   * Transform UserKnockoutPredictionDTO to Domain Entity
+   * @param dto - User knockout prediction DTO from API
+   * @returns UserKnockoutPrediction domain entity
+   */
+  static userKnockoutPredictionToDomain(
+    dto: UserKnockoutPredictionDTO
+  ): UserKnockoutPrediction {
+    return {
+      id: dto.id,
+      matchId: dto.matchId,
+      homeScore: dto.homeScore,
+      awayScore: dto.awayScore,
+      homeScoreET: dto.homeScoreET,
+      awayScoreET: dto.awayScoreET,
+      penaltiesWinner: dto.penaltiesWinner,
+      pointsEarned: dto.pointsEarned,
+    };
+  }
+
+  /**
+   * Transform KnockoutMatchDetailDTO to Domain Entity
+   * @param dto - Knockout match detail DTO from API
+   * @returns KnockoutMatchDetail domain entity
+   */
+  static knockoutMatchDetailToDomain(
+    dto: KnockoutMatchDetailDTO
+  ): KnockoutMatchDetail {
+    return {
+      id: dto.id,
+      matchNumber: dto.matchNumber,
+      homeTeam: dto.homeTeam ? TeamMapper.toDomain(dto.homeTeam) : null,
+      awayTeam: dto.awayTeam ? TeamMapper.toDomain(dto.awayTeam) : null,
+      stadium: StadiumMapper.toDomain(dto.stadium),
+      matchDate: new Date(dto.matchDate),
+      matchTime: dto.matchTime,
+      phase: dto.phase,
+      predictionsLockedAt: new Date(dto.predictionsLockedAt),
+      homeTeamPlaceholder: dto.homeTeamPlaceholder,
+      awayTeamPlaceholder: dto.awayTeamPlaceholder,
+      userPrediction: dto.userPrediction
+        ? this.userKnockoutPredictionToDomain(dto.userPrediction)
+        : null,
+    };
+  }
+
+  /**
+   * Transform KnockoutsDTO to Domain Entity
+   * Transforms all knockout rounds with progressive team resolution
+   * @param dto - Knockouts DTO from API
+   * @returns Knockouts domain entity
+   */
+  static knockoutsToDomain(dto: KnockoutsDTO): Knockouts {
+    return {
+      roundOf32: dto.roundOf32.map((match) =>
+        this.knockoutMatchDetailToDomain(match)
+      ),
+      roundOf16: dto.roundOf16.map((match) =>
+        this.knockoutMatchDetailToDomain(match)
+      ),
+      quarterFinals: dto.quarterFinals.map((match) =>
+        this.knockoutMatchDetailToDomain(match)
+      ),
+      semiFinals: dto.semiFinals.map((match) =>
+        this.knockoutMatchDetailToDomain(match)
+      ),
+      final: this.knockoutMatchDetailToDomain(dto.final),
+    };
   }
 }

@@ -17,7 +17,7 @@ export interface SaveKnockoutPredictionsResponseDTO {
 
   /**
    * The phase that was saved
-   * Values: "ROUND_OF_32", "ROUND_OF_16", "QUARTER_FINALS", "SEMI_FINALS", "FINAL"
+   * Values: "ROUND_OF_32", "ROUND_OF_16", "QUARTER_FINAL", "SEMI_FINAL", "FINAL"
    */
   phase: string;
 

@@ -25,6 +25,7 @@ export class PlayerMapper {
       teamId: dto.teamId,
       position: dto.position as PlayerPosition,
       jerseyNumber: dto.jerseyNumber,
+      avatarFilename: dto.avatarFilename,
       createdAt: new Date(dto.createdAt),
       updatedAt: new Date(dto.updatedAt),
     };
@@ -54,6 +55,7 @@ export class PlayerMapper {
       teamId: domain.teamId,
       position: domain.position,
       jerseyNumber: domain.jerseyNumber,
+      avatarFilename: domain.avatarFilename,
       createdAt: domain.createdAt.toISOString(),
       updatedAt: domain.updatedAt.toISOString(),
     };

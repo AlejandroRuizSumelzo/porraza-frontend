@@ -13,6 +13,10 @@ import { LeaveLeagueUseCase } from "@/domain/use-cases/leagues/leave-league-use-
 import { GetLeagueMembersUseCase } from "@/domain/use-cases/leagues/get-league-members-use-case";
 import { RemoveMemberUseCase } from "@/domain/use-cases/leagues/remove-member-use-case";
 import { TransferAdminUseCase } from "@/domain/use-cases/leagues/transfer-admin-use-case";
+import { GetLeagueRankingUseCase } from "@/domain/use-cases/leagues/get-league-ranking-use-case";
+import { GetCorporateLeaguesUseCase } from "@/domain/use-cases/leagues/get-corporate-leagues-use-case";
+import { GetLeaguesByCategoryUseCase } from "@/domain/use-cases/leagues/get-leagues-by-category-use-case";
+import { UploadLeagueLogoUseCase } from "@/domain/use-cases/leagues/upload-league-logo-use-case";
 
 /**
  * League Use Case Module
@@ -80,10 +84,28 @@ export class LeagueUseCaseModule implements DependencyModule {
       this.deps.leagueRepository
     );
 
+    const getLeagueRankingUseCase = new GetLeagueRankingUseCase(
+      this.deps.leagueRepository
+    );
+
+    const getCorporateLeaguesUseCase = new GetCorporateLeaguesUseCase(
+      this.deps.leagueRepository
+    );
+
+    const getLeaguesByCategoryUseCase = new GetLeaguesByCategoryUseCase(
+      this.deps.leagueRepository
+    );
+
+    const uploadLeagueLogoUseCase = new UploadLeagueLogoUseCase(
+      this.deps.leagueRepository
+    );
+
     return {
       createLeagueUseCase,
       getAllLeaguesUseCase,
       getPublicLeaguesUseCase,
+      getCorporateLeaguesUseCase,
+      getLeaguesByCategoryUseCase,
       getMyLeaguesUseCase,
       getLeagueByIdUseCase,
       getLeagueByInviteCodeUseCase,
@@ -94,6 +116,8 @@ export class LeagueUseCaseModule implements DependencyModule {
       getLeagueMembersUseCase,
       removeMemberUseCase,
       transferAdminUseCase,
+      uploadLeagueLogoUseCase,
+      getLeagueRankingUseCase,
     };
   }
 }

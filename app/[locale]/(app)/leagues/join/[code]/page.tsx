@@ -199,7 +199,7 @@ export default function JoinLeaguePage({ params }: Props) {
   console.log("[JoinLeaguePage] Rendering join page:", {
     leagueId: league.id,
     leagueName: league.name,
-    type: league.type,
+    visibility: league.visibility,
   });
 
   return <JoinLeagueClient league={league} code={code} />;

@@ -3,7 +3,26 @@
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Button } from "@/presentation/components/ui/button";
-import { Users, Lock, Globe, ChevronRight, Share2 } from "lucide-react";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/presentation/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/presentation/components/ui/dropdown-menu";
+import {
+  Users,
+  Lock,
+  Globe,
+  ChevronRight,
+  Share2,
+  MoreVertical,
+  Edit,
+} from "lucide-react";
 import type { League } from "@/domain/entities/league";
 
 interface LeagueCardProps {
@@ -13,7 +32,26 @@ interface LeagueCardProps {
   actionDisabled?: boolean;
   showAdminBadge?: boolean;
   showShareButton?: boolean;
+  showEditMenu?: boolean;
   onShareInvite?: (league: League) => void;
+  onEdit?: (league: League) => void;
+}
+
+/**
+ * Helper function to get initials from league name
+ * Returns first 2 characters of each word (max 2 words)
+ * Example: "Liga Mundial 2026" -> "LM"
+ */
+function getLeagueInitials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].substring(0, 2).toUpperCase();
+  }
+  return words
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
 }
 
 /**
@@ -33,14 +71,31 @@ export function LeagueCard({
   actionDisabled = false,
   showAdminBadge = false,
   showShareButton = false,
+  showEditMenu = false,
   onShareInvite,
+  onEdit,
 }: LeagueCardProps) {
-  const isPublic = league.type === "public";
+  const isPublic = league.visibility === "public";
 
   return (
     <Card className="group transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
-      <CardContent className="flex items-center justify-between p-4">
-        <div className="flex-1">
+      <CardContent className="flex items-center gap-4 p-4">
+        {/* League Logo/Avatar */}
+        <Avatar className="h-14 w-14 shrink-0 rounded-lg">
+          {league.logoUrl ? (
+            <AvatarImage
+              src={league.logoUrl}
+              alt={`Logo de ${league.name}`}
+              className="object-cover"
+            />
+          ) : null}
+          <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-semibold text-lg">
+            {getLeagueInitials(league.name)}
+          </AvatarFallback>
+        </Avatar>
+
+        {/* League Content */}
+        <div className="flex-1 min-w-0">
           <div className="mb-1 flex items-center gap-2">
             <h3 className="font-semibold text-foreground">{league.name}</h3>
 
@@ -93,7 +148,7 @@ export function LeagueCard({
         </div>
 
         {/* Action Buttons */}
-        <div className="ml-4 flex gap-2">
+        <div className="flex shrink-0 gap-2">
           {/* Share Button - Only for members */}
           {showShareButton && league.isMember && onShareInvite && (
             <Button
@@ -105,6 +160,31 @@ export function LeagueCard({
               <Share2 className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Compartir</span>
             </Button>
+          )}
+
+          {/* Edit Menu - Only for admins */}
+          {showEditMenu && league.isAdmin && onEdit && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  title="Opciones de administración"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => onEdit(league)}
+                  className="cursor-pointer"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  <span>Editar liga</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
 
           {/* Main Action Button */}

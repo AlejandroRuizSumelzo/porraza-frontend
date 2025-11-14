@@ -25,8 +25,272 @@
     }
   },
   "common": {
-    "app_name": "Porraza"
+    "app_name": "Porraza",
+    "loading": "Cargando..."
   },
+  "rules": {
+    "header": { "title": "Reglas del juego" },
+    "intro": {
+      "title": "Bienvenido a Porraza Mundial 2026",
+      "description": "Compite con tus amigos prediciendo los resultados del Mundial de Fútbol. Conoce las reglas para maximizar tus puntos y escalar en el leaderboard."
+    },
+    "tabs": {
+      "scoring": "Puntuación",
+      "groups": "Fase de Grupos",
+      "knockout": "Eliminatorias",
+      "fifa": "Reglas FIFA"
+    },
+    "scoring": {
+      "group": {
+        "title": "Fase de Grupos",
+        "description": "Puntos por acertar resultados de partidos y posiciones finales",
+        "items": {
+          "exact_result": {
+            "title": "Resultado exacto",
+            "description": "Ej: Predicción 2-1, Real 2-1"
+          },
+          "correct_outcome": {
+            "title": "Acierto 1X2 correcto",
+            "description": "Aciertas ganador/empate pero no marcador"
+          },
+          "exact_position": {
+            "title": "Posición exacta en grupo",
+            "description": "El equipo termina 1º o 2º como predijiste"
+          },
+          "team_qualified": {
+            "title": "Equipo clasificado",
+            "description": "Clasificó pero en diferente posición"
+          }
+        }
+      },
+      "knockout": {
+        "title": "Fase Eliminatoria",
+        "description": "Mayor dificultad = más puntos",
+        "items": {
+          "exact_90": {
+            "title": "Resultado exacto en 90 minutos",
+            "description": "Marcador exacto al final del tiempo reglamentario"
+          },
+          "winner_90": {
+            "title": "Ganador correcto en 90 minutos",
+            "description": "Aciertas el ganador pero no el marcador"
+          },
+          "exact_et": {
+            "title": "Resultado exacto en prórroga",
+            "description": "Marcador exacto al final de la prórroga"
+          },
+          "winner_et": {
+            "title": "Ganador correcto en prórroga",
+            "description": "Aciertas ganador en prórroga pero no marcador"
+          },
+          "winner_pens": {
+            "title": "Ganador correcto en penaltis",
+            "description": "Partido se decidió por penaltis"
+          }
+        }
+      },
+      "progress": {
+        "title": "Progreso en el Torneo (Acumulativo)",
+        "description": "Gana puntos adicionales por acertar qué equipos avanzan en el torneo",
+        "cumulative": {
+          "title": "Puntos acumulativos",
+          "description": "Si aciertas que Brasil llega a la final y gana, obtienes puntos por cada ronda que avanza (R32 + R16 + Cuartos + Semifinal + Final + Campeón)."
+        },
+        "levels": {
+          "r32": "Pasa a Ronda de 32",
+          "r16": "Pasa a Octavos (R16)",
+          "qf": "Pasa a Cuartos de Final",
+          "sf": "Pasa a Semifinales",
+          "final": "Pasa a la Final",
+          "champion": "Campeón del Mundial"
+        },
+        "example": "💡 Ejemplo: Si predices que Brasil gana el Mundial y aciertas, obtienes: 5 + 10 + 15 + 25 + 40 + 80 = 175 puntos"
+      },
+      "awards": {
+        "title": "Premios Individuales",
+        "description": "Predice los ganadores de los premios del torneo",
+        "items": {
+          "golden_boot": {
+            "title": "Bota de Oro",
+            "description": "Máximo goleador del torneo"
+          },
+          "golden_ball": {
+            "title": "Balón de Oro",
+            "description": "Mejor jugador del torneo"
+          },
+          "golden_glove": {
+            "title": "Guante de Oro",
+            "description": "Mejor portero del torneo"
+          }
+        }
+      }
+    },
+    "groups": {
+      "title": "Sistema de Competencia - Fase de Grupos",
+      "description": "48 selecciones divididas en 12 grupos de 4 equipos",
+      "format": {
+        "title": "Formato de Grupo",
+        "items": {
+          "round_robin": "Cada equipo enfrenta a los otros 3 del grupo (sistema liguilla)",
+          "points_system": "Victoria = 3 puntos | Empate = 1 punto | Derrota = 0 puntos",
+          "final_round": "La última jornada de cada grupo se juega al mismo día y hora"
+        }
+      },
+      "qualification": {
+        "title": "Clasificación a Octavos",
+        "items": {
+          "top_two": "Los 2 primeros lugares de cada grupo (24 equipos)",
+          "best_thirds": "Los 8 mejores terceros lugares (según tabla general)"
+        }
+      },
+      "tiebreakers": {
+        "title": "Criterios de Desempate",
+        "items": {
+          "h2h_points": {
+            "title": "1. Puntos en enfrentamientos directos",
+            "description": "Entre equipos empatados"
+          },
+          "h2h_goal_diff": {
+            "title": "2. Diferencia de goles (enfrentamientos directos)",
+            "description": "Goles a favor - Goles en contra"
+          },
+          "h2h_goals_scored": {
+            "title": "3. Goles marcados (enfrentamientos directos)",
+            "description": "Total de goles a favor"
+          },
+          "overall_goal_diff": {
+            "title": "4. Diferencia de goles general",
+            "description": "En todos los partidos del grupo"
+          },
+          "overall_goals_scored": {
+            "title": "5. Goles marcados general",
+            "description": "En todos los partidos del grupo"
+          },
+          "fair_play": {
+            "title": "6. Puntos de conducta deportiva",
+            "description": "Amarilla: -1 pt | Doble amarilla: -3 pts | Roja directa: -4 pts"
+          },
+          "fifa_ranking": {
+            "title": "7. Clasificación Mundial FIFA",
+            "description": "Ranking más reciente de FIFA"
+          }
+        }
+      },
+      "best_thirds": {
+        "title": "Mejores Terceros Lugares",
+        "description": "8 de los 12 terceros lugares clasifican a octavos",
+        "table_title": "Tabla General de Terceros",
+        "table_description": "Los 8 mejores terceros lugares se ordenan por los mismos criterios de desempate de la fase de grupos (puntos, diferencia de goles, goles marcados, etc.)."
+      }
+    },
+    "knockout": {
+      "title": "Fase de Eliminación Directa",
+      "description": "5 rondas desde dieciseisavos hasta la final",
+      "structure": {
+        "title": "Estructura del Torneo",
+        "r32": "Dieciseisavos de Final (R32)",
+        "r16": "Octavos de Final (R16)",
+        "qf": "Cuartos de Final",
+        "sf": "Semifinales",
+        "final": "Final",
+        "teams_32": "32 equipos",
+        "teams_16": "16 equipos",
+        "teams_8": "8 equipos",
+        "teams_4": "4 equipos",
+        "teams_2": "2 equipos"
+      },
+      "match_format": {
+        "title": "Formato de Partidos",
+        "regulation": {
+          "title": "Tiempo Reglamentario",
+          "description": "90 minutos (2 tiempos de 45 minutos)"
+        },
+        "extra_time": {
+          "title": "Prórroga (si hay empate)",
+          "description": "30 minutos extra (2 tiempos de 15 minutos)"
+        },
+        "penalties": {
+          "title": "Penaltis (si persiste empate)",
+          "description": "Tanda de penaltis según Reglas de Juego FIFA"
+        }
+      }
+    },
+    "fifa": {
+      "title": "Reglas Oficiales FIFA - Mundial 2026",
+      "subtitle": "Formato oficial del torneo según la FIFA",
+      "hero": {
+        "title": "Copa Mundial de Fútbol 2026",
+        "description": "Organizada por FIFA | Sede: Estados Unidos, Canadá y México"
+      },
+      "format": {
+        "title": "Formato del Torneo",
+        "teams_48": "48 selecciones participan en la fase final",
+        "groups_12": "12 grupos de 4 equipos cada uno",
+        "advancers_32": "32 equipos clasifican a fase eliminatoria (24 primeros + 8 mejores terceros)",
+        "knockout_5_rounds": "5 rondas eliminatorias desde dieciseisavos hasta la final"
+      },
+      "group_points": {
+        "title": "Puntuación en Fase de Grupos",
+        "win": "Victoria",
+        "win_points": "3 puntos",
+        "draw": "Empate",
+        "draw_points": "1 punto",
+        "loss": "Derrota",
+        "loss_points": "0 puntos"
+      },
+      "hosts": {
+        "title": "Sedes del Mundial 2026",
+        "subtitle": "Primera Copa Mundial con 3 países anfitriones:",
+        "usa": "Estados Unidos: 11 ciudades sede",
+        "mexico": "México: 3 ciudades sede",
+        "canada": "Canadá: 2 ciudades sede"
+      },
+      "info": {
+        "title": "Información Importante",
+        "last_round": {
+          "title": "Última jornada de grupos",
+          "description": "Todos los partidos de la última jornada de cada grupo se juegan simultáneamente (mismo día y hora) para evitar ventajas deportivas."
+        },
+        "cards": {
+          "title": "Tarjetas y sanciones",
+          "description": "Las tarjetas amarillas se resetean después de cuartos de final. Las rojas pueden conllevar sanciones de más de un partido según gravedad."
+        },
+        "fair_play": {
+          "title": "Fair Play",
+          "description": "El comportamiento deportivo (tarjetas recibidas) es uno de los criterios de desempate en fase de grupos."
+        }
+      }
+    }
+  },
+  "stadiums": {
+    "header": {
+      "title": "Estadios",
+      "subtitle": "Explora los estadios más emblemáticos donde se juega la historia"
+    },
+    "stats": {
+      "labels": {
+        "stadiums": "Estadios",
+        "countries": "Países",
+        "total_capacity": "Capacidad Total"
+      }
+    },
+    "card": {
+      "capacity_label": "Capacidad",
+      "timezone_label": "Zona horaria"
+    },
+    "empty": {
+      "error": {
+        "title": "Error al cargar estadios",
+        "description": "Asegúrate de que el backend esté corriendo en {url}",
+        "retry": "Reintentar"
+      },
+      "empty": {
+        "title": "No hay estadios disponibles",
+        "description": "Parece que aún no hay estadios registrados en el sistema"
+      }
+    }
+  },
+
   "landing": {
     "header": {
       "aria": {
@@ -233,7 +497,8 @@
       "name": "Nombre completo",
       "email": "Email",
       "password": "Contraseña",
-      "confirm_password": "Confirmar contraseña"
+      "confirm_password": "Confirmar contraseña",
+      "new_password": "Nueva Contraseña"
     },
     "placeholders": {
       "name": "Tu nombre para la tabla",
@@ -250,6 +515,9 @@
       "confirm_password_required": "Repite la contraseña para confirmar la jugada.",
       "passwords_mismatch": "Las contraseñas no hacen piña. Revísalas.",
       "forgot_email_required": "Dinos tu email y te mandamos un salvavidas."
+    },
+    "hints": {
+      "password_min": "Mínimo 8 caracteres"
     },
     "social": {
       "google": "Google",
@@ -328,6 +596,74 @@
       "success_state": {
         "message": "Correo enviado. Revisa tu bandeja y sigue el enlace."
       }
+    },
+    "reset_password": {
+      "subtitle": "Restablecer tu contraseña",
+      "title": "Nueva Contraseña",
+      "description": "Ingresa tu nueva contraseña. Debe tener al menos 8 caracteres.",
+      "loading": {
+        "verify_link": "Verificando enlace..."
+      },
+      "toasts": {
+        "invalid_token": {
+          "title": "Token inválido",
+          "description": "El enlace de recuperación es inválido o ha expirado."
+        },
+        "missing_token": {
+          "title": "Token no encontrado",
+          "description": "Por favor, usa el enlace del email de recuperación."
+        },
+        "success": {
+          "title": "¡Contraseña restablecida!"
+        },
+        "error": {
+          "title": "Error al restablecer contraseña",
+          "description": "Por favor, solicita un nuevo enlace de recuperación."
+        }
+      },
+      "submit": "Restablecer Contraseña",
+      "submit_loading": "Restableciendo...",
+      "login_prompt": "¿Ya tienes tu contraseña?",
+      "login_link": "Inicia sesión",
+      "back_home": "Volver al inicio"
+    },
+    "verify_email": {
+      "subtitle": "Verificación de Email",
+      "states": {
+        "verified": {
+          "title": "¡Email Verificado!",
+          "description": "Tu cuenta ha sido verificada exitosamente"
+        },
+        "error": {
+          "title": "Error de Verificación",
+          "description": "No pudimos verificar tu email"
+        },
+        "pending": {
+          "title": "Verifica tu Email",
+          "description": "Haz clic en el botón para verificar tu dirección de email"
+        },
+        "missing_token": {
+          "title": "Token No Encontrado",
+          "description": "No se encontró un token de verificación en la URL"
+        }
+      },
+      "ready": {
+        "title": "¡Casi listo!",
+        "description": "Para completar tu registro, por favor verifica tu dirección de email haciendo clic en el botón de abajo."
+      },
+      "buttons": {
+        "verify": {
+          "label": "Verificar Email",
+          "loading": "Verificando..."
+        },
+        "go_to_login": "Ir a Iniciar Sesión",
+        "create_account": "Crear Nueva Cuenta"
+      },
+      "success": {
+        "title": "¡Verificación exitosa!",
+        "description": "Tu email <strong>{email}</strong> ha sido verificado. Ahora inicia sesión para completar tu registro con el pago de {price}."
+      },
+      "back_home": "Volver al inicio"
     }
   },
   "sidebar": {
@@ -362,6 +698,52 @@
       "error": {
         "title": "Error al cerrar sesión",
         "description": "No se pudo cerrar la sesión. Inténtalo de nuevo."
+      }
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "description": "Administra tu cuenta y preferencias de la aplicación",
+    "tabs": {
+      "profile": "Perfil",
+      "security": "Seguridad",
+      "account": "Cuenta"
+    },
+    "profile": {
+      "title": "Información de perfil",
+      "description": "Actualiza tu foto de perfil y información personal",
+      "updateSuccess": "Perfil actualizado correctamente",
+      "pictureUploadSuccess": "Foto de perfil actualizada correctamente",
+      "validation": {
+        "nameRequired": "El nombre es obligatorio",
+        "nameMin": "El nombre debe tener al menos 2 caracteres",
+        "emailRequired": "El email es obligatorio",
+        "emailInvalid": "Email inválido"
+      }
+    },
+    "security": {
+      "title": "Seguridad",
+      "description": "Actualiza tu contraseña y gestiona la seguridad de tu cuenta",
+      "passwordChangeSuccess": "Contraseña cambiada correctamente",
+      "validation": {
+        "currentPasswordRequired": "La contraseña actual es obligatoria",
+        "newPasswordRequired": "La nueva contraseña es obligatoria",
+        "newPasswordMin": "La contraseña debe tener al menos 8 caracteres",
+        "newPasswordUppercase": "Debe contener al menos una mayúscula",
+        "newPasswordLowercase": "Debe contener al menos una minúscula",
+        "newPasswordNumber": "Debe contener al menos un número",
+        "confirmPasswordRequired": "Debes confirmar la nueva contraseña",
+        "passwordsMismatch": "Las contraseñas no coinciden",
+        "passwordsSame": "La nueva contraseña debe ser diferente a la actual"
+      }
+    },
+    "account": {
+      "title": "Gestión de cuenta",
+      "description": "Administra tu cuenta y datos personales",
+      "deleteSuccess": "Cuenta eliminada correctamente",
+      "validation": {
+        "passwordRequired": "Debes ingresar tu contraseña para confirmar",
+        "confirmationRequired": "Debes confirmar que entiendes que esta acción es irreversible"
       }
     }
   }

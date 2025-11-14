@@ -80,7 +80,8 @@ export function useCreateLeagueClient(): UseCreateLeagueResult {
     try {
       console.log("[useCreateLeagueClient] Creating league from browser...", {
         name: params.name,
-        type: params.type,
+        visibility: params.visibility,
+        category: params.category,
       });
 
       const result = await createLeagueUseCase.execute(params);
@@ -88,7 +89,8 @@ export function useCreateLeagueClient(): UseCreateLeagueResult {
       console.log("[useCreateLeagueClient] League created successfully:", {
         id: result.id,
         name: result.name,
-        type: result.type,
+        visibility: result.visibility,
+        category: result.category,
       });
 
       setCreatedLeague(result);

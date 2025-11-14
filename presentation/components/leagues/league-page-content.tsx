@@ -13,10 +13,17 @@ import {
   TabsTrigger,
 } from "@/presentation/components/ui/tabs";
 import { toast } from "sonner";
+import {
+  UserPlus,
+  PlusCircle,
+  Library,
+  Building2,
+} from "lucide-react";
 import { useCreateLeagueClient } from "@/presentation/hooks/leagues/use-create-league-client";
 import { useJoinLeagueClient } from "@/presentation/hooks/leagues/use-join-league-client";
 import { usePublicLeaguesClient } from "@/presentation/hooks/leagues/use-public-leagues-client";
 import { useMyLeaguesClient } from "@/presentation/hooks/leagues/use-my-leagues-client";
+import { useCorporateLeaguesClient } from "@/presentation/hooks/leagues/use-corporate-leagues-client";
 import type { League } from "@/domain/entities/league";
 import type {
   CreateLeagueFormData,
@@ -25,6 +32,7 @@ import type {
 import { JoinLeagueTab } from "@/presentation/components/leagues/join-league-tab";
 import { CreateLeagueTab } from "@/presentation/components/leagues/create-league-tab";
 import { MyLeaguesTab } from "@/presentation/components/leagues/my-leagues-tab";
+import { CorporateLeaguesTab } from "@/presentation/components/leagues/corporate-leagues-tab";
 import { JoinConfirmationDialog } from "@/presentation/components/leagues/join-confirmation-dialog";
 import { selectAddLeague } from "@/infrastructure/store/selectors";
 
@@ -56,6 +64,12 @@ export function LeaguePageContent() {
     error: myError,
     refetch: refetchMy,
   } = useMyLeaguesClient();
+  const {
+    leagues: corporateLeagues,
+    isLoading: isLoadingCorporate,
+    error: corporateError,
+    refetch: refetchCorporate,
+  } = useCorporateLeaguesClient();
 
   // Add this selector
   const addLeague = selectAddLeague();
@@ -75,7 +89,10 @@ export function LeaguePageContent() {
     const league = await createLeague({
       name: data.name,
       description: data.description || undefined,
-      type: data.type,
+      visibility: data.visibility,
+      category: data.category,
+      code: data.code || undefined,
+      requiredEmailDomain: data.requiredEmailDomain || undefined,
     });
 
     if (league) {
@@ -126,6 +143,7 @@ export function LeaguePageContent() {
       setConfirmJoinDialog({ open: false, league: null });
       refetchMy();
       refetchPublic();
+      refetchCorporate();
       router.push("/dashboard");
     } else if (joinError) {
       toast.error("Error al unirse a la liga", {
@@ -146,10 +164,23 @@ export function LeaguePageContent() {
       <main className="flex-1 overflow-auto p-4">
         <div className="mx-auto max-w-4xl">
           <Tabs defaultValue="join" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="join">Unirse a Liga</TabsTrigger>
-              <TabsTrigger value="create">Crear Liga</TabsTrigger>
-              <TabsTrigger value="my-leagues">Mis Ligas</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="join" className="gap-2">
+                <UserPlus className="h-4 w-4" />
+                <span className="hidden sm:inline">Unirse</span>
+              </TabsTrigger>
+              <TabsTrigger value="corporate" className="gap-2">
+                <Building2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Empresas</span>
+              </TabsTrigger>
+              <TabsTrigger value="create" className="gap-2">
+                <PlusCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Crear</span>
+              </TabsTrigger>
+              <TabsTrigger value="my-leagues" className="gap-2">
+                <Library className="h-4 w-4" />
+                <span className="hidden sm:inline">Mis Ligas</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="join" className="mt-6">
@@ -160,6 +191,16 @@ export function LeaguePageContent() {
                 isJoining={isJoining}
                 onJoinWithCode={handleJoinWithCode}
                 onJoinPublicLeague={openJoinConfirmation}
+              />
+            </TabsContent>
+
+            <TabsContent value="corporate" className="mt-6">
+              <CorporateLeaguesTab
+                leagues={corporateLeagues}
+                isLoading={isLoadingCorporate}
+                error={corporateError}
+                isJoining={isJoining}
+                onJoinLeague={openJoinConfirmation}
               />
             </TabsContent>
 
@@ -175,6 +216,7 @@ export function LeaguePageContent() {
                 leagues={myLeagues}
                 isLoading={isLoadingMy}
                 error={myError}
+                onLeagueUpdated={refetchMy}
               />
             </TabsContent>
           </Tabs>

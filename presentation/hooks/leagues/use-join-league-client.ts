@@ -95,7 +95,7 @@ export function useJoinLeagueClient(): UseJoinLeagueResult {
       console.log("[useJoinLeagueClient] League joined successfully:", {
         id: result.id,
         name: result.name,
-        type: result.type,
+        visibility: result.visibility,
       });
 
       setJoinedLeague(result);

@@ -1,4 +1,14 @@
 /**
+ * League visibility enumeration
+ */
+export type LeagueVisibility = "public" | "private";
+
+/**
+ * League category enumeration
+ */
+export type LeagueCategory = "general" | "corporate" | "friends" | "community";
+
+/**
  * League Entity
  * Represents a competition league where users can participate
  */
@@ -6,7 +16,9 @@ export interface League {
   id: string;
   name: string;
   description: string | null;
-  type: "public" | "private";
+  visibility: LeagueVisibility;
+  category: LeagueCategory;
+  requiredEmailDomain: string | null;
   adminUserId: string;
   maxMembers: number;
   currentMembers: number;
@@ -17,11 +29,6 @@ export interface League {
   createdAt: Date;
   updatedAt: Date;
 }
-
-/**
- * League type enumeration
- */
-export type LeagueType = "public" | "private";
 
 /**
  * League Member Entity
@@ -39,4 +46,43 @@ export interface LeagueMember {
   hasPaid: boolean;
   paymentDate: Date | null;
   stripeCustomerId: string | null;
+}
+
+/**
+ * User Ranking Info
+ * Represents basic user information for ranking display
+ */
+export interface UserRanking {
+  id: string;
+  name: string;
+  email: string; // Partially masked (e.g., a***@example.com)
+}
+
+/**
+ * League Ranking Entry
+ * Represents a single entry in the league ranking
+ */
+export interface LeagueRankingEntry {
+  position: number;
+  user: UserRanking;
+  totalPoints: number;
+  predictionId: string | null;
+  isLocked: boolean;
+  groupsCompleted: boolean;
+  knockoutsCompleted: boolean;
+  awardsCompleted: boolean;
+  lastPointsCalculation: Date | null;
+  joinedAt: Date;
+}
+
+/**
+ * League Ranking
+ * Represents the complete ranking/leaderboard of a league
+ */
+export interface LeagueRanking {
+  leagueId: string;
+  totalMembers: number;
+  activePredictions: number;
+  ranking: LeagueRankingEntry[];
+  generatedAt: Date;
 }

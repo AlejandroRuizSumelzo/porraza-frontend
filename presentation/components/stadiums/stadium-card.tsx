@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Card } from "@/presentation/components/ui/card";
 import { MapPin, Users, Globe } from "lucide-react";
 import type { Stadium } from "@/domain/entities/stadium";
@@ -19,6 +19,7 @@ interface StadiumCardProps {
  */
 export function StadiumCard({ stadium }: StadiumCardProps) {
   const locale = useLocale();
+  const t = useTranslations();
 
   // Generate image path from stadium code
   const imagePath = `/stadiums/${stadium.code}.webp`;
@@ -60,7 +61,7 @@ export function StadiumCard({ stadium }: StadiumCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
-              <span className="text-sm">Capacidad</span>
+              <span className="text-sm">{t("stadiums.card.capacity_label")}</span>
             </div>
             <span className="text-sm font-semibold">
               {formatNumber(stadium.capacity, locale)}
@@ -72,7 +73,7 @@ export function StadiumCard({ stadium }: StadiumCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Globe className="h-4 w-4" />
-            <span className="text-sm">Zona horaria</span>
+            <span className="text-sm">{t("stadiums.card.timezone_label")}</span>
           </div>
           <span className="text-xs font-mono text-muted-foreground">
             {stadium.timezone}

@@ -1,78 +1,23 @@
-import type { League, LeagueMember } from "@/domain/entities/league";
-
-/**
- * League DTO from API (Response)
- * Matches the LeagueResponseDto from Swagger
- */
-export interface LeagueDTO {
-  id: string;
-  name: string;
-  description: string | null;
-  type: "public" | "private";
-  adminUserId: string;
-  maxMembers: number;
-  currentMembers: number;
-  code: string;
-  logoUrl: string | null;
-  isAdmin: boolean;
-  isMember: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-/**
- * Create League DTO (Request)
- * Matches the CreateLeagueDto from Swagger
- */
-export interface CreateLeagueDTO {
-  name: string;
-  description?: string;
-  type: "public" | "private";
-}
-
-/**
- * Update League DTO (Request)
- * Matches the UpdateLeagueDto from Swagger
- */
-export interface UpdateLeagueDTO {
-  name?: string;
-  description?: string;
-  type?: "public" | "private";
-}
-
-/**
- * Join League DTO (Request)
- * Matches the JoinLeagueDto from Swagger
- */
-export interface JoinLeagueDTO {
-  code?: string;
-}
-
-/**
- * Transfer Admin DTO (Request)
- * Matches the TransferAdminDto from Swagger
- */
-export interface TransferAdminDTO {
-  newAdminUserId: string;
-}
-
-/**
- * League Member DTO (Response)
- * Matches the User response from GET /leagues/{id}/members
- */
-export interface LeagueMemberDTO {
-  id: string;
-  email: string;
-  name: string;
-  isActive: boolean;
-  isEmailVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt: string | null;
-  hasPaid: boolean;
-  paymentDate: string | null;
-  stripeCustomerId: string | null;
-}
+import type {
+  League,
+  LeagueCategory,
+  LeagueMember,
+  LeagueRanking,
+  LeagueRankingEntry,
+  LeagueVisibility,
+  UserRanking,
+} from "@/domain/entities/league";
+import type {
+  CreateLeagueDTO,
+  JoinLeagueDTO,
+  LeagueDTO,
+  LeagueMemberDTO,
+  LeagueRankingEntryDTO,
+  LeagueRankingResponseDTO,
+  TransferAdminDTO,
+  UpdateLeagueDTO,
+  UserRankingDTO,
+} from "@/infrastructure/http/dtos/league-dto";
 
 /**
  * Mapper to transform between League domain entity and DTOs
@@ -86,7 +31,9 @@ export class LeagueMapper {
       id: dto.id,
       name: dto.name,
       description: dto.description,
-      type: dto.type,
+      visibility: dto.visibility,
+      category: dto.category,
+      requiredEmailDomain: dto.requiredEmailDomain,
       adminUserId: dto.adminUserId,
       maxMembers: dto.maxMembers,
       currentMembers: dto.currentMembers,
@@ -105,12 +52,18 @@ export class LeagueMapper {
   static toCreateDTO(data: {
     name: string;
     description?: string;
-    type: "public" | "private";
+    visibility: LeagueVisibility;
+    category: LeagueCategory;
+    code?: string;
+    requiredEmailDomain?: string;
   }): CreateLeagueDTO {
     return {
       name: data.name,
       description: data.description,
-      type: data.type,
+      visibility: data.visibility,
+      category: data.category,
+      code: data.code,
+      requiredEmailDomain: data.requiredEmailDomain,
     };
   }
 
@@ -120,12 +73,16 @@ export class LeagueMapper {
   static toUpdateDTO(data: {
     name?: string;
     description?: string;
-    type?: "public" | "private";
+    visibility?: LeagueVisibility;
+    category?: LeagueCategory;
+    requiredEmailDomain?: string;
   }): UpdateLeagueDTO {
     return {
       name: data.name,
       description: data.description,
-      type: data.type,
+      visibility: data.visibility,
+      category: data.category,
+      requiredEmailDomain: data.requiredEmailDomain,
     };
   }
 
@@ -163,6 +120,50 @@ export class LeagueMapper {
       hasPaid: dto.hasPaid,
       paymentDate: dto.paymentDate ? new Date(dto.paymentDate) : null,
       stripeCustomerId: dto.stripeCustomerId,
+    };
+  }
+
+  /**
+   * Transform user ranking DTO to domain entity
+   */
+  static toUserRankingDomain(dto: UserRankingDTO): UserRanking {
+    return {
+      id: dto.id,
+      name: dto.name,
+      email: dto.email, // Already masked from API
+    };
+  }
+
+  /**
+   * Transform league ranking entry DTO to domain entity
+   */
+  static toRankingEntryDomain(dto: LeagueRankingEntryDTO): LeagueRankingEntry {
+    return {
+      position: dto.position,
+      user: this.toUserRankingDomain(dto.user),
+      totalPoints: dto.totalPoints,
+      predictionId: dto.predictionId,
+      isLocked: dto.isLocked,
+      groupsCompleted: dto.groupsCompleted,
+      knockoutsCompleted: dto.knockoutsCompleted,
+      awardsCompleted: dto.awardsCompleted,
+      lastPointsCalculation: dto.lastPointsCalculation
+        ? new Date(dto.lastPointsCalculation)
+        : null,
+      joinedAt: new Date(dto.joinedAt),
+    };
+  }
+
+  /**
+   * Transform league ranking response DTO to domain entity
+   */
+  static toRankingDomain(dto: LeagueRankingResponseDTO): LeagueRanking {
+    return {
+      leagueId: dto.leagueId,
+      totalMembers: dto.totalMembers,
+      activePredictions: dto.activePredictions,
+      ranking: dto.ranking.map((entry) => this.toRankingEntryDomain(entry)),
+      generatedAt: new Date(dto.generatedAt),
     };
   }
 }

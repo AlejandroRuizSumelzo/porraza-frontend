@@ -1,4 +1,10 @@
-import type { League, LeagueMember } from "@/domain/entities/league";
+import type {
+  League,
+  LeagueCategory,
+  LeagueMember,
+  LeagueRanking,
+  LeagueVisibility,
+} from "@/domain/entities/league";
 
 /**
  * League Repository Interface
@@ -14,7 +20,10 @@ export interface LeagueRepository {
   create(data: {
     name: string;
     description?: string;
-    type: "public" | "private";
+    visibility: LeagueVisibility;
+    category: LeagueCategory;
+    code?: string;
+    requiredEmailDomain?: string;
   }): Promise<League>;
 
   /**
@@ -28,6 +37,19 @@ export interface LeagueRepository {
    * @returns List of public leagues
    */
   getPublic(): Promise<League[]>;
+
+  /**
+   * Get only public corporate leagues
+   * @returns List of public corporate leagues
+   */
+  getCorporate(): Promise<League[]>;
+
+  /**
+   * Get public leagues filtered by category
+   * @param category League category (general, corporate, friends, community)
+   * @returns List of public leagues in the specified category
+   */
+  getByCategory(category: LeagueCategory): Promise<League[]>;
 
   /**
    * Get leagues where the current user is a member
@@ -61,7 +83,9 @@ export interface LeagueRepository {
     data: {
       name?: string;
       description?: string;
-      type?: "public" | "private";
+      visibility?: LeagueVisibility;
+      category?: LeagueCategory;
+      requiredEmailDomain?: string;
     }
   ): Promise<League>;
 
@@ -105,4 +129,25 @@ export interface LeagueRepository {
    * @param newAdminUserId User UUID of the new admin
    */
   transferAdmin(id: string, newAdminUserId: string): Promise<League>;
+
+  /**
+   * Upload or update league logo (admin only)
+   * Allowed file types: JPEG, PNG, WebP
+   * Maximum file size: 5 MB
+   * Previous logo will be automatically deleted from storage
+   * @param id League UUID
+   * @param file Image file to upload
+   * @returns Updated league with new logo URL
+   */
+  uploadLogo(id: string, file: File): Promise<League>;
+
+  /**
+   * Get league ranking/leaderboard
+   * Retrieve the real-time ranking of all members in a league ordered by points.
+   * Includes all members (even those without predictions).
+   * Tie-breaking criteria: 1) Total points (DESC), 2) Last points calculation (DESC), 3) Join date (ASC)
+   * @param id League UUID
+   * @returns League ranking with all members ordered by points
+   */
+  getLeagueRanking(id: string): Promise<LeagueRanking>;
 }

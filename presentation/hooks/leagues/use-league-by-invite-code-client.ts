@@ -90,7 +90,7 @@ export function useLeagueByInviteCodeClient(
           {
             id: result.id,
             name: result.name,
-            type: result.type,
+            visibility: result.visibility,
           }
         );
       } else {

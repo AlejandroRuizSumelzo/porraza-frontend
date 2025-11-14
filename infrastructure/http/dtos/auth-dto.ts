@@ -1,19 +1,7 @@
-/**
- * User DTO
- * Represents user data from the API
- */
-export interface UserDTO {
-  id: string;
-  email: string;
-  name: string;
-  isActive: boolean;
-  isEmailVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt: string | null;
-  hasPaid: boolean;
-  stripeCustomerId?: string | null;
-}
+import type { UserDTO } from "@/infrastructure/http/dtos/user-dto";
+
+// Re-export UserDTO for backward compatibility
+export type { UserDTO };
 
 /**
  * Login Request DTO

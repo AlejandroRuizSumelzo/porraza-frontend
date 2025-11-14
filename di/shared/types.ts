@@ -1,5 +1,6 @@
 import type { HttpClient } from "@/infrastructure/http/client";
 import type { AuthRepository } from "@/domain/repositories/auth-repository";
+import type { UserRepository } from "@/domain/repositories/user-repository";
 import type { PaymentRepository } from "@/domain/repositories/payment-repository";
 import type { MatchRepository } from "@/domain/repositories/match-repository";
 import type { StadiumRepository } from "@/domain/repositories/stadium-repository";
@@ -8,6 +9,10 @@ import type { PlayerRepository } from "@/domain/repositories/player-repository";
 import type { PredictionRepository } from "@/domain/repositories/prediction-repository";
 import type { LeagueRepository } from "@/domain/repositories/league-repository";
 import type { LoginUseCase } from "@/domain/use-cases/auth/login-use-case";
+import type { UpdateUserUseCase } from "@/domain/use-cases/users/update-user-use-case";
+import type { DeleteUserUseCase } from "@/domain/use-cases/users/delete-user-use-case";
+import type { UploadProfilePictureUseCase } from "@/domain/use-cases/users/upload-profile-picture-use-case";
+import type { ChangePasswordUseCase } from "@/domain/use-cases/users/change-password-use-case";
 import type { RegisterUseCase } from "@/domain/use-cases/auth/register-use-case";
 import type { VerifyEmailUseCase } from "@/domain/use-cases/auth/verify-email-use-case";
 import type { RefreshTokenUseCase } from "@/domain/use-cases/auth/refresh-token-use-case";
@@ -42,6 +47,10 @@ import type { LeaveLeagueUseCase } from "@/domain/use-cases/leagues/leave-league
 import type { GetLeagueMembersUseCase } from "@/domain/use-cases/leagues/get-league-members-use-case";
 import type { RemoveMemberUseCase } from "@/domain/use-cases/leagues/remove-member-use-case";
 import type { TransferAdminUseCase } from "@/domain/use-cases/leagues/transfer-admin-use-case";
+import type { GetLeagueRankingUseCase } from "@/domain/use-cases/leagues/get-league-ranking-use-case";
+import type { GetCorporateLeaguesUseCase } from "@/domain/use-cases/leagues/get-corporate-leagues-use-case";
+import type { GetLeaguesByCategoryUseCase } from "@/domain/use-cases/leagues/get-leagues-by-category-use-case";
+import type { UploadLeagueLogoUseCase } from "@/domain/use-cases/leagues/upload-league-logo-use-case";
 
 /**
  * Dependencies Interface
@@ -58,6 +67,7 @@ export interface Dependencies {
 
   // Repositories
   authRepository: AuthRepository;
+  userRepository: UserRepository;
   paymentRepository: PaymentRepository;
   matchRepository: MatchRepository;
   stadiumRepository: StadiumRepository;
@@ -74,6 +84,12 @@ export interface Dependencies {
   logoutUseCase: LogoutUseCase;
   forgotPasswordUseCase: ForgotPasswordUseCase;
   resetPasswordUseCase: ResetPasswordUseCase;
+
+  // User Use Cases
+  updateUserUseCase: UpdateUserUseCase;
+  deleteUserUseCase: DeleteUserUseCase;
+  uploadProfilePictureUseCase: UploadProfilePictureUseCase;
+  changePasswordUseCase: ChangePasswordUseCase;
 
   // Payment Use Cases
   createCheckoutSessionUseCase: CreateCheckoutSessionUseCase;
@@ -106,6 +122,8 @@ export interface Dependencies {
   createLeagueUseCase: CreateLeagueUseCase;
   getAllLeaguesUseCase: GetAllLeaguesUseCase;
   getPublicLeaguesUseCase: GetPublicLeaguesUseCase;
+  getCorporateLeaguesUseCase: GetCorporateLeaguesUseCase;
+  getLeaguesByCategoryUseCase: GetLeaguesByCategoryUseCase;
   getMyLeaguesUseCase: GetMyLeaguesUseCase;
   getLeagueByIdUseCase: GetLeagueByIdUseCase;
   getLeagueByInviteCodeUseCase: GetLeagueByInviteCodeUseCase;
@@ -116,4 +134,6 @@ export interface Dependencies {
   getLeagueMembersUseCase: GetLeagueMembersUseCase;
   removeMemberUseCase: RemoveMemberUseCase;
   transferAdminUseCase: TransferAdminUseCase;
+  uploadLeagueLogoUseCase: UploadLeagueLogoUseCase;
+  getLeagueRankingUseCase: GetLeagueRankingUseCase;
 }

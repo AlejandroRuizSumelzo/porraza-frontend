@@ -8,6 +8,7 @@ import type { Stadium } from "@/domain/entities/stadium";
 import { StadiumHeader } from "@/presentation/components/stadiums/stadium-header";
 import { StadiumGrid } from "@/presentation/components/stadiums/stadium-grid";
 import { StadiumEmptyState } from "@/presentation/components/stadiums/stadium-empty-state";
+import { useTranslations } from "next-intl";
 
 interface StadiumPageContentProps {
   stadiums: Stadium[] | null;
@@ -23,6 +24,7 @@ export function StadiumPageContent({
   error,
 }: StadiumPageContentProps) {
   const { open, isMobile } = useSidebar();
+  const t = useTranslations();
 
   return (
     <div className="flex h-full flex-col">
@@ -30,7 +32,7 @@ export function StadiumPageContent({
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
         {/* Show trigger always on mobile, or when collapsed on desktop */}
         {(isMobile || !open) && <SidebarTrigger />}
-        <h1 className="text-xl font-semibold">Estadios</h1>
+        <h1 className="text-xl font-semibold">{t("stadiums.header.title")}</h1>
       </header>
 
       {/* Main Content */}

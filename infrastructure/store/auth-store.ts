@@ -74,6 +74,12 @@ interface AuthState {
    */
   clearAuth: () => void;
 
+  /**
+   * Update only the user data (used after profile update)
+   * @param user - Updated user object
+   */
+  setUser: (user: User) => void;
+
   // ===== Getters =====
   /**
    * Get current access token if available
@@ -182,6 +188,16 @@ export const useAuthStore = create<AuthState>()(
         syncAuthStateToCookie(null);
 
         console.log("[AuthStore] Authentication cleared");
+      },
+
+      setUser: (user: User) => {
+        set({ user });
+
+        console.log("[AuthStore] User updated:", {
+          userId: user.id,
+          name: user.name,
+          email: user.email,
+        });
       },
 
       // Getters

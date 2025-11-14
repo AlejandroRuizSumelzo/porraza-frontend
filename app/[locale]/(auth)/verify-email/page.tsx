@@ -2,8 +2,9 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
+import { useTranslations, useMessages } from "next-intl";
 import { motion } from "motion/react";
 import { useEmailVerification } from "@/presentation/hooks/auth/use-email-verification";
 import { APP_ROUTES } from "@/presentation/utils/routes";
@@ -25,6 +26,8 @@ import { CheckCircle2, XCircle, Mail, ShieldCheck } from "lucide-react";
  * Separated from page component to use useSearchParams inside Suspense.
  */
 function VerifyEmailContent() {
+  const t = useTranslations();
+  const messages = useMessages();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { verifyEmail, isLoading, error, clearError } = useEmailVerification();
@@ -66,7 +69,7 @@ function VerifyEmailContent() {
               <div className="relative w-20 h-20 group-hover:scale-105 transition-transform">
                 <Image
                   src="/logo/porraza-icon.webp"
-                  alt="Porraza Logo"
+                  alt={messages.common?.app_name ?? "Porraza"}
                   width={80}
                   height={80}
                   className="object-contain drop-shadow-lg"
@@ -74,12 +77,12 @@ function VerifyEmailContent() {
                 />
               </div>
               <h1 className="text-5xl font-display font-bold gradient-text-tricolor">
-                Porraza
+                {messages.common?.app_name ?? "Porraza"}
               </h1>
             </div>
           </Link>
           <p className="text-muted-foreground text-lg mt-3">
-            Verificación de Email
+            {t("auth.verify_email.subtitle")}
           </p>
         </motion.div>
 
@@ -97,39 +100,39 @@ function VerifyEmailContent() {
                     <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
                       <CheckCircle2 className="w-5 h-5 text-green-500" />
                     </div>
-                    ¡Email Verificado!
+                    {t("auth.verify_email.states.verified.title")}
                   </>
                 ) : error ? (
                   <>
                     <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
                       <XCircle className="w-5 h-5 text-destructive" />
                     </div>
-                    Error de Verificación
+                    {t("auth.verify_email.states.error.title")}
                   </>
                 ) : token ? (
                   <>
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                       <ShieldCheck className="w-5 h-5 text-primary" />
                     </div>
-                    Verifica tu Email
+                    {t("auth.verify_email.states.pending.title")}
                   </>
                 ) : (
                   <>
                     <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
                       <Mail className="w-5 h-5 text-muted-foreground" />
                     </div>
-                    Token No Encontrado
+                    {t("auth.verify_email.states.missing_token.title")}
                   </>
                 )}
               </CardTitle>
               <CardDescription className="text-base text-center">
                 {verifiedEmail
-                  ? "Tu cuenta ha sido verificada exitosamente"
+                  ? t("auth.verify_email.states.verified.description")
                   : error
-                  ? "No pudimos verificar tu email"
+                  ? t("auth.verify_email.states.error.description")
                   : token
-                  ? "Haz clic en el botón para verificar tu dirección de email"
-                  : "No se encontró un token de verificación en la URL"}
+                  ? t("auth.verify_email.states.pending.description")
+                  : t("auth.verify_email.states.missing_token.description")}
               </CardDescription>
             </CardHeader>
 
@@ -141,10 +144,11 @@ function VerifyEmailContent() {
                     <div className="flex items-start gap-3">
                       <ShieldCheck className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium">¡Casi listo!</p>
+                        <p className="text-sm font-medium">
+                          {t("auth.verify_email.ready.title")}
+                        </p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Para completar tu registro, por favor verifica tu
-                          dirección de email haciendo clic en el botón de abajo.
+                          {t("auth.verify_email.ready.description")}
                         </p>
                       </div>
                     </div>
@@ -158,12 +162,16 @@ function VerifyEmailContent() {
                     {isLoading ? (
                       <>
                         <Spinner className="w-4 h-4" />
-                        <span>Verificando...</span>
+                        <span>
+                          {t("auth.verify_email.buttons.verify.loading")}
+                        </span>
                       </>
                     ) : (
                       <>
                         <ShieldCheck className="w-5 h-5" />
-                        <span>Verificar Email</span>
+                        <span>
+                          {t("auth.verify_email.buttons.verify.label")}
+                        </span>
                       </>
                     )}
                   </Button>
@@ -178,12 +186,13 @@ function VerifyEmailContent() {
                       <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-green-700 dark:text-green-400">
-                          ¡Verificación exitosa!
+                          {t("auth.verify_email.success.title")}
                         </p>
                         <p className="text-sm text-green-600 dark:text-green-500 mt-1">
-                          Tu email <strong>{verifiedEmail}</strong> ha sido
-                          verificado. Ahora inicia sesión para completar tu
-                          registro con el pago de €1.99.
+                          {t("auth.verify_email.success.description", {
+                            email: verifiedEmail,
+                            price: "€1.99",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -199,7 +208,7 @@ function VerifyEmailContent() {
                     }
                     className="w-full h-12 text-base font-semibold"
                   >
-                    Ir a Iniciar Sesión
+                    {t("auth.verify_email.buttons.go_to_login")}
                   </Button>
                 </div>
               )}
@@ -212,7 +221,7 @@ function VerifyEmailContent() {
                       <XCircle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-destructive">
-                          Error de verificación
+                          {t("auth.verify_email.states.error.title")}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1">
                           {error}
@@ -227,14 +236,14 @@ function VerifyEmailContent() {
                       variant="outline"
                       className="w-full"
                     >
-                      Ir a Iniciar Sesión
+                      {t("auth.verify_email.buttons.go_to_login")}
                     </Button>
                     <Button
                       onClick={() => router.push(APP_ROUTES.auth.signup)}
                       variant="ghost"
                       className="w-full"
                     >
-                      Crear Nueva Cuenta
+                      {t("auth.verify_email.buttons.create_account")}
                     </Button>
                   </div>
                 </div>
@@ -248,11 +257,12 @@ function VerifyEmailContent() {
                       <Mail className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm font-medium">
-                          Token de verificación no encontrado
+                          {t("auth.verify_email.states.missing_token.title")}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Por favor, utiliza el enlace de verificación que
-                          recibiste en tu email.
+                          {t(
+                            "auth.verify_email.states.missing_token.description"
+                          )}
                         </p>
                       </div>
                     </div>
@@ -262,7 +272,7 @@ function VerifyEmailContent() {
                     onClick={() => router.push(APP_ROUTES.auth.signup)}
                     className="w-full"
                   >
-                    Crear Cuenta
+                    {t("auth.verify_email.buttons.create_account")}
                   </Button>
                 </div>
               )}
@@ -281,7 +291,7 @@ function VerifyEmailContent() {
             href="/"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Volver al inicio
+            {t("auth.verify_email.back_home")}
           </Link>
         </motion.div>
       </div>
@@ -308,13 +318,16 @@ function VerifyEmailContent() {
  * - Wrapped in Suspense for useSearchParams
  */
 export default function VerifyEmailPage() {
+  // Separate hook usage here for the Suspense fallback
+  // Keeps content component clean and focused
+  const t = useTranslations();
   return (
     <Suspense
       fallback={
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
           <div className="flex flex-col items-center gap-4">
             <Spinner className="w-12 h-12" />
-            <p className="text-muted-foreground">Cargando...</p>
+            <p className="text-muted-foreground">{t("common.loading")}</p>
           </div>
         </div>
       }
